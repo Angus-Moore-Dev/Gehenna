@@ -1,4 +1,4 @@
-![Gehenna Banner for Github](https://user-images.githubusercontent.com/99398403/224558452-3050de2d-4b8c-4050-babd-cee5fd9671c4.png)
+![Gehenna Banner for Github](https://user-images.githubusercontent.com/99398403/224560632-2ab53885-0de4-4b44-8c5c-0370a593ff3f.png)
 
 Gehenna is a Free and Open-Source Forum centred around the discussion of learning. This is so that people can chat about learning, projects they're partaking in, interesting topics of discussion and free communication between people who want to learn and grow. Everything from computer science, business, art, sports, academia; anything is allowed to be discussed here, so long as it's about learning and some form of personal/product development.
 
