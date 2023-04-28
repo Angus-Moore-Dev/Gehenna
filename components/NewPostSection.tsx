@@ -12,5 +12,5 @@ interface NewPostSection
  */
 export default function NewPostSection({ user, profile }: NewPostSection)
 {
-
+    return <div></div>
 }
