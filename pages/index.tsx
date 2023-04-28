@@ -1,53 +1,109 @@
-import AppNavbar from '@/components/AppNavbar';
+import SignUpModal from '@/components/SignUpModal';
+import { clientDb, serverDb } from '@/lib/db';
+import { Profile } from '@/models/Profile';
+import { Box, Button, TextInput } from '@mantine/core';
+import { User } from '@supabase/auth-helpers-nextjs';
+import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useCallback, useEffect, useRef } from 'react';
-
-export default function HomePage()
+import { useState } from 'react';
+interface HomePageProps
 {
-	const audioRef = useRef<HTMLAudioElement>(null);
-	useEffect(() => {
-		audioRef.current?.click();
-		audioRef.current?.play();
-	}, []);
+	user: User;
+	profile: Profile;
+}
+
+export default function HomePage({ user, profile }: HomePageProps)
+{
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 
 	return (
-		<div className="w-full h-full flex flex-col items-center justify-center">
+		<div className="w-full h-full flex flex-col gap-4 max-w-6xl mx-auto py-16">
 			<Head>
-				<title>Jensen Labs Template</title>
+				<title>Gehenna - Learn, Grow.</title>
 			</Head>
-			<Image src='https://media.tenor.com/UeTh6kTjoP0AAAAd/topg-andrew.gif' width='400' height='500' alt='Mr Producer' className='rounded-lg pb-2' />
-			<audio id="player" autoPlay controls loop className='w-[400px]'>
-				<source src="mr_producer.mp3" type="audio/mp3" />
-			</audio>
-			<p className="text-2xl font-semibold">Jensen Labs Template Repository.</p>
-			<br />
-			<span>
-				Please ensure that you have Supabase setup with the given NEXT_PUBLIC_SUPABASE_PUBLIC_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY inside the Jensen Labs Doppler, under the given project.
-				<br />
-				Then configure the .env.local and storage buckets with whatever you need.
-			</span>
-			<small>If not, ensure you have that setup in the environment variables before building.</small>
-			<small>Otherwise, have a fucking sook if something doesn't work. 🤓</small>
-			<br />
-			<span>
-				The following libraries are pre-installed:
-				<ol>
-					<li>"@emotion/react": "^11.10.5",</li>
-					<li>"@emotion/styled": "^11.10.5",</li>
-					<li>"@mui/icons-material": "^5.11.0",</li>
-					<li>"@mui/material": "^5.11.8",</li>
-					<li>"@next/font": "13.1.6",</li>
-					<li>"@supabase/auth-helpers-nextjs": "^0.5.4",</li>
-					<li>"@supabase/auth-helpers-react": "^0.3.1",</li>
-					<li>"@supabase/supabase-js": "^2.10.0",</li>
-				</ol>
-			</span>
-			<span className='text-center mt-4'>
-				We also use Doppler, read the docs <a href='https://docs.doppler.com/docs/install-cli' target='_blank' className='text-blue-500 hover:text-blue-600'>here</a> to get started. 
-				<br />
-				It's to ensure that environment variables are never in the configs or in the repository ever. Every developer is required to have it.
-			</span>
+			{
+				user && profile &&
+				<>
+				You are signed in as {user.email}!
+				{/* <p>{JSON.stringify(user)}</p>
+				<p>{JSON.stringify(profile)}</p> */}
+				</>
+			}
+			{
+				!user && 
+				<div className='w-full h-full flex flex-col items-center justify-center gap-4'>
+					<div className='w-1/2 border-b-4 border-x-4 border-b-secondary border-x-secondary rounded-2xl p-8 flex flex-col items-center'>
+						<Image src='/logo.png' width={1000} height={450} className='w-full' alt='Gehenna' />
+						<p className='font-semibold'>Those who travel the fastest, travel alone.</p>
+						<p className='font-semibold text-primary'>Those who travel the furthest, travel together.</p>
+						<TextInput label="Email" className='w-full mt-4' value={email} onChange={(e) => setEmail(e.target.value)} />
+						<TextInput label="Password" className='w-full mt-4' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
+						{/* <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
+						onClick={() => {
+							alert('This feature is not yet implemented.');
+						}}>
+							Forgot Password?
+						</button> */}
+						<Button className='w-full mt-4 bg-primary text-secondary transition hover:bg-amber-400'
+						onClick={async () => {
+							const res = await fetch('/api/sign-in', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									email: email,
+									password: password
+								})
+							});
+
+							if (res.status === 200)
+							{
+								// valid sign in.
+								const data = await res.json();
+								const session = data.session;
+								const user = data.user;
+								await clientDb.auth.setSession(session);
+							}
+							else
+							{
+								alert((await res.json()).error);
+							}
+						}}>
+							Login
+						</Button>
+						<SignUpModal />
+					</div>
+				</div>
+			}
 		</div>
 	)
+}
+
+
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => 
+{
+	const db = serverDb(context);
+	const user = (await db.auth.getUser()).data.user;
+
+	if (user)
+	{
+		// Get the profile.
+		const profile = (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile;
+		return {
+			props: {
+				user: user,
+				profile: profile
+			}
+		}
+	}
+
+	return {
+		props: {
+			user: user
+		}
+	}
 }

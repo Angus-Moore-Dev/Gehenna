@@ -1,7 +1,45 @@
 @tailwind base;
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+      width: 10px;
+      height: 20px;
+      direction: rtl;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+      background: #FFAA00;
+      border-radius: 8px;
+      border: 6px solid transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #FFAA00;
+  }
+}
+
+
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
+  color: white;
   margin: 0;
+  background-color: #1f1f1f;
+  font-family: 'Inter', sans-serif;
+}
+
+textarea {
+  resize: none;
+}
+
+#text-box {
+  font-family: 'Open Sans', sans-serif;
+  white-space: pre-wrap;
+  overflow: auto;
 }
