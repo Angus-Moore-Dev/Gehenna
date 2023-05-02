@@ -1,12 +1,19 @@
+import NewPostBox from '@/components/NewPostBox';
+import PostPreviewBox from '@/components/PostPreviewBox';
+import SignInForm from '@/components/SignInForm';
 import SignUpModal from '@/components/SignUpModal';
 import { clientDb, serverDb } from '@/lib/db';
+import { Post } from '@/models/Post';
 import { Profile } from '@/models/Profile';
 import { Box, Button, TextInput } from '@mantine/core';
 import { User } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+
 interface HomePageProps
 {
 	user: User;
@@ -15,8 +22,26 @@ interface HomePageProps
 
 export default function HomePage({ user, profile }: HomePageProps)
 {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	const [posts, setPosts] = useState<Post[]>();
+
+	useEffect(() => {
+		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
+		clientDb.from('post').select('*').limit(25).order('createdAt', { ascending: true }).then(async res => {
+			if (!res.error && res.data)
+			{
+				setPosts(res.data as Post[]);
+			}
+			else if (res.error)
+			{
+				toast.error(res.error.message);
+			}
+		})
+
+		clientDb.channel('new_posts').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'post' }, (payload) => {
+			// We set the new post as the first post because it's the newest.
+			setPosts((prev) => [payload.new, ...prev ?? []] as Post[]);
+		}).subscribe();
+	}, []);
 
 	return (
 		<div className="w-full h-full flex flex-col gap-4 max-w-6xl mx-auto py-16">
@@ -24,65 +49,50 @@ export default function HomePage({ user, profile }: HomePageProps)
 				<title>Gehenna - Learn, Grow.</title>
 			</Head>
 			{
-				user && profile &&
-				<>
-				You are signed in as {user.email}!
-				{/* <p>{JSON.stringify(user)}</p>
-				<p>{JSON.stringify(profile)}</p> */}
-				</>
+				!user && 
+				<SignInForm />
 			}
 			{
-				!user && 
-				<div className='w-full h-full flex flex-col items-center justify-center gap-4'>
-					<div className='w-1/2 border-b-4 border-x-4 border-b-secondary border-x-secondary rounded-2xl p-8 flex flex-col items-center'>
-						<Image src='/logo.png' width={1000} height={450} className='w-full' alt='Gehenna' />
-						<p className='font-semibold'>Those who travel the fastest, travel alone.</p>
-						<p className='font-semibold text-primary'>Those who travel the furthest, travel together.</p>
-						<TextInput label="Email" className='w-full mt-4' value={email} onChange={(e) => setEmail(e.target.value)} />
-						<TextInput label="Password" className='w-full mt-4' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-						{/* <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
-						onClick={() => {
-							alert('This feature is not yet implemented.');
-						}}>
-							Forgot Password?
-						</button> */}
-						<Button className='w-full mt-4 bg-primary text-secondary transition hover:bg-amber-400'
-						onClick={async () => {
-							const res = await fetch('/api/sign-in', {
-								method: 'POST',
-								headers: {
-									'Content-Type': 'application/json'
-								},
-								body: JSON.stringify({
-									email: email,
-									password: password
-								})
-							});
-
-							if (res.status === 200)
+				user && profile && !profile.emailVerified &&
+				<div className='w-full h-full flex items-center justify-center flex-col gap-4'>
+					<Image src='/logo.png' width={500} height={450} className='w-1/3 mb-10' alt='Gehenna' />
+					<span className='text-2xl font-bold'>Please verify your email address before you can gain access to Gehenna.</span>
+					<span>Please check your inbox (or spam) for an email with a link to confirm <b>{user.email}</b></span>
+				</div>
+			}
+			{
+				user && profile && profile.emailVerified &&
+				<div className='w-full h-full flex flex-col items-center gap-10'>
+					<Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' />
+					<Link href='/profile' className='w-full max-w-3xl flex flex-col items-center gap-4 underline text-blue-600 transition hover:text-blue-500'>
+						View My Profile
+					</Link>
+					{/* The user can make new posts here. */}
+					<NewPostBox user={user} />
+					{/* The user can see their posts here. */}
+					<div className='w-full h-full flex flex-col items-center gap-4'>
+						{
+							posts &&
+							posts.length === 0 &&
+							<div className='w-full h-full flex flex-col items-center gap-4'>
+								<h1 className='text-2xl font-bold'>There are no recent posts...</h1>
+							</div>
+						}
+						{
+							posts && posts.length > 0 &&
+							<>
+							<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads</span>
 							{
-								// valid sign in.
-								const data = await res.json();
-								const session = data.session;
-								const user = data.user;
-								await clientDb.auth.setSession(session);
+								posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
 							}
-							else
-							{
-								alert((await res.json()).error);
-							}
-						}}>
-							Login
-						</Button>
-						<SignUpModal />
+							</>
+						}
 					</div>
 				</div>
 			}
 		</div>
 	)
 }
-
-
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 {
@@ -93,6 +103,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 	{
 		// Get the profile.
 		const profile = (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile;
+		console.log(profile);
 		return {
 			props: {
 				user: user,
