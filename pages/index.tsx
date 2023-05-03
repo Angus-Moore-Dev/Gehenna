@@ -5,7 +5,7 @@ import SignUpModal from '@/components/SignUpModal';
 import { clientDb, serverDb } from '@/lib/db';
 import { Post } from '@/models/Post';
 import { Profile } from '@/models/Profile';
-import { Box, Button, TextInput } from '@mantine/core';
+import { Box, Button, Loader, TextInput } from '@mantine/core';
 import { User } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
@@ -27,6 +27,8 @@ export default function HomePage({ user, profile }: HomePageProps)
 	const [postCount, setPostCount] = useState(10);
 	const [posts, setPosts] = useState<Post[]>();
 	const ref = useRef<HTMLDivElement>(null);
+
+	const [searchResults, setSearchResults] = useState('');
 
 	useEffect(() => {
 		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
@@ -84,41 +86,50 @@ export default function HomePage({ user, profile }: HomePageProps)
 						}
 						{
 							posts && posts.length > 0 &&
-							<InfiniteScroll 
-							dataLength={posts.length} 
-							next={async () => {
-								clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
-									if (!res.error && res.data)
+							<>
+							<TextInput placeholder='Search For Thread' className='w-full max-w-3xl' label='Search For Thread' value={searchResults} onChange={async (e) => setSearchResults(e.target.value)} />
+							{
+								searchResults.length > 0 && posts.map(x => x.title.toLowerCase().includes(searchResults.toLowerCase()) && <PostPreviewBox key={x.id} post={x} />)
+							}
+							{
+								searchResults.length === 0 &&
+								<InfiniteScroll 
+								dataLength={posts.length} 
+								next={async () => {
+									clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
+										if (!res.error && res.data)
+										{
+											setPosts(res.data as Post[]);
+											setPostCount(postCount + 2);
+										}
+										else
+										{
+											toast.error(res.error.message);
+										}
+									})
+								}} 
+								hasMore={true} 
+								loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
+								style={{
+									width: '768px',
+								}}
+								endMessage={
+									<p style={{ textAlign: 'center' }}>
+										<b>Yay! You have seen it all</b>
+									</p>
+								}>
 									{
-										setPosts(res.data as Post[]);
-										setPostCount(postCount + 2);
+										posts && posts.length > 0 &&
+										<div className='w-full flex flex-col gap-2 justify-start'>
+										<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads</span>
+										{
+											posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+										}
+										</div>
 									}
-									else
-									{
-										toast.error(res.error.message);
-									}
-								})
-							}} 
-							hasMore={true} 
-							loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
-							style={{
-								width: '768px',
-							}}
-							endMessage={
-								<p style={{ textAlign: 'center' }}>
-									<b>Yay! You have seen it all</b>
-								</p>
-							}>
-								{
-									posts && posts.length > 0 &&
-									<div className='w-full flex flex-col gap-2 justify-start'>
-									<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads</span>
-									{
-										posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
-									}
-									</div>
-								}
-							</InfiniteScroll>
+								</InfiniteScroll>
+							}
+							</>
 						}
 					</div>
 					
