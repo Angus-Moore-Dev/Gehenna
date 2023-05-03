@@ -86,8 +86,11 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     {post.title}
                 </div>
             </div>
+            <div className="ml-auto flex flex-row items-center gap-4 text-primary font-semibold">
+                {post.upvotes} Likes
+            </div>
             <div className="ml-auto pr-2 font-semibold text-sm">
-                {commentCount} Comments
+                {commentCount} Comment{commentCount !== 1 && 's'}
             </div>
             </>
         }
