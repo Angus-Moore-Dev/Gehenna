@@ -6,8 +6,9 @@ import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
+import { useDropzone } from 'react-dropzone'
 
 interface ProfilePageProps
 {
@@ -23,35 +24,37 @@ export default function ProfilePage({ profile }: ProfilePageProps)
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
+        const newProfilePicture = acceptedFiles[0];
+        if (newProfilePicture)
+        {
+            const res = await clientDb.storage.from('profile_pictures').upload(`${profile.id}/${newProfilePicture.name}`, newProfilePicture);
+            if (res.error)
+            {
+                toast.error(res.error.message);
+            }
+            else
+            {
+                const url = await clientDb.storage.from('profile_pictures').getPublicUrl(`${profile.id}/${newProfilePicture.name}`).data.publicUrl;
+                const res = await clientDb.from('profiles').update({ avatar: url }).eq('id', profile.id);
+                setAvatar(url);
+            }
+        }
+        }, [])
+    const {getRootProps, getInputProps} = useDropzone({onDrop})
+
     return <div className="w-full h-full flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">
         <Link href='/' className="flex flex-col items-center justify-center mb-10">
             <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
             <span className="text-sm mr-auto pt-2">Click To Go Back</span>
         </Link>
         <h1 className="text-4xl font-bold">My Profile</h1>
-        <div className="flex flex-col gap-2 items-center">
-            <Image src={avatar} alt='profile' width='250' height='250' className="rounded-md object-cover" />
-            <input hidden type='file' id='avatar' accept="image/*" onChange={async (e) => {
-                const newProfilePicture = e.target.files?.[0];
-                if (newProfilePicture)
-                {
-                    const res = await clientDb.storage.from('profile_pictures').upload(`${profile.id}/${newProfilePicture.name}`, newProfilePicture);
-                    if (res.error)
-                    {
-                        toast.error(res.error.message);
-                    }
-                    else
-                    {
-                        const url = await clientDb.storage.from('profile_pictures').getPublicUrl(`${profile.id}/${newProfilePicture.name}`).data.publicUrl;
-                        const res = await clientDb.from('profiles').update({ avatar: url }).eq('id', profile.id);
-                        setAvatar(url);
-                    }
-                }
-                e.target.value = '';
-            }} />
-            <CommonButton text='Update Avatar' className="m-0 w-[250px]" onClick={async () => {
-                document.getElementById('avatar')?.click();
-            }} />
+        <div className="flex flex-col gap-2 items-center justify-center transition p-2 rounded-xl hover:text-secondary hover:cursor-pointer hover:bg-primary">
+            <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <Image src={avatar} alt='profile' width='250' height='250' className="rounded-md object-cover mx-auto" />
+            <span>Drag a New Image or Click to Upload a New Avatar</span>
+        </div>
         </div>
         <div className="flex flex-col gap-2 items-end">
             <TextInput label='Username' value={username} onChange={(e) => setUsername(e.target.value)} className="w-96" />
