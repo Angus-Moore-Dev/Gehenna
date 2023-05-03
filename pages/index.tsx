@@ -11,8 +11,10 @@ import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useInfiniteScroll } from 'ahooks';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface HomePageProps
 {
@@ -22,11 +24,13 @@ interface HomePageProps
 
 export default function HomePage({ user, profile }: HomePageProps)
 {
+	const [postCount, setPostCount] = useState(10);
 	const [posts, setPosts] = useState<Post[]>();
+	const ref = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
-		clientDb.from('post').select('*').limit(25).order('createdAt', { ascending: true }).then(async res => {
+		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).then(async res => {
 			if (!res.error && res.data)
 			{
 				setPosts(res.data as Post[]);
@@ -44,7 +48,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 	}, []);
 
 	return (
-		<div className="w-full h-full flex flex-col gap-4 max-w-6xl mx-auto py-16">
+		<div ref={ref} className="w-full h-full flex flex-col gap-4 max-w-6xl mx-auto py-16">
 			<Head>
 				<title>Gehenna - Learn, Grow.</title>
 			</Head>
@@ -80,15 +84,49 @@ export default function HomePage({ user, profile }: HomePageProps)
 						}
 						{
 							posts && posts.length > 0 &&
-							<>
-							<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads</span>
-							{
-								posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
-							}
-							</>
+							<InfiniteScroll 
+							dataLength={posts.length} 
+							next={async () => {
+								clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
+									if (!res.error && res.data)
+									{
+										setPosts(res.data as Post[]);
+										setPostCount(postCount + 2);
+									}
+									else
+									{
+										toast.error(res.error.message);
+									}
+								})
+							}} 
+							hasMore={true} 
+							loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
+							style={{
+								width: '768px',
+							}}
+							endMessage={
+								<p style={{ textAlign: 'center' }}>
+									<b>Yay! You have seen it all</b>
+								</p>
+							}>
+								{
+									posts && posts.length > 0 &&
+									<div className='w-full flex flex-col gap-2 justify-start'>
+									<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads</span>
+									{
+										posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+									}
+									</div>
+								}
+							</InfiniteScroll>
 						}
 					</div>
+					
 				</div>
+			}
+			{
+				posts && posts.length === 10 &&
+				<div ref={ref} className='w-full h-full flex items-center justify-center' />
 			}
 		</div>
 	)

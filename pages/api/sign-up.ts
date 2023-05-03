@@ -19,7 +19,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
     const userExistsAlready = await serverSuperClient.from('profiles').select('id').eq('email', email).single();
     if (userExistsAlready.data)
     {
-        return res.status(409).json({ error: 'User already exists!' });
+        return res.status(409).json({ error: 'User with this email account already exists!' });
     }
     console.log(serverSuperClient);
 

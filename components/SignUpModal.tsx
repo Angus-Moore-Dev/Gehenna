@@ -63,12 +63,12 @@ export default function SignUpModal()
             }
             else
             {
-                alert((await res.json()).error);
+                toast.error((await res.json()).error);
             }
         }
         else
         {
-            alert((await res.json()).error);
+            toast.error((await res.json()).error);
         }
     }
 

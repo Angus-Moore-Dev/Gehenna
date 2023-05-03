@@ -13,6 +13,8 @@ import CommonButton from './CommonButton';
 import { clientDb } from '@/lib/db';
 import { User } from '@supabase/supabase-js';
 import { toast } from 'react-toastify';
+import { v4 } from 'uuid';
+import { useRouter } from 'next/router';
 
 interface NewPostBoxProps
 {
@@ -21,6 +23,7 @@ interface NewPostBoxProps
 
 export default function NewPostBox({ user }: NewPostBoxProps)
 {
+    const router = useRouter();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isCreating, setIsCreating] = useState(false);
@@ -111,7 +114,9 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                     !isCreating &&
                     <CommonButton text='Create Thread' onClick={async () => {
                         setIsCreating(true);
+                        const id = v4();
                         const res = await clientDb.from('post').insert({
+                            id,
                             title,
                             content,
                             userId: user.id
@@ -119,6 +124,13 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                         if (res.error)
                         {
                             toast.error(res.error.message);
+                        }
+                        else
+                        {
+                            await router.push(`/${id}`);
+                            toast.success('Thread created successfully!');
+                            setTitle('');
+                            setContent('');
                         }
                         setIsCreating(false);
                     }} className='ml-auto text-md font-semibold' />

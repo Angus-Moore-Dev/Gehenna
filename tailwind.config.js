@@ -18,6 +18,8 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/typography'),
+    require('@tailwindcss/typography')({
+      className: 'text-zinc-100 font-medium'
+    }),
   ],
 }
