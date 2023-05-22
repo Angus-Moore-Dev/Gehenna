@@ -13,7 +13,7 @@ import { generateHTML } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import CommonButton from "@/components/CommonButton";
 import { v4 } from "uuid";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import CommentBox from "@/components/CommentBox";
 import { Notification } from "@/models/Notification";
@@ -39,8 +39,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     const [postData, setPostData] = useState(post);
 
     useEffect(() => {
-
-
         // CHANNEL SUBSCRIPTIONS ------------------------------------------------------------------------------------------------------------
         clientDb.channel('newComments').on('postgres_changes', { event: '*', schema: 'public', table: 'comments'}, (payload) => {
             if (payload.eventType === 'INSERT')
@@ -117,7 +115,19 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
 				});
 			}
 		}).subscribe((status) => console.log(status));
+
+        // Set scroll
+        window.scrollTo(0, parseInt(localStorage.getItem('scrollY') ?? '0'));
+
     }, []);
+
+    const handleScroll = () => {
+        localStorage.setItem('scrollY', window.scrollY.toString());
+    };
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll); 
+        return () => window.removeEventListener("scroll", handleScroll);
+    });
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Link href='/' className="flex flex-col items-center justify-center mb-10 group">
