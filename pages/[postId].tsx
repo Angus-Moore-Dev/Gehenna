@@ -172,7 +172,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                             <source src={file.url} type={file.mimeType} />
                         </audio>
                     else if (file.mimeType.includes('video'))
-                        return <video className="w-[45%]" controls>
+                        return <video className="w-[45%] rounded-md" controls>
                             <source src={file.url} type={file.mimeType} />
                         </video>
                 })
