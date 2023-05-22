@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function App({ Component, pageProps }: AppProps) {
 	const [supabaseClient] = useState(() => virginDb);
 	const { user } = pageProps;
+
 	return (
 		<SessionContextProvider
 		supabaseClient={supabaseClient}
@@ -29,8 +30,8 @@ export default function App({ Component, pageProps }: AppProps) {
 						<Component {...pageProps} />
 					</div>
 					<ToastContainer
-						position="top-right"
-						autoClose={1500}
+						position="top-center"
+						autoClose={10000}
 						hideProgressBar={false}
 						newestOnTop={false}
 						closeOnClick

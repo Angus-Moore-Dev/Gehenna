@@ -16,6 +16,8 @@ import { v4 } from "uuid";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import CommentBox from "@/components/CommentBox";
+import { Notification } from "@/models/Notification";
+import { useRouter } from "next/router";
 
 interface PostIdPageProps
 {
@@ -28,6 +30,7 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me, comments, commenters }: PostIdPageProps)
 {
+    const router = useRouter();
     const [postCommentors, setPostCommentors] = useState(commenters);
     const [postComments, setPostComments] = useState(comments);
     const [comment, setComment] = useState('');
@@ -36,6 +39,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     const [postData, setPostData] = useState(post);
 
     useEffect(() => {
+
+
         // CHANNEL SUBSCRIPTIONS ------------------------------------------------------------------------------------------------------------
         clientDb.channel('newComments').on('postgres_changes', { event: '*', schema: 'public', table: 'comments'}, (payload) => {
             if (payload.eventType === 'INSERT')
@@ -81,12 +86,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             }
             else
             {
-                if (postComments.some(x => x.id === payload.old.id))
-                {
-                    const deletedComment = payload.old as Comment;
-                    const updatedComments = postComments.filter(comment => comment.id !== deletedComment.id);
-                    setPostComments(updatedComments);
-                }
+                const deletedComment = payload.old as Comment;
+                const updatedComments = postComments.filter(comment => comment.id !== deletedComment.id);
+                setPostComments(updatedComments);
             }
         }).subscribe((status) => console.log(status));
 
@@ -101,6 +103,20 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                 }
             }
         }).subscribe();
+
+
+        // Listen for new notifications.
+		clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
+			const newNotification = payload.new as Notification;
+			if (newNotification.userId === me.id)
+			{
+				toast.info(newNotification.title, {
+					onClick() {
+						router.push(`${window.location.origin}${newNotification.link}`);
+					}
+				});
+			}
+		}).subscribe((status) => console.log(status));
     }, []);
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
@@ -110,7 +126,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
         </Link>
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center border-b-2 border-b-primary mb-2 pb-2">
-                <Image src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-full w-[50px] h-[50px]" />
+                <Image src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
                 <span className="font-semibold text-xl">
                     {poster.username} <i>asked:</i>
                     <br />
@@ -123,22 +139,21 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             <div dangerouslySetInnerHTML={{ __html: postData.content }} />
         </TypographyStylesProvider>
         <section className="flex flex-col flex-wrap gap-2 border-t-2 border-t-secondary pt-2">
-            <span className="text-lg font-semibold">Attached Files</span>
+            {
+                post.attachedFileURLs.length > 0 &&
+                <span className="text-lg font-semibold">Attached Files</span>
+            }
             <section className="w-full flex flex-row flex-wrap gap-2 items-start">
             {
                 post.attachedFileURLs.map(file => {
                     if (file.mimeType.includes('image'))
-                        return <Link href={file.url} target="_blank" className="w-[45%] bg-tertiary">
-                            <Image src={file.url} alt={v4()} width='1000' height='1000' className="object-cover w-full h-full rounded-md" />
-                        </Link>
+                        return <Image src={file.url} alt={v4()} width='1000' height='1000' className="object-cover w-[45%] h-[350px] rounded-md" />
                     else if (file.mimeType.includes('audio'))
                         return <audio className="w-[45%]" controls>
                             <source src={file.url} type={file.mimeType} />
                         </audio>
                     else if (file.mimeType.includes('video'))
-                        return <video controls className="w-[45%]" onLoadStart={(e) => {
-                            e.currentTarget.volume = 0.5;
-                        }}>
+                        return <video className="w-[45%]" controls>
                             <source src={file.url} type={file.mimeType} />
                         </video>
                 })
@@ -181,11 +196,11 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             </div>
         </section>
         <div className="flex-grow flex flex-col gap-4 mt-4">
-            <h1 className="text-2xl font-bold">Comments</h1>
+            <h1 className="text-2xl font-bold">Comments <small className="text-xs text-primary">(Still a bit buggy...)</small></h1>
             <div className="flex-grow h-full flex flex-col">
                 <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">
                     {
-                        postComments.map(comment => <CommentBox comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} />)
+                        postComments.map(comment => <CommentBox key={comment.id} comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} />)
                     }
                 </div>
                 <div className="w-full flex flex-col gap-0">
@@ -206,6 +221,53 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                         else
                         {
                             setComment('');
+                        }
+
+                        /*
+                            1. If we are the creator, create a notification to all the other posters.
+                            2. If we are not the creator, create a notification to the creator and all the other posters.
+                        */
+
+                        const listOfPeopleToNotify: string[] = [];
+                        if (post.userId === me.id)
+                        {
+                            const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
+                            for (const notifier of postsCommentorsToNotify)
+                            {
+                                listOfPeopleToNotify.push(notifier);
+                            }
+                        }
+                        else
+                        {
+                            // I am not the creator
+                            console.log(post.userId);
+                            listOfPeopleToNotify.push(post.userId);
+                            const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
+                            for (const notifier of postsCommentorsToNotify)
+                            {
+                                listOfPeopleToNotify.push(notifier);
+                            }
+                        }
+
+                        const insertBatch = listOfPeopleToNotify.map(x => ({
+                            id: v4(),
+                            created_at: new Date().toISOString(),
+                            title: `${me.username} commented on ${post.userId === x ? 'your post' : 'a post you commented on'}.`,
+                            text: `Please click this link to view the comment.`,
+                            link: `/${post.id}`,
+                            userId: x,
+                            seen: false // Default, since the intended party has not opened the post yet.
+                        }));
+
+                        console.log(insertBatch);
+                        // Now we insert the notifications for each of these people
+                        const notificationRes = await clientDb.from('notifications').insert(insertBatch);
+
+                        console.log(notificationRes);
+
+                        if (notificationRes.error)
+                        {
+                            toast.error(notificationRes.error.message);
                         }
                     }} /> 
                 </div>

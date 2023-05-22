@@ -80,6 +80,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
 
 
 const checkEnvironment = () => {
-    let base_url = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://gehenna.vercel.app"; 
+    let base_url = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://gehenna-mu.vercel.app"; 
     return base_url;
 };

@@ -79,7 +79,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
             !isLoading && profile &&
             <>
             <div className="flex flex-row items-center gap-4 p-2">
-                <Image src={profile.avatar} alt='avatar' width={40} height={40} className="rounded-full object-cover" />
+                <Image src={profile.avatar} alt='avatar' width={40} height={40} className="rounded-md object-cover w-[40px] h-[40px]" />
                 <span className=""><b>{profile.username}</b> Posted on <span>{new Date(post.createdAt).toLocaleDateString('en-au', { day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}</span></span>
             </div>
             <div className="flex flex-row justify-between w-full items-center">
