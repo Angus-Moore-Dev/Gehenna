@@ -27,6 +27,7 @@ interface HomePageProps
 
 export default function HomePage({ user, profile }: HomePageProps)
 {
+	const audioRef = useRef<HTMLAudioElement>(null);
 	const router = useRouter();
 	const [postCount, setPostCount] = useState(10);
 	const [posts, setPosts] = useState<Post[]>();
@@ -40,55 +41,64 @@ export default function HomePage({ user, profile }: HomePageProps)
 
 		// generate two timestamptz, one right now and one from a week ago.
 		// then we can use the week ago timestamp to get the posts from the last week.
-		const weekAgo = new Date();
-		weekAgo.setDate(weekAgo.getDate() - 7);
+		if (user)
+		{
+			const weekAgo = new Date();
+			weekAgo.setDate(weekAgo.getDate() - 7);
 
-		clientDb.from('post').select('*').limit(postCount).gt('createdAt', weekAgo.toISOString()).order('createdAt', { ascending: false }).then(async res => {
-			if (!res.error && res.data)
-			{
-				if (res.data.length === 0)
+			clientDb.from('post').select('*').limit(postCount).gt('createdAt', weekAgo.toISOString()).order('createdAt', { ascending: false }).then(async res => {
+				if (!res.error && res.data)
 				{
-					// Create new post immediately, since there are none on the recent post list.
-					setCreateNewPost(true);
-				}
-				setPosts(res.data as Post[]);
-			}
-			else if (res.error)
-			{
-				toast.error(res.error.message);
-			}
-		})
-
-		clientDb.channel('new_posts').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'post' }, (payload) => {
-			// We set the new post as the first post because it's the newest.
-			setPosts((prev) => [payload.new, ...prev ?? []] as Post[]);
-		}).subscribe();
-
-
-		// Get all unseen notifications
-		clientDb.from('notifications').select('*').eq('userId', user.id).eq('seen', false).order('created_at', { ascending: false }).then(async res => {
-			setNotifications(res.data as Notification[]);
-		});
-
-		// Listen for new notifications.
-		clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
-			const newNotification = payload.new as Notification;
-			if (newNotification.userId === user.id)
-			{
-				toast.info(newNotification.title, {
-					async onClick() {
-						// Let the system know that we've clicked and viewed this post.
-						await clientDb.from('notifications').update({
-							seen: true
-						}).eq('id', newNotification.id);
-
-						router.push(`${window.location.origin}${newNotification.link}`);
+					if (res.data.length === 0)
+					{
+						// Create new post immediately, since there are none on the recent post list.
+						setCreateNewPost(true);
 					}
-				});
+					setPosts(res.data as Post[]);
+				}
+				else if (res.error)
+				{
+					toast.error(res.error.message);
+				}
+			})
 
-				setNotifications((prev) => [newNotification, ...prev ?? []] as Notification[]);
-			}
-		}).subscribe((status) => console.log(status));
+			clientDb.channel('new_posts').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'post' }, (payload) => {
+				// We set the new post as the first post because it's the newest.
+				setPosts((prev) => [payload.new, ...prev ?? []] as Post[]);
+			}).subscribe();
+
+
+			// Get all unseen notifications
+			clientDb.from('notifications').select('*').eq('userId', user.id).eq('seen', false).order('created_at', { ascending: false }).then(async res => {
+				setNotifications(res.data as Notification[]);
+			});
+
+			// Listen for new notifications.
+			clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
+				const newNotification = payload.new as Notification;
+				if (newNotification.userId === user.id)
+				{
+					// Play a sound to notify the user of the new notification.
+					if (audioRef.current)
+					{
+						audioRef.current.currentTime = 0;
+						audioRef.current.play();
+					}
+					toast.info(newNotification.title, {
+						async onClick() {
+							// Let the system know that we've clicked and viewed this post.
+							await clientDb.from('notifications').update({
+								seen: true
+							}).eq('id', newNotification.id);
+
+							router.push(`${window.location.origin}${newNotification.link}`);
+						}
+					});
+
+					setNotifications((prev) => [newNotification, ...prev ?? []] as Notification[]);
+				}
+			}).subscribe((status) => console.log(status));
+		}
 	}, []);
 
 	return (
@@ -111,6 +121,9 @@ export default function HomePage({ user, profile }: HomePageProps)
 			{
 				user && profile && profile.emailVerified &&
 				<div className='w-full h-full flex flex-col items-center gap-8'>
+					<audio ref={audioRef} hidden>
+						<source src={'/notification.mp3'} />
+					</audio>
 					<Link href='https://www.paypal.com/donate/?business=GM4YGMGDGZZ5A&no_recurring=0&item_name=Help+support+Gehenna+and+keep+it+functioning+well%21&currency_code=AUD'
 					target="_blank"
 					className='underline text-blue-600 transition hover:text-blue-500'>

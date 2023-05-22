@@ -30,12 +30,12 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me, comments, commenters }: PostIdPageProps)
 {
+	const audioRef = useRef<HTMLAudioElement>(null);
     const router = useRouter();
     const [postCommentors, setPostCommentors] = useState(commenters);
     const [postComments, setPostComments] = useState(comments);
     const [comment, setComment] = useState('');
     const commentBoxRef = useRef<HTMLDivElement>(null);
-
     const [postData, setPostData] = useState(post);
 
     useEffect(() => {
@@ -108,6 +108,12 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
 			const newNotification = payload.new as Notification;
 			if (newNotification.userId === me.id)
 			{
+                // Play a sound to notify the user of the new notification.
+				if (audioRef.current)
+                {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play();
+                }
 				toast.info(newNotification.title, {
 					onClick() {
 						router.push(`${window.location.origin}${newNotification.link}`);
@@ -130,6 +136,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     });
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
+        <audio ref={audioRef} hidden>
+            <source src={'/notification.mp3'} />
+        </audio>
         <Link href='/' className="flex flex-col items-center justify-center mb-10 group">
             <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
             <span className="text-sm mr-auto pt-2 transition group-hover:text-primary">Click To Go Back</span>

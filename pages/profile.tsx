@@ -6,11 +6,12 @@ import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Dropzone, { useDropzone } from 'react-dropzone';
 import AvatarEditor from 'react-avatar-editor';
 import { v4 } from "uuid";
+import { Notification } from "@/models/Notification";
 
 interface ProfilePageProps
 {
@@ -19,6 +20,7 @@ interface ProfilePageProps
 
 export default function ProfilePage({ profile }: ProfilePageProps)
 {
+    const audioRef = useRef<HTMLAudioElement>(null);
     const ref = useRef<AvatarEditor>(null);
     const router = useRouter();
     const [username, setUsername] = useState(profile.username);
@@ -55,9 +57,33 @@ export default function ProfilePage({ profile }: ProfilePageProps)
             setNewProfilePicture(newProfilePicture);
         }
         }, [])
-    const {getRootProps, getInputProps} = useDropzone({onDrop})
+    const {getRootProps, getInputProps} = useDropzone({onDrop});
+
+    useEffect(() => {
+        // Listen for new notifications.
+        clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
+            const newNotification = payload.new as Notification;
+            if (newNotification.userId === profile.id)
+            {
+                // Play a sound to notify the user of the new notification.
+                if (audioRef.current)
+                {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play();
+                }
+                toast.info(newNotification.title, {
+                    onClick() {
+                        router.push(`${window.location.origin}${newNotification.link}`);
+                    }
+                });
+            }
+        }).subscribe((status) => console.log(status));
+    }, []);
 
     return <div className="w-full h-full flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">
+        <audio ref={audioRef} hidden>
+            <source src={'/notification.mp3'} />
+        </audio>
         <Link href='/' className="flex flex-col items-center justify-center mb-10">
             <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
             <span className="text-sm mr-auto pt-2">Click To Go Back</span>
