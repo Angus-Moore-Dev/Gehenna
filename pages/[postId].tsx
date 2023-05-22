@@ -144,7 +144,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             <span className="text-sm mr-auto pt-2 transition group-hover:text-primary">Click To Go Back</span>
         </Link>
         <div className="w-full">
-            <div className="flex flex-row gap-4 items-center border-b-2 border-b-primary mb-2 pb-2">
+            <div className="flex flex-row gap-4 items-center border-b-4 border-b-primary mb-2 pb-2">
                 <Image src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
                 <span className="font-semibold text-xl">
                     {poster.username} <i>asked:</i>
