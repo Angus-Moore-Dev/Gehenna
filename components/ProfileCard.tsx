@@ -12,7 +12,7 @@ export default function ProfileCard({ profile }: ProfileCardProps)
     // was created.
     const formattedDate = new Date(profile.created_at).toLocaleDateString('en-au', { dateStyle: 'long' });
 
-    return <div className="w-96 h-60 bg-gradient-to-b from-amber-500 to-primary rounded-2xl p-1.5 flex items-center justify-center">
+    return <div className="w-96 h-60 bg-gradient-to-b from-black to-primary rounded-2xl p-1 flex items-center justify-center">
         <div className="flex-grow h-full bg-[#111111] rounded-2xl p-4 flex flex-col gap-4">
             <section className="w-full flex flex-row gap-2 items-start">
                 <Image src={profile.avatar} width={100} height={100} alt="Profile Picture" className="object-cover rounded-md w-[100px] h-[100px]" />
