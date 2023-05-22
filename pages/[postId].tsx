@@ -18,6 +18,8 @@ import { toast } from "react-toastify";
 import CommentBox from "@/components/CommentBox";
 import { Notification } from "@/models/Notification";
 import { useRouter } from "next/router";
+import ProfileCard from "@/components/ProfileCard";
+import { useClickAway } from "ahooks";
 
 interface PostIdPageProps
 {
@@ -37,6 +39,14 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     const [comment, setComment] = useState('');
     const commentBoxRef = useRef<HTMLDivElement>(null);
     const [postData, setPostData] = useState(post);
+
+    const [showCard, setShowCard] = useState(false);
+
+    // setup a useClickAway hook
+    const ref = useRef(null);
+    useClickAway(() => {
+        setShowCard(false);
+    }, ref);
 
     useEffect(() => {
         // CHANNEL SUBSCRIPTIONS ------------------------------------------------------------------------------------------------------------
@@ -144,8 +154,17 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             <span className="text-sm mr-auto pt-2 transition group-hover:text-primary">Click To Go Back</span>
         </Link>
         <div className="w-full">
-            <div className="flex flex-row gap-4 items-center border-b-4 border-b-primary mb-2 pb-2">
-                <Image src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
+            <div className="flex flex-row gap-4 items-center border-b-4 border-b-primary mb-2 pb-2 relative">
+                <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
+                onClick={async () => {
+                    setShowCard(true);
+                }} />
+                {
+                    showCard &&
+                    <div className="absolute top-14">
+                        <ProfileCard profile={poster} />    
+                    </div>
+                }
                 <span className="font-semibold text-xl">
                     {poster.username} <i>asked:</i>
                     <br />

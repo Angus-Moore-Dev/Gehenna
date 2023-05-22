@@ -178,7 +178,8 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         </div>
         <TextInput label='Email' value={profile.email} className="w-96" disabled />
         <div className="flex flex-col gap-2 items-end">
-            <Textarea label='Bio (About Yourself)' value={bio} onChange={(e) => setBio(e.target.value)} className="w-96" />
+            <Textarea label='Bio (About Yourself)' value={bio} onChange={(e) => setBio(e.target.value)} className="w-96" maxLength={128} />
+            <small className="mr-auto">{128 - bio.length} characters left</small>
             <CommonButton text='Update Bio' className="m-0" onClick={async () => {
                 const res = await clientDb.from('profiles').update({ bio: bio }).eq('id', profile.id);
                 if (res.error)
