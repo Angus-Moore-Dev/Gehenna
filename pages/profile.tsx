@@ -28,7 +28,11 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         const newProfilePicture = acceptedFiles[0];
         if (newProfilePicture)
         {
-            const res = await clientDb.storage.from('profile_pictures').upload(`${profile.id}/${newProfilePicture.name}`, newProfilePicture);
+            const res = await clientDb.storage.from('profile_pictures').upload(`${profile.id}/${newProfilePicture.name}`, newProfilePicture, 
+            {
+                cacheControl: '3600', 
+                upsert: true
+            });
             if (res.error)
             {
                 toast.error(res.error.message);
@@ -136,7 +140,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 	{
 		// Get the profile.
 		const profile = (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile;
-		console.log(profile);
 		return {
 			props: {
 				user: user,

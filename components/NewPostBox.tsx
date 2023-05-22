@@ -7,14 +7,16 @@ import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import { Color } from '@tiptap/extension-color';
-import { useEffect, useState } from 'react';
-import { Button, Loader, TextInput } from '@mantine/core';
+import { useEffect, useRef, useState } from 'react';
+import { Button, Chip, List, Loader, TextInput } from '@mantine/core';
 import CommonButton from './CommonButton';
 import { clientDb } from '@/lib/db';
 import { User } from '@supabase/supabase-js';
 import { toast } from 'react-toastify';
 import { v4 } from 'uuid';
 import { useRouter } from 'next/router';
+import { AttachedFile, Tags } from '@/models/Post';
+import seedColor from 'seed-color';
 
 interface NewPostBoxProps
 {
@@ -23,10 +25,16 @@ interface NewPostBoxProps
 
 export default function NewPostBox({ user }: NewPostBoxProps)
 {
+    const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
+    const [tagsFilter, setTagsFilter] = useState('');
+
+    const [files, setFiles] = useState<File[]>([]);
+
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -109,17 +117,90 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                 </RichTextEditor.Toolbar>
                 <RichTextEditor.Content />
             </RichTextEditor>
+            <div className='w-full flex flex-col gap-2'>
+                {
+                    files.length > 0 &&
+                    <span>Files Included</span>
+                }
+                <List size='sm' withPadding className='flex flex-col gap-4'>
+                    {
+                        files.map((file, index) => (
+                            <List.Item key={index} className='flex flex-row gap-4 items-center'>
+                                <span className='text-lg font-semibold'>- {file.name}</span> <button className='text-red-500 ml-2 transition hover:bg-red-500 rounded border-[1px] border-red-500 p-1 hover:text-white' onClick={() => setFiles(files.filter(x => x !== file))}>Remove</button>
+                            </List.Item>
+                        ))
+                    }
+                </List>
+                <input ref={inputRef} hidden 
+                type='file' accept='image/*,video/*,audio/*'
+                multiple
+                onChange={(e) => {
+                    if (e.target.files)
+                    {
+                        setFiles([...files, ...Array.from(e.target.files)]);
+                    }
+                }} />
+                <CommonButton text='Add Files To Post' onClick={() => inputRef.current?.click()} />
+            </div>
+            <div className='w-full flex flex-col gap-2'>
+                <span className='text-xl font-semibold'>Add Tags To Your Post</span>
+                <TextInput placeholder='Search Tags' className='w-full' value={tagsFilter} onChange={(e) => setTagsFilter(e.target.value)} />
+                <div className='w-full flex flex-row gap-1 flex-wrap'>
+                    {
+                        Object.values(Tags).filter(x => x.toLowerCase().startsWith(tagsFilter.toLowerCase())).map(tag => <button>
+                            <Chip checked={tags.some(x => x === tag)} color="yellow" onClick={() => {
+                                if (tags.some(x => x === tag))
+                                {
+                                    setTags(tags.filter(x => x !== tag));
+                                }
+                                else
+                                {
+                                    setTags([...tags, tag]);
+                                }
+                            }}>{tag}</Chip>
+                        </button>)
+                    }
+                </div>
+            </div>
             <div className='flex flex-row gap-2 ml-auto items-center'>
                 {
                     !isCreating &&
                     <CommonButton text='Create Thread' onClick={async () => {
                         setIsCreating(true);
+
+                        // Upload the files first, then get their URLs and attach them to the post under the name attachedFileURLs
                         const id = v4();
+                        const fileURLs: AttachedFile[] = [];
+                        for (const file of files)
+                        {
+                            const res = await clientDb.storage.from('post_files').upload(`${id}/${file.name}`, file, {
+                                cacheControl: '3600',
+                                upsert: true
+                            });
+
+                            if (res.error)
+                            {
+                                toast.error(res.error.message);
+                            }
+                            else
+                            {
+                                // Get the url
+                                const url = clientDb.storage.from('post_files').getPublicUrl(`${id}/${file.name}`).data.publicUrl as string;
+                                fileURLs.push({
+                                    url: url,
+                                    mimeType: file.type,
+                                    byteSize: file.size,
+                                });
+                            }
+                        }
+
                         const res = await clientDb.from('post').insert({
                             id,
                             title,
                             content,
-                            userId: user.id
+                            userId: user.id,
+                            tags: tags,
+                            attachedFileURLs: fileURLs
                         });
                         if (res.error)
                         {
@@ -141,4 +222,12 @@ export default function NewPostBox({ user }: NewPostBoxProps)
             </div>
         </div>
     </div>
+}
+
+
+// write a function to generate a colour for each enum type. It must be deterministc.
+function generateTagColour(tag: Tags)
+{
+    
+
 }

@@ -5,7 +5,7 @@ import { Profile } from "@/models/Profile";
 import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { TypographyStylesProvider, Highlight, Textarea } from "@mantine/core";
+import { TypographyStylesProvider, Highlight, Textarea, Chip } from "@mantine/core";
 import Superscript from "@tiptap/extension-superscript";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
@@ -36,6 +36,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     const [postData, setPostData] = useState(post);
 
     useEffect(() => {
+        // CHANNEL SUBSCRIPTIONS ------------------------------------------------------------------------------------------------------------
         clientDb.channel('newComments').on('postgres_changes', { event: '*', schema: 'public', table: 'comments'}, (payload) => {
             if (payload.eventType === 'INSERT')
             {
@@ -103,9 +104,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     }, []);
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
-        <Link href='/' className="flex flex-col items-center justify-center mb-10">
+        <Link href='/' className="flex flex-col items-center justify-center mb-10 group">
             <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
-            <span className="text-sm mr-auto pt-2">Click To Go Back</span>
+            <span className="text-sm mr-auto pt-2 transition group-hover:text-primary">Click To Go Back</span>
         </Link>
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center border-b-2 border-b-primary mb-2 pb-2">
@@ -121,6 +122,34 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
         <TypographyStylesProvider>
             <div dangerouslySetInnerHTML={{ __html: postData.content }} />
         </TypographyStylesProvider>
+        <section className="flex flex-col flex-wrap gap-2 border-t-2 border-t-secondary pt-2">
+            <span className="text-lg font-semibold">Attached Files</span>
+            <section className="w-full flex flex-row flex-wrap gap-2 items-start">
+            {
+                post.attachedFileURLs.map(file => {
+                    if (file.mimeType.includes('image'))
+                        return <Link href={file.url} target="_blank" className="w-[45%] bg-tertiary">
+                            <Image src={file.url} alt={v4()} width='1000' height='1000' className="object-cover w-full h-full rounded-md" />
+                        </Link>
+                    else if (file.mimeType.includes('audio'))
+                        return <audio className="w-[45%]" controls>
+                            <source src={file.url} type={file.mimeType} />
+                        </audio>
+                    else if (file.mimeType.includes('video'))
+                        return <video controls className="w-[45%]" onLoadStart={(e) => {
+                            e.currentTarget.volume = 0.5;
+                        }}>
+                            <source src={file.url} type={file.mimeType} />
+                        </video>
+                })
+            }
+            </section>
+        </section>
+        <section className="flex flex-row flex-wrap gap-1">
+            {
+                post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
+            }
+        </section>
         <section className="flex flex-row gap-4 items-center">
             <div className="flex flex-row gap-4 items-center">
                 <div className="transition p-2 rounded-xl w-fit hover:text-secondary hover:bg-primary hover:cursor-pointer aria-checked:bg-primary aria-checked:text-secondary" 
@@ -153,8 +182,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
         </section>
         <div className="flex-grow flex flex-col gap-4 mt-4">
             <h1 className="text-2xl font-bold">Comments</h1>
-            <div className="flex-grow h-full bg-secondary rounded-md flex flex-col">
-                <div className="flex-grow flex flex-col gap-2 mb-4">
+            <div className="flex-grow h-full flex flex-col">
+                <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">
                     {
                         postComments.map(comment => <CommentBox comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} />)
                     }

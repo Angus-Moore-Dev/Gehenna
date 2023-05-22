@@ -1,7 +1,7 @@
 import { clientDb } from "@/lib/db";
 import { Post } from "@/models/Post";
 import { Profile } from "@/models/Profile";
-import { Loader, Skeleton } from "@mantine/core";
+import { Chip, Loader, Skeleton } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import Link from "next/link";
@@ -72,6 +72,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                 <Skeleton height={40} width='100%' />
             </div>
             <Skeleton width={100} height={20} className="ml-auto" />
+            <Skeleton width={100} height={20} className="ml-auto" />
             </>
         }
         {
@@ -86,11 +87,20 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     {post.title}
                 </div>
             </div>
-            <div className="ml-auto flex flex-row items-center gap-4 text-primary font-semibold">
-                {post.upvotes} Likes
-            </div>
-            <div className="ml-auto pr-2 font-semibold text-sm">
-                {commentCount} Comment{commentCount !== 1 && 's'}
+            <div className="w-full flex flex-row justify-between">
+                <section className="flex-grow flex flex-row flex-wrap gap-1">
+                    {
+                        post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
+                    }
+                </section>
+                <section>
+                    <div className="flex flex-row items-center gap-4 text-primary font-semibold">
+                        {post.upvotes} Likes
+                    </div>
+                    <div className="pr-2 font-semibold text-sm">
+                        {commentCount} Comment{commentCount !== 1 && 's'}
+                    </div>
+                </section>
             </div>
             </>
         }

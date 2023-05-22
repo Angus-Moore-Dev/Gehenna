@@ -15,6 +15,8 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useInfiniteScroll } from 'ahooks';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { Notification } from '@/models/Notification';
+import CommonButton from '@/components/CommonButton';
 
 interface HomePageProps
 {
@@ -27,14 +29,27 @@ export default function HomePage({ user, profile }: HomePageProps)
 	const [postCount, setPostCount] = useState(10);
 	const [posts, setPosts] = useState<Post[]>();
 	const ref = useRef<HTMLDivElement>(null);
-
 	const [searchResults, setSearchResults] = useState('');
+	const [notifications, setNotifications] = useState<Notification[]>([]);
+
+	const [createNewPost, setCreateNewPost] = useState(false);
 
 	useEffect(() => {
 		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
-		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).then(async res => {
+
+		// generate two timestamptz, one right now and one from a week ago.
+		// then we can use the week ago timestamp to get the posts from the last week.
+		const weekAgo = new Date();
+		weekAgo.setDate(weekAgo.getDate() - 7);
+
+		clientDb.from('post').select('*').limit(postCount).gt('createdAt', weekAgo.toISOString()).order('createdAt', { ascending: false }).then(async res => {
 			if (!res.error && res.data)
 			{
+				if (res.data.length === 0)
+				{
+					// Create new post immediately, since there are none on the recent post list.
+					setCreateNewPost(true);
+				}
 				setPosts(res.data as Post[]);
 			}
 			else if (res.error)
@@ -47,6 +62,15 @@ export default function HomePage({ user, profile }: HomePageProps)
 			// We set the new post as the first post because it's the newest.
 			setPosts((prev) => [payload.new, ...prev ?? []] as Post[]);
 		}).subscribe();
+
+		// Listen for new notifications.
+		clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
+			const newNotification = payload.new as Notification;
+			if (newNotification.userId === user.id)
+			{
+				setNotifications(prev => [...prev, newNotification]);
+			}
+		}).subscribe((status) => console.log(status));
 	}, []);
 
 	return (
@@ -74,7 +98,14 @@ export default function HomePage({ user, profile }: HomePageProps)
 						View My Profile
 					</Link>
 					{/* The user can make new posts here. */}
-					<NewPostBox user={user} />
+					{
+						!createNewPost &&
+						<CommonButton onClick={() => setCreateNewPost(true)} className='w-full max-w-3xl' text='Create New Post' />
+					}
+					{
+						createNewPost &&
+						<NewPostBox user={user} />
+					}
 					{/* The user can see their posts here. */}
 					<div className='w-full h-full flex flex-col items-center gap-4'>
 						{
@@ -87,9 +118,9 @@ export default function HomePage({ user, profile }: HomePageProps)
 						{
 							posts && posts.length > 0 &&
 							<>
-							<TextInput placeholder='Search For Thread' className='w-full max-w-3xl' label='Search For Thread' value={searchResults} onChange={async (e) => setSearchResults(e.target.value)} />
+							<TextInput placeholder='We look for titles and tags...' className='w-full max-w-3xl' label='Search For Thread' value={searchResults} onChange={async (e) => setSearchResults(e.target.value)} />
 							{
-								searchResults.length > 0 && posts.map(x => x.title.toLowerCase().includes(searchResults.toLowerCase()) && <PostPreviewBox key={x.id} post={x} />)
+								searchResults.length > 0 && posts.map(x => x.title.toLowerCase().includes(searchResults.toLowerCase()) || x.tags.some(tag => tag.toLowerCase().includes(searchResults.toLowerCase())) && <PostPreviewBox key={x.id} post={x} />)
 							}
 							{
 								searchResults.length === 0 &&
@@ -152,7 +183,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 	{
 		// Get the profile.
 		const profile = (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile;
-		console.log(profile);
 		return {
 			props: {
 				user: user,
