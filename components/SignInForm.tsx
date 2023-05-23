@@ -51,12 +51,12 @@ export default function SignInForm()
                 <p className='font-semibold text-primary'>Those who travel the furthest, travel together.</p>
                 <TextInput label="Email" className='w-full mt-4' value={email} onChange={(e) => setEmail(e.target.value)} />
                 <TextInput label="Password" className='w-full mt-4' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                {/* <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
+                <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
                 onClick={() => {
-                    // setPasswordReset(true);
+                    setPasswordReset(true);
                 }}>
                     Forgot Password?
-                </button> */}
+                </button>
                 <Button className='w-full mt-4 bg-primary text-secondary transition hover:bg-amber-400'
                 onClick={async () => {
                     const res = await fetch('/api/sign-in', {

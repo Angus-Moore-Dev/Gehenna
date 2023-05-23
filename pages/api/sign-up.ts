@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as sgMail from '@sendgrid/mail';
 sgMail.setApiKey(process.env.SENDGRID_MAIL_KEY!);
 import * as jwt from 'jsonwebtoken';
+import { generateSHA256Hash } from "@/utils/stringHash";
 
 /**
  * Handles the request to create a new user.
@@ -14,23 +15,21 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
 {
     const serverSuperClient = superClient(process.env.POSTGRES_SERVICE_ROLE_KEY!)
     const { username, password, email } = JSON.parse(req.body);
-    console.log(req.body, username, email);
     // Check if user already exists guard clause.
     const userExistsAlready = await serverSuperClient.from('profiles').select('id').eq('email', email).single();
     if (userExistsAlready.data)
     {
         return res.status(409).json({ error: 'User with this email account already exists!' });
     }
-    console.log(serverSuperClient);
+
+    const hashedPassword = generateSHA256Hash(password, email);
 
     // Create the new user in postgres.
     const createUserRes = await serverSuperClient.auth.admin.createUser({
         email: email,
-        password: password,
+        password: hashedPassword,
         email_confirm: true,
     });
-
-    console.log(createUserRes);
 
     if (createUserRes.error)
     {

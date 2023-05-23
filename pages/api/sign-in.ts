@@ -1,4 +1,5 @@
 import { apiServerDb } from "@/lib/db";
+import { generateSHA256Hash } from "@/utils/stringHash";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse)
@@ -17,7 +18,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
     // Sign in the user.
     const { data: signInRes, error } = await serverClient.auth.signInWithPassword({
         email: email,
-        password: password,
+        password: generateSHA256Hash(password, email),
     });
 
     if (error)

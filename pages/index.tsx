@@ -248,7 +248,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 									{
 										posts && posts.length > 0 &&
 										<div className='w-full flex flex-col gap-2 justify-start'>
-										<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads</span>
+										<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads (up to 7 days ago)</span>
 										{
 											posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
 										}

@@ -94,7 +94,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
                 !newProfilePicture &&
                 <div className="flex flex-col gap-2 items-center justify-center transition p-2 rounded-xl hover:text-secondary hover:cursor-pointer hover:bg-primary">
                     <div {...getRootProps()} className="flex flex-col items-center">
-                        <input {...getInputProps()} />
+                        <input {...getInputProps()} type='file' accept='image/*' />
                         <Image src={avatar} width={256} height={256} alt='Profile Picture' className="w-[256px] h-[256px] object-cover rounded-md" />
                         <span>Drag a New Image or Click to Upload a New Avatar</span>
                     </div>
@@ -196,23 +196,35 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         <div className="flex flex-col gap-2">
             <TextInput label='New Password' value={password} onChange={(e) => setPassword(e.target.value)} className="w-96" type='password' />
             <TextInput label='Confirm New Password' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-96" type='password' />
-            <div className='flex flex-col'>
-                <small className={`${password.length > 8 ? 'text-green-500' : 'text-red-500'}`}>Password must be at least 8 characters long.</small>
-                <small className={`${password && confirmPassword && password === confirmPassword ? 'text-green-500' : 'text-red-500'}`}>Passwords must match.</small>
-            </div>
+            {
+                password &&
+                <div className='flex flex-col'>
+                    <small className={`${password.length > 8 ? 'text-green-500' : 'text-red-500'}`}>Password must be at least 8 characters long.</small>
+                    <small className={`${password && confirmPassword && password === confirmPassword ? 'text-green-500' : 'text-red-500'}`}>Passwords must match.</small>
+                </div>
+            }
             {
                 password && password.length >= 8 && password === confirmPassword &&
                 <CommonButton text='Update Password' className="ml-auto" onClick={async () => {
-                    const res = await clientDb.auth.updateUser({
-                        password: password
+                    const res = await fetch('/api/reset-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            newPassword: password
+                        })
                     });
-                    if (res.error)
+
+                    if (res.status !== 200)
                     {
-                        toast.error(res.error.message);
+                        toast.error((await res.json()).message);
                     }
                     else
                     {
                         toast.success('Password updated!');
+                        setPassword('');
+                        setConfirmPassword('');
                     }
                 }} />
             }

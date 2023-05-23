@@ -13,18 +13,25 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
     }
 
     const { email } = req.body as { email: string };
-    const tempSignIn = 'TempSignInForTheUserToHave';
-    const confirmEmaiLToken = jwt.sign({
-        email: email,
-        password: tempSignIn,
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7), // 7 days.
-    }, process.env.JWT_SIGNING_KEY!, { algorithm: 'HS256' });
 
-    // We update the user's password to a random password using the superClient, then we send the email with the temp email built in.
-    const serverSuperClient = superClient(process.env.POSTGRES_SERVICE_ROLE_KEY!);
+    if (!email)
+    {
+        return res.status(400).json({ error: 'Please provide an email!' });
+    }
 
-    const profile = (await serverSuperClient.from('profiles').select('id').eq('email', email).single()).data as Profile;
+    // Check if the user exists in the database before sending an email
+    const adminClient = superClient(process.env.POSTGRES_SERVICE_ROLE_KEY!);
+    const user = (await adminClient.from('profiles').select('id').eq('email', email).single()).data as Profile;
+
+    if (!user)
+    {
+        res.status(404).json({
+            error: 'User with this email does not exist!'
+        });
+    }
+
+    const link = await adminClient.auth.admin.generateLink({ email: email, type: 'recovery', options: { redirectTo: `${checkEnvironment()}/reset-password` } });
+    const url = link.data.properties?.action_link;
 
     await sgMail.send({
         from: {
@@ -37,7 +44,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
         dynamicTemplateData: {
             'titleText': "Here Is Your Reset Password Link!",
             'descriptionText': "Please click the link below to reset your password to Gehenna!",
-            'url': `${checkEnvironment()}/forgot-password?token=${confirmEmaiLToken}`,
+            'url': url,
             'subject': 'Password Reset For Gehenna Forum',
         }
     });
