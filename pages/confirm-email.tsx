@@ -1,4 +1,5 @@
 import { LoadingOverlay } from "@mantine/core";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -31,6 +32,9 @@ export default function ConfirmEmailPage()
         }
     }, [token]);
     return <div className="w-full h-full flex flex-col items-center justify-center">
+        <Head>
+            <title>Gehenna - Confirm Your Email</title>
+        </Head>
         <LoadingOverlay visible={true} overlayBlur={2} />
     </div>
 }

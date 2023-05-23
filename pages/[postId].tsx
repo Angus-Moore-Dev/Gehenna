@@ -20,6 +20,7 @@ import { Notification } from "@/models/Notification";
 import { useRouter } from "next/router";
 import ProfileCard from "@/components/ProfileCard";
 import { useClickAway } from "ahooks";
+import Head from "next/head";
 
 interface PostIdPageProps
 {
@@ -146,6 +147,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     });
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
+        <Head>
+            <title>Gehenna - {post.title}</title>
+        </Head>
         <audio ref={audioRef} hidden>
             <source src={'/notification.mp3'} />
         </audio>

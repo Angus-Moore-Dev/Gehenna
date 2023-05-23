@@ -3,6 +3,7 @@ import { Notification } from "@/models/Notification";
 import { Profile } from "@/models/Profile";
 import { Loader } from "@mantine/core";
 import { GetServerSidePropsContext } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -30,6 +31,9 @@ export default function NotificationsPage({ profile }: NotificationsPageProps)
     }, []);
 
     return <div className="w-full h-full flex flex-col gap-10 max-w-3xl p-24 mx-auto">
+        <Head>
+            <title>Gehenna - Notifications</title>
+        </Head>
         <Link href='/' className="flex flex-col items-center justify-center mb-10">
             <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
             <span className="text-sm mr-auto pt-2">Click To Go Back</span>
