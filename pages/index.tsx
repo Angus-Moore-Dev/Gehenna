@@ -205,7 +205,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 						</div>}
 						label="Search For A Post" 
 						placeholder='Search By Title' 
-						data={autocompletePosts.map(post => ({ id: post.id, value: post.title, tags: post.tags, username: post.username, avatar: post.avatar }))} // value instead of title, since Mantine Autocomplete requires it.
+						data={globalSearchkeywords ? autocompletePosts.map(post => ({ id: post.id, value: post.title, tags: post.tags, username: post.username, avatar: post.avatar })) : []} // value instead of title, since Mantine Autocomplete requires it.
 						value={globalSearchkeywords}
 						onChange={(e) => setGlobalSearchkeywords(e)} 
 						className='w-full max-w-3xl'
