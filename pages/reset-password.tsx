@@ -29,10 +29,10 @@ export default function ResetPasswordPage({ user }: ResetPasswordPageProps)
                 {
                     clientDb.auth.setSession(session);
                 }
-                window.location.reload();
             }
             window.location.reload();
         });
+        window.location.reload();
     }, []);
 
     return <div className="w-full h-full flex items-center justify-center">
