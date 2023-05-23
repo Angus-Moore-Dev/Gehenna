@@ -31,6 +31,7 @@ export default function ResetPasswordPage({ user }: ResetPasswordPageProps)
                 }
                 window.location.reload();
             }
+            window.location.reload();
         });
     }, []);
 
