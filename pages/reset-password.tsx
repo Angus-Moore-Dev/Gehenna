@@ -32,7 +32,11 @@ export default function ResetPasswordPage({ user }: ResetPasswordPageProps)
             }
             window.location.reload();
         });
-        window.location.reload();
+        
+        if (!user)
+        {
+            window.location.reload();
+        }
     }, []);
 
     return <div className="w-full h-full flex items-center justify-center">
