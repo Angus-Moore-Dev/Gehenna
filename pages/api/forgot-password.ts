@@ -30,6 +30,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
         });
     }
 
+    // Generate the URL that the user will click. This is a PostgREST function to generate a JWT token that will be used to verify the user's identity.
     const link = await adminClient.auth.admin.generateLink({ email: email, type: 'recovery', options: { redirectTo: `${checkEnvironment()}/reset-password` } });
     const url = link.data.properties?.action_link;
 
@@ -54,6 +55,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
 
 
 const checkEnvironment = () => {
-    let base_url = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://gehenna-mu.vercel.app"; 
+    let base_url = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://gehenna-mu.vercel.app";
     return base_url;
 };

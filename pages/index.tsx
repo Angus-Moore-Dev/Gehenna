@@ -5,7 +5,7 @@ import SignUpModal from '@/components/SignUpModal';
 import { clientDb, serverDb } from '@/lib/db';
 import { Post } from '@/models/Post';
 import { Profile } from '@/models/Profile';
-import { Box, Button, Loader, Skeleton, TextInput } from '@mantine/core';
+import { Autocomplete, Box, Button, Chip, Loader, Skeleton, TextInput } from '@mantine/core';
 import { User } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
@@ -35,6 +35,9 @@ export default function HomePage({ user, profile }: HomePageProps)
 	const [searchResults, setSearchResults] = useState('');
 	const [notifications, setNotifications] = useState<Notification[]>();
 	const [createNewPost, setCreateNewPost] = useState(false);
+
+	const [autocompletePosts, setAutocompletePosts] = useState<{ id: string, title: string, tags: string[], userId: string, username: string, avatar: string }[]>([]);
+	const [globalSearchkeywords, setGlobalSearchkeywords] = useState('');
 
 	useEffect(() => {
 		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
@@ -101,6 +104,46 @@ export default function HomePage({ user, profile }: HomePageProps)
 		}
 	}, []);
 
+	useEffect(() => {
+		if (globalSearchkeywords)
+		{
+			if (autocompletePosts.length === 0)
+				setAutocompletePosts([{ id: 'LOADING', title: 'Loading...', tags: [], userId: '', username: '', avatar: '' }]);
+			
+			clientDb.from('post').select(`id, title, tags, userId`).ilike('title', `%${globalSearchkeywords}%`).limit(50).then(async res => {
+				if (!res.error && res.data)
+				{
+					
+					// To anyone that knows RPC or PostgREST, I am sorry. I tried getting the inner join working but kept getting 400 status codes... :'(
+					const profiles = (await clientDb.from('profiles').select('id, username, avatar').in('id', res.data.map(x => x.userId))).data as { id: string, username: string, avatar: string }[];
+					console.log('profiles::', profiles);
+					// We have results
+					const autoCompleteResults = res.data as { id: string, title: string, tags: string[], userId: string, username: string, avatar: string }[];
+
+					// Attach the username and avatar to this post.
+					autoCompleteResults.forEach(post => {
+						const profile = profiles.find(x => x.id === post.userId);
+						if (profile)
+						{
+							post.username = profile.username;
+							post.avatar = profile.avatar;
+						}
+					})
+
+					setAutocompletePosts(autoCompleteResults);
+				}
+				else
+				{
+					setAutocompletePosts([]);
+				}
+			});
+		}
+		else
+		{
+			setAutocompletePosts([]);
+		}
+	}, [globalSearchkeywords]);
+
 	return (
 		<div ref={ref} className="w-full h-full flex flex-col gap-4 max-w-6xl mx-auto py-16">
 			<Head>
@@ -129,6 +172,46 @@ export default function HomePage({ user, profile }: HomePageProps)
 					className='underline text-blue-600 transition hover:text-blue-500'>
 						Help Support Gehenna!
 					</Link>
+					
+					<Autocomplete 
+						icon={<svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+							<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+							<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+							<path d="M21 21l-6 -6"></path>
+						</svg>}
+						itemComponent={({ id, value, tags, username, avatar }) => <div>
+							{
+								id === 'LOADING' &&
+								<div className='flex items-center justify-center p-4'>
+									<Loader color='yellow' />
+								</div>
+							}
+							{
+								id !== 'LOADING' &&
+								<Link href={`/${id}`} className='flex flex-col justify-center gap-2 py-2 px-4 font-medium transition hover:bg-primary hover:text-secondary rounded-md group'>
+									<span>{value}</span>
+									<div className='flex flex-row gap-2 items-end'>
+										<div className='w-3/4 flex flex-row flex-wrap gap-1'>
+										{
+											tags.map((tag: string) => <Chip>{tag}</Chip>)
+										}
+										</div>
+										<div className='px-2 flex flex-row items-center gap-2 w-1/4'>
+											<Image src={avatar} width={30} height={30} className='w-[40px] h-[40px] rounded-md object-cover' alt={username} />
+											<small className='font-semibold text-neutral-400 group-hover:text-secondary'>{username}</small>
+										</div>
+									</div>
+								</Link>
+							}
+						</div>}
+						label="Search For A Post" 
+						placeholder='Search By Title' 
+						data={autocompletePosts.map(post => ({ id: post.id, value: post.title, tags: post.tags, username: post.username, avatar: post.avatar }))} // value instead of title, since Mantine Autocomplete requires it.
+						value={globalSearchkeywords}
+						onChange={(e) => setGlobalSearchkeywords(e)} 
+						className='w-full max-w-3xl'
+					/>
+
 					<Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' />
 					<section className='flex flex-col mx-auto gap-2 items-center'>
 						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
