@@ -12,6 +12,7 @@ import Dropzone, { useDropzone } from 'react-dropzone';
 import AvatarEditor from 'react-avatar-editor';
 import { v4 } from "uuid";
 import { Notification } from "@/models/Notification";
+import Head from "next/head";
 
 interface ProfilePageProps
 {
@@ -81,6 +82,9 @@ export default function ProfilePage({ profile }: ProfilePageProps)
     }, []);
 
     return <div className="w-full h-full flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">
+        <Head>
+            <title>Gehenna - My Profile</title>
+        </Head>
         <audio ref={audioRef} hidden>
             <source src={'/notification.mp3'} />
         </audio>
