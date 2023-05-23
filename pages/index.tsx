@@ -116,7 +116,6 @@ export default function HomePage({ user, profile }: HomePageProps)
 					
 					// To anyone that knows RPC or PostgREST, I am sorry. I tried getting the inner join working but kept getting 400 status codes... :'(
 					const profiles = (await clientDb.from('profiles').select('id, username, avatar').in('id', res.data.map(x => x.userId))).data as { id: string, username: string, avatar: string }[];
-					console.log('profiles::', profiles);
 					// We have results
 					const autoCompleteResults = res.data as { id: string, title: string, tags: string[], userId: string, username: string, avatar: string }[];
 
