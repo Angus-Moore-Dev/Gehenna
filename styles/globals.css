@@ -44,3 +44,7 @@ textarea {
   white-space: pre-wrap;
   overflow: auto;
 }
+
+pre {
+  white-space: pre-wrap;
+}

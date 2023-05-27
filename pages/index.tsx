@@ -18,6 +18,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { Notification } from '@/models/Notification';
 import CommonButton from '@/components/CommonButton';
 import { useRouter } from 'next/router';
+import NewPostModal from '@/components/NewPostModal';
 
 interface HomePageProps
 {
@@ -163,17 +164,29 @@ export default function HomePage({ user, profile }: HomePageProps)
 			{
 				user && profile && profile.emailVerified &&
 				<div className='w-full h-full flex flex-col items-center gap-8'>
-					<audio ref={audioRef} hidden>
-						<source src={'/notification.mp3'} />
-					</audio>
-					<Link href='https://www.paypal.com/donate/?business=GM4YGMGDGZZ5A&no_recurring=0&item_name=Help+support+Gehenna+and+keep+it+functioning+well%21&currency_code=AUD'
-					target="_blank"
-					className='underline text-blue-600 transition hover:text-blue-500'>
-						Help Support Gehenna!
+					{/* <Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' /> */}
+					<pre className='leading-4'>
+
+					▄████ ▓█████  ██░ ██ ▓█████  ███▄    █  ███▄    █  ▄▄▄      <br />
+					██▒ ▀█▒▓█   ▀ ▓██░ ██▒▓█   ▀  ██ ▀█   █  ██ ▀█   █ ▒████▄    <br />
+					▒██░▄▄▄░▒███   ▒██▀▀██░▒███   ▓██  ▀█ ██▒▓██  ▀█ ██▒▒██  ▀█▄  <br />
+					░▓█  ██▓▒▓█  ▄ ░▓█ ░██ ▒▓█  ▄ ▓██▒  ▐▌██▒▓██▒  ▐▌██▒░██▄▄▄▄██ <br />
+					░▒▓███▀▒░▒████▒░▓█▒░██▓░▒████▒▒██░   ▓██░▒██░   ▓██░ ▓█   ▓██▒<br />
+					░▒   ▒ ░░ ▒░ ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ▒ ▒ ░ ▒░   ▒ ▒  ▒▒   ▓▒█░<br />
+					░   ░  ░ ░  ░ ▒ ░▒░ ░ ░ ░  ░░ ░░   ░ ▒░░ ░░   ░ ▒░  ▒   ▒▒ ░<br />
+					░ ░   ░    ░    ░  ░░ ░   ░      ░   ░ ░    ░   ░ ░   ░   ▒   <br />
+						░    ░  ░ ░  ░  ░   ░  ░         ░          ░       ░  ░<br />
+
+					</pre>
+					<section className='flex flex-col mx-auto gap-2 items-center'>
+						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
+						<span className='font-semibold'>{profile.username}</span>
+					</section>
+					<Link href='/profile' className='-mt-6 mb-2 w-full max-w-3xl flex flex-col items-center gap-4 underline text-blue-600 transition hover:text-blue-500'>
+						View My Profile
 					</Link>
-					
 					<Autocomplete 
-						icon={<svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+						icon={<svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
 							<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
 							<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
 							<path d="M21 21l-6 -6"></path>
@@ -210,80 +223,8 @@ export default function HomePage({ user, profile }: HomePageProps)
 						onChange={(e) => setGlobalSearchkeywords(e)} 
 						className='w-full max-w-3xl'
 					/>
-
-					<Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' />
-					<section className='flex flex-col mx-auto gap-2 items-center'>
-						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
-						<span className='font-semibold'>{profile.username}</span>
-					</section>
-					<Link href='/profile' className='-mt-6 mb-2 w-full max-w-3xl flex flex-col items-center gap-4 underline text-blue-600 transition hover:text-blue-500'>
-						View My Profile
-					</Link>
-					<section className={`w-full max-w-3xl flex flex-col min-h-[200px] max-h-[400px] ${notifications && notifications.length > 0 && 'border-b-8 border-b-primary'} rounded-b-xl bg-quaternary`}>
-						{/* This is for notifications that the user has not seen yet. */}
-						{
-							notifications && notifications.length > 0 &&
-							<div className='w-full flex flex-row gap-4 items-center bg-primary rounded-t-xl'>
-								<span className='font-semibold text-lg text-secondary p-2'>New Notifications {notifications && notifications.length > 0 && '(Click on each to remove them)'}</span>
-								<CommonButton text='Dismiss All' onClick={async () => {
-									const res = await clientDb.from('notifications').update({ seen: true }).eq('userId', user.id);
-									if (res.error) 
-										toast.error(res.error.message);
-									else
-									{
-										setNotifications([]);
-										toast.success('Successfully dismissed notifications.');
-									}
-								}} className='bg-secondary text-white transition hover:text-primary hover:bg-quaternary' />
-							</div>
-						}
-						{
-							!notifications &&
-							<div className='flex-grow flex items-center justify-center bg-tertiary'>
-								<Loader />
-							</div>
-						}
-						{
-							notifications && notifications.length === 0 &&
-							<div className='flex-grow flex flex-col gap-2 items-center justify-center bg-tertiary'>
-								<span className='text-xl font-semibold'>You have no new notifications.</span>
-								<Link href='/notifications' className='underline text-blue-600 transition hover:text-blue-500'>
-									View All Notifications
-								</Link>
-							</div>
-						}
-						{
-							notifications && notifications.length > 0 &&
-							<div className='flex-grow flex flex-col gap-2 overflow-y-auto p-2 scrollbar'>
-								{
-									notifications.map((notification, index) => {
-										return (
-											<Link key={index} href={notification.link} className='w-full flex flex-col gap-2 p-2 px-4 bg-tertiary rounded-xl transition hover:bg-primary hover:text-secondary group border-b-2 border-b-primary'
-											onClick={async () => {
-												// Let the system know that we've clicked and viewed this post.
-												const res = await clientDb.from('notifications').update({
-													seen: true
-												}).eq('id', notification.id);
-											}}>
-												<span className='text-lg font-semibold'>{notification.title}</span>
-												<span className='text-xs'>{notification.text}</span>
-												<span className='text-xs text-primary ml-auto group-hover:text-secondary'>{new Date(notification.created_at).toLocaleDateString('en-au', { weekday: 'long', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-											</Link>
-										)
-									})
-								}
-							</div>
-						}
-					</section>
 					{/* The user can make new posts here. */}
-					{
-						!createNewPost &&
-						<CommonButton onClick={() => setCreateNewPost(true)} className='w-full max-w-3xl py-2 text-xl font-bold' text='Create New Post' />
-					}
-					{
-						createNewPost &&
-						<NewPostBox user={user} />
-					}
+					<NewPostModal user={user} />
 					{/* The user can see their posts here. */}
 					<div className='w-full h-full flex flex-col items-center gap-4'>
 						{
@@ -296,48 +237,41 @@ export default function HomePage({ user, profile }: HomePageProps)
 						{
 							posts && posts.length > 0 &&
 							<>
-							<TextInput placeholder='We look for titles and tags...' className='w-full max-w-3xl' label='Search For Thread' value={searchResults} onChange={async (e) => setSearchResults(e.target.value)} />
-							{
-								searchResults.length > 0 && posts.map(x => x.title.toLowerCase().includes(searchResults.toLowerCase()) || x.tags.some(tag => tag.toLowerCase().includes(searchResults.toLowerCase())) && <PostPreviewBox key={x.id} post={x} />)
-							}
-							{
-								searchResults.length === 0 &&
-								<InfiniteScroll 
-								dataLength={posts.length} 
-								next={async () => {
-									clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
-										if (!res.error && res.data)
-										{
-											setPosts(res.data as Post[]);
-											setPostCount(postCount + 2);
-										}
-										else
-										{
-											toast.error(res.error.message);
-										}
-									})
-								}} 
-								hasMore={true} 
-								loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
-								style={{
-									width: '768px',
-								}}
-								endMessage={
-									<p style={{ textAlign: 'center' }}>
-										<b>Yay! You have seen it all</b>
-									</p>
-								}>
+							<InfiniteScroll 
+							dataLength={posts.length} 
+							next={async () => {
+								clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
+									if (!res.error && res.data)
 									{
-										posts && posts.length > 0 &&
-										<div className='w-full flex flex-col gap-2 justify-start'>
-										<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads (up to 7 days ago)</span>
-										{
-											posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
-										}
-										</div>
+										setPosts(res.data as Post[]);
+										setPostCount(postCount + 2);
 									}
-								</InfiniteScroll>
-							}
+									else
+									{
+										toast.error(res.error.message);
+									}
+								})
+							}} 
+							hasMore={true} 
+							loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
+							style={{
+								width: '768px',
+							}}
+							endMessage={
+								<p style={{ textAlign: 'center' }}>
+									<b>Yay! You have seen it all</b>
+								</p>
+							}>
+								{
+									posts && posts.length > 0 &&
+									<div className='w-full flex flex-col gap-2 justify-start'>
+									<span className='w-full max-w-3xl font-semibold text-lg'>Latest Threads (up to 7 days ago)</span>
+									{
+										posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+									}
+									</div>
+								}
+							</InfiniteScroll>
 							</>
 						}
 					</div>

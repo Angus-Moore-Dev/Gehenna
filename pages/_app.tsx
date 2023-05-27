@@ -18,9 +18,10 @@ export default function App({ Component, pageProps }: AppProps) {
 		initialSession={pageProps.initialSession}
 		>
 			<MantineProvider withGlobalStyles withNormalizeCSS 
-			theme={{ 
+			theme={{
 				colorScheme: 'dark',
-				focusRing: 'never',
+				focusRing: 'never', 
+				primaryColor: 'yellow',
 			}}>
 				<div className='w-screen h-screen flex flex-col'>
 					<Head>

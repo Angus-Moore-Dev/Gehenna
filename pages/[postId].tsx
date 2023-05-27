@@ -133,18 +133,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
 			}
 		}).subscribe((status) => console.log(status));
 
-        // Set scroll
-        window.scrollTo(0, parseInt(localStorage.getItem('scrollY') ?? '0'));
-
     }, []);
-
-    const handleScroll = () => {
-        localStorage.setItem('scrollY', window.scrollY.toString());
-    };
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll); 
-        return () => window.removeEventListener("scroll", handleScroll);
-    });
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Head>
@@ -166,7 +155,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                 {
                     showCard &&
                     <div className="absolute top-14">
-                        <ProfileCard profile={poster} />    
+                        <ProfileCard profile={poster} /> 
                     </div>
                 }
                 <span className="font-semibold text-xl">
@@ -189,7 +178,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             {
                 post.attachedFileURLs.map(file => {
                     if (file.mimeType.includes('image'))
-                        return <Image src={file.url} alt={v4()} width='1000' height='1000' className="object-cover w-[45%] h-[350px] rounded-md" />
+                        return <Image src={file.url} alt={v4()} quality={100} width='1000' height='1000' className={`object-cover min-w-[45%] flex-1 rounded-md ${post.attachedFileURLs.length > 1 && 'h-[350px]'}`} />
                     else if (file.mimeType.includes('audio'))
                         return <audio className="w-[45%]" controls>
                             <source src={file.url} type={file.mimeType} />
@@ -214,10 +203,10 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     // Update the post likes.
                     const res = await clientDb.from('post').update({ upvotes: postData.upvotes + 1 }).eq('id', postData.id);
                 }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-up-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-up-filled" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M13 3a3 3 0 0 1 2.995 2.824l.005 .176v4h2a3 3 0 0 1 2.98 2.65l.015 .174l.005 .176l-.02 .196l-1.006 5.032c-.381 1.626 -1.502 2.796 -2.81 2.78l-.164 -.008h-8a1 1 0 0 1 -.993 -.883l-.007 -.117l.001 -9.536a1 1 0 0 1 .5 -.865a2.998 2.998 0 0 0 1.492 -2.397l.007 -.202v-1a3 3 0 0 1 3 -3z" stroke-width="0" fill="currentColor"></path>
-                        <path d="M5 10a1 1 0 0 1 .993 .883l.007 .117v9a1 1 0 0 1 -.883 .993l-.117 .007h-1a2 2 0 0 1 -1.995 -1.85l-.005 -.15v-7a2 2 0 0 1 1.85 -1.995l.15 -.005h1z" stroke-width="0" fill="currentColor"></path>
+                        <path d="M13 3a3 3 0 0 1 2.995 2.824l.005 .176v4h2a3 3 0 0 1 2.98 2.65l.015 .174l.005 .176l-.02 .196l-1.006 5.032c-.381 1.626 -1.502 2.796 -2.81 2.78l-.164 -.008h-8a1 1 0 0 1 -.993 -.883l-.007 -.117l.001 -9.536a1 1 0 0 1 .5 -.865a2.998 2.998 0 0 0 1.492 -2.397l.007 -.202v-1a3 3 0 0 1 3 -3z" strokeWidth="0" fill="currentColor"></path>
+                        <path d="M5 10a1 1 0 0 1 .993 .883l.007 .117v9a1 1 0 0 1 -.883 .993l-.117 .007h-1a2 2 0 0 1 -1.995 -1.85l-.005 -.15v-7a2 2 0 0 1 1.85 -1.995l.15 -.005h1z" strokeWidth="0" fill="currentColor"></path>
                     </svg>
                 </div>
                 <span className="text-2xl font-bold">{postData.upvotes}</span>
@@ -228,10 +217,10 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     // Update the post likes.
                     const res = await clientDb.from('post').update({ downvotes: postData.downvotes + 1 }).eq('id', postData.id);
                 }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-down-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-down-filled" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M13 21.008a3 3 0 0 0 2.995 -2.823l.005 -.177v-4h2a3 3 0 0 0 2.98 -2.65l.015 -.173l.005 -.177l-.02 -.196l-1.006 -5.032c-.381 -1.625 -1.502 -2.796 -2.81 -2.78l-.164 .008h-8a1 1 0 0 0 -.993 .884l-.007 .116l.001 9.536a1 1 0 0 0 .5 .866a2.998 2.998 0 0 1 1.492 2.396l.007 .202v1a3 3 0 0 0 3 3z" stroke-width="0" fill="currentColor"></path>
-                        <path d="M5 14.008a1 1 0 0 0 .993 -.883l.007 -.117v-9a1 1 0 0 0 -.883 -.993l-.117 -.007h-1a2 2 0 0 0 -1.995 1.852l-.005 .15v7a2 2 0 0 0 1.85 1.994l.15 .005h1z" stroke-width="0" fill="currentColor"></path>
+                        <path d="M13 21.008a3 3 0 0 0 2.995 -2.823l.005 -.177v-4h2a3 3 0 0 0 2.98 -2.65l.015 -.173l.005 -.177l-.02 -.196l-1.006 -5.032c-.381 -1.625 -1.502 -2.796 -2.81 -2.78l-.164 .008h-8a1 1 0 0 0 -.993 .884l-.007 .116l.001 9.536a1 1 0 0 0 .5 .866a2.998 2.998 0 0 1 1.492 2.396l.007 .202v1a3 3 0 0 0 3 3z" strokeWidth="0" fill="currentColor"></path>
+                        <path d="M5 14.008a1 1 0 0 0 .993 -.883l.007 -.117v-9a1 1 0 0 0 -.883 -.993l-.117 -.007h-1a2 2 0 0 0 -1.995 1.852l-.005 .15v7a2 2 0 0 0 1.85 1.994l.15 .005h1z" strokeWidth="0" fill="currentColor"></path>
                     </svg>
                 </div>
                 <span className="text-2xl font-bold">{postData.downvotes}</span>

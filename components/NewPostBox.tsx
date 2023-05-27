@@ -6,9 +6,9 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
-import { Color } from '@tiptap/extension-color';
+import Image from '@tiptap/extension-image';
 import { useEffect, useRef, useState } from 'react';
-import { Button, Chip, List, Loader, TextInput } from '@mantine/core';
+import { Chip, List, Loader, TextInput } from '@mantine/core';
 import CommonButton from './CommonButton';
 import { clientDb } from '@/lib/db';
 import { User } from '@supabase/supabase-js';
@@ -16,7 +16,8 @@ import { toast } from 'react-toastify';
 import { v4 } from 'uuid';
 import { useRouter } from 'next/router';
 import { AttachedFile, Tags } from '@/models/Post';
-import seedColor from 'seed-color';
+import { ImageDropzone } from './ImageDropzone';
+import Placeholder from '@tiptap/extension-placeholder';
 
 interface NewPostBoxProps
 {
@@ -35,6 +36,8 @@ export default function NewPostBox({ user }: NewPostBoxProps)
 
     const [files, setFiles] = useState<File[]>([]);
 
+    const [isFilesTooLarge, setIsFilesTooLarge] = useState(false);
+
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -43,18 +46,25 @@ export default function NewPostBox({ user }: NewPostBoxProps)
 			Superscript,
 			SubScript,
 			Highlight,
+            Image,
 			TextAlign.configure({ types: ['heading', 'paragraph'] }),
+            Placeholder.configure({ placeholder: "What do you want to say?" }),
 		],
 		content,
         onUpdate({ editor }) {
             setContent(editor.getHTML());
-        }
+        },
 	});
+
+    useEffect(() => {
+        // If the sum total of all the files are greater than 5mb, set isFilesTooLarge to true
+        files.reduce((acc, file) => acc + file.size, 0) >= 5242880 ? setIsFilesTooLarge(true) : setIsFilesTooLarge(false);
+    }, [files]);
 
     return <div className='w-full flex flex-col items-center'>
         <div className='w-full max-w-3xl flex flex-col items-center gap-4'>
             <span className='text-2xl font-bold mr-auto'>Start a New Thread</span>
-            <TextInput placeholder='Thread Title' className='w-full' value={title} onChange={(e) => setTitle(e.target.value)} />
+            <TextInput placeholder='Thread Title' className='w-full font-semibold' value={title} onChange={(e) => setTitle(e.target.value)} size='xl' />
             <RichTextEditor editor={editor} style={{
                 width: '100%'
             }}>
@@ -67,30 +77,30 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                         <RichTextEditor.ClearFormatting />
                         <RichTextEditor.Highlight />
                         <RichTextEditor.Code />
-                        </RichTextEditor.ControlsGroup>
+                    </RichTextEditor.ControlsGroup>
 
-                        <RichTextEditor.ControlsGroup>
+                    <RichTextEditor.ControlsGroup>
                         <RichTextEditor.H1 />
                         <RichTextEditor.H2 />
                         <RichTextEditor.H3 />
                         <RichTextEditor.H4 />
-                        </RichTextEditor.ControlsGroup>
+                    </RichTextEditor.ControlsGroup>
 
-                        <RichTextEditor.ControlsGroup>
+                    <RichTextEditor.ControlsGroup>
                         <RichTextEditor.Blockquote />
                         <RichTextEditor.Hr />
                         <RichTextEditor.BulletList />
                         <RichTextEditor.OrderedList />
                         <RichTextEditor.Subscript />
                         <RichTextEditor.Superscript />
-                        </RichTextEditor.ControlsGroup>
+                    </RichTextEditor.ControlsGroup>
 
-                        <RichTextEditor.ControlsGroup>
+                    <RichTextEditor.ControlsGroup>
                         <RichTextEditor.Link />
                         <RichTextEditor.Unlink />
-                        </RichTextEditor.ControlsGroup>
+                    </RichTextEditor.ControlsGroup>
 
-                        <RichTextEditor.ControlsGroup>
+                    <RichTextEditor.ControlsGroup>
                         <RichTextEditor.AlignLeft />
                         <RichTextEditor.AlignCenter />
                         <RichTextEditor.AlignJustify />
@@ -113,11 +123,14 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                                 '#fd7e14',
                             ]}
                         />
-                    </RichTextEditor.ControlsGroup>
-                </RichTextEditor.Toolbar>
-                <RichTextEditor.Content />
+                </RichTextEditor.ControlsGroup>
+            </RichTextEditor.Toolbar>
+            <RichTextEditor.Content />
             </RichTextEditor>
             <div className='w-full flex flex-col gap-2'>
+                <ImageDropzone onUpload={(files: File[]) => {
+                    setFiles(existingFiles => [...existingFiles, ...files]);
+                }} isUploading={isCreating} />
                 {
                     files.length > 0 &&
                     <span>Files Included</span>
@@ -131,16 +144,6 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                         ))
                     }
                 </List>
-                <input ref={inputRef} hidden 
-                type='file' accept='image/*,video/*,audio/*'
-                multiple
-                onChange={(e) => {
-                    if (e.target.files)
-                    {
-                        setFiles([...files, ...Array.from(e.target.files)]);
-                    }
-                }} />
-                <CommonButton text='Add Files To Post' onClick={() => inputRef.current?.click()} />
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <span className='text-xl font-semibold'>Add Tags To Your Post</span>
@@ -164,7 +167,11 @@ export default function NewPostBox({ user }: NewPostBoxProps)
             </div>
             <div className='flex flex-row gap-2 ml-auto items-center'>
                 {
-                    !isCreating &&
+                    isFilesTooLarge &&
+                    <span className='text-red-500'>Files are too large. Please keep your image count below 5mb :(</span>
+                }
+                {
+                    !isCreating && !isFilesTooLarge &&
                     <CommonButton text='Create Thread' onClick={async () => {
                         setIsCreating(true);
 

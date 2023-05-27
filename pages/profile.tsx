@@ -96,7 +96,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         <div className="flex flex-col gap-2">
             {
                 !newProfilePicture &&
-                <div className="flex flex-col gap-2 items-center justify-center transition p-2 rounded-xl hover:text-secondary hover:cursor-pointer hover:bg-primary">
+                <div className="flex flex-col gap-2 items-center justify-center transition p-2 rounded-xl hover:cursor-pointer hover:bg-primary">
                     <div {...getRootProps()} className="flex flex-col items-center">
                         <input {...getInputProps()} type='file' accept='image/*' />
                         <Image src={avatar} width={256} height={256} alt='Profile Picture' className="w-[256px] h-[256px] object-cover rounded-md" />
