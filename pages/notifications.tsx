@@ -1,3 +1,4 @@
+import { Gehenna } from "@/components/Gehenna";
 import { clientDb, serverDb } from "@/lib/db";
 import { Notification } from "@/models/Notification";
 import { Profile } from "@/models/Profile";
@@ -35,8 +36,7 @@ export default function NotificationsPage({ profile }: NotificationsPageProps)
             <title>Gehenna - Notifications</title>
         </Head>
         <Link href='/' className="flex flex-col items-center justify-center mb-10">
-            <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
-            <span className="text-sm mr-auto pt-2">Click To Go Back</span>
+            <Gehenna />
         </Link>
         <h1 className="text-4xl font-bold">Notifications</h1>
         <div className="flex flex-col gap-4">

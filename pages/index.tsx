@@ -19,6 +19,7 @@ import { Notification } from '@/models/Notification';
 import CommonButton from '@/components/CommonButton';
 import { useRouter } from 'next/router';
 import NewPostModal from '@/components/NewPostModal';
+import { Gehenna } from '@/components/Gehenna';
 
 interface HomePageProps
 {
@@ -28,7 +29,6 @@ interface HomePageProps
 
 export default function HomePage({ user, profile }: HomePageProps)
 {
-	const audioRef = useRef<HTMLAudioElement>(null);
 	const router = useRouter();
 	const [postCount, setPostCount] = useState(10);
 	const [posts, setPosts] = useState<Post[]>();
@@ -82,12 +82,6 @@ export default function HomePage({ user, profile }: HomePageProps)
 				const newNotification = payload.new as Notification;
 				if (newNotification.userId === user.id)
 				{
-					// Play a sound to notify the user of the new notification.
-					if (audioRef.current)
-					{
-						audioRef.current.currentTime = 0;
-						audioRef.current.play();
-					}
 					toast.info(newNotification.title, {
 						async onClick() {
 							// Let the system know that we've clicked and viewed this post.
@@ -165,19 +159,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 				user && profile && profile.emailVerified &&
 				<div className='w-full h-full flex flex-col items-center gap-8'>
 					{/* <Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' /> */}
-					<pre className='leading-4'>
-
-					▄████ ▓█████  ██░ ██ ▓█████  ███▄    █  ███▄    █  ▄▄▄      <br />
-					██▒ ▀█▒▓█   ▀ ▓██░ ██▒▓█   ▀  ██ ▀█   █  ██ ▀█   █ ▒████▄    <br />
-					▒██░▄▄▄░▒███   ▒██▀▀██░▒███   ▓██  ▀█ ██▒▓██  ▀█ ██▒▒██  ▀█▄  <br />
-					░▓█  ██▓▒▓█  ▄ ░▓█ ░██ ▒▓█  ▄ ▓██▒  ▐▌██▒▓██▒  ▐▌██▒░██▄▄▄▄██ <br />
-					░▒▓███▀▒░▒████▒░▓█▒░██▓░▒████▒▒██░   ▓██░▒██░   ▓██░ ▓█   ▓██▒<br />
-					░▒   ▒ ░░ ▒░ ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ▒ ▒ ░ ▒░   ▒ ▒  ▒▒   ▓▒█░<br />
-					░   ░  ░ ░  ░ ▒ ░▒░ ░ ░ ░  ░░ ░░   ░ ▒░░ ░░   ░ ▒░  ▒   ▒▒ ░<br />
-					░ ░   ░    ░    ░  ░░ ░   ░      ░   ░ ░    ░   ░ ░   ░   ▒   <br />
-						░    ░  ░ ░  ░  ░   ░  ░         ░          ░       ░  ░<br />
-
-					</pre>
+					<Gehenna />
 					<section className='flex flex-col mx-auto gap-2 items-center'>
 						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
 						<span className='font-semibold'>{profile.username}</span>

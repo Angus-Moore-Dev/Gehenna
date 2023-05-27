@@ -42,10 +42,10 @@ export function ImageDropzone({ onUpload, isUploading }: DropzoneImageProps)
 
                 <div>
                 <Text size="xl" inline>
-                    Drag images here or click to select files
+                    Drag images / video / audio files here or click to select files
                 </Text>
                 <Text size="sm" color="dimmed" inline mt={7}>
-                    Attach as many files as you like, each file should not exceed 5mb
+                    Attach as many files as you like, the total must not exceed 5mb
                 </Text>
                 </div>
             </Group>

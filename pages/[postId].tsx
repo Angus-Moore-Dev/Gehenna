@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import ProfileCard from "@/components/ProfileCard";
 import { useClickAway } from "ahooks";
 import Head from "next/head";
+import { Gehenna } from "@/components/Gehenna";
 
 interface PostIdPageProps
 {
@@ -33,7 +34,6 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me, comments, commenters }: PostIdPageProps)
 {
-	const audioRef = useRef<HTMLAudioElement>(null);
     const router = useRouter();
     const [postCommentors, setPostCommentors] = useState(commenters);
     const [postComments, setPostComments] = useState(comments);
@@ -119,12 +119,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
 			const newNotification = payload.new as Notification;
 			if (newNotification.userId === me.id)
 			{
-                // Play a sound to notify the user of the new notification.
-				if (audioRef.current)
-                {
-                    audioRef.current.currentTime = 0;
-                    audioRef.current.play();
-                }
 				toast.info(newNotification.title, {
 					onClick() {
 						router.push(`${window.location.origin}${newNotification.link}`);
@@ -139,12 +133,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
         <Head>
             <title>Gehenna - {post.title}</title>
         </Head>
-        <audio ref={audioRef} hidden>
-            <source src={'/notification.mp3'} />
-        </audio>
         <Link href='/' className="flex flex-col items-center justify-center mb-10 group">
-            <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
-            <span className="text-sm mr-auto pt-2 transition group-hover:text-primary">Click To Go Back</span>
+            <Gehenna />
         </Link>
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center border-b-4 border-b-primary mb-2 pb-2 relative">

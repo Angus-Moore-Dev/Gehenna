@@ -13,6 +13,7 @@ import AvatarEditor from 'react-avatar-editor';
 import { v4 } from "uuid";
 import { Notification } from "@/models/Notification";
 import Head from "next/head";
+import { Gehenna } from "@/components/Gehenna";
 
 interface ProfilePageProps
 {
@@ -21,7 +22,6 @@ interface ProfilePageProps
 
 export default function ProfilePage({ profile }: ProfilePageProps)
 {
-    const audioRef = useRef<HTMLAudioElement>(null);
     const ref = useRef<AvatarEditor>(null);
     const router = useRouter();
     const [username, setUsername] = useState(profile.username);
@@ -66,12 +66,6 @@ export default function ProfilePage({ profile }: ProfilePageProps)
             const newNotification = payload.new as Notification;
             if (newNotification.userId === profile.id)
             {
-                // Play a sound to notify the user of the new notification.
-                if (audioRef.current)
-                {
-                    audioRef.current.currentTime = 0;
-                    audioRef.current.play();
-                }
                 toast.info(newNotification.title, {
                     onClick() {
                         router.push(`${window.location.origin}${newNotification.link}`);
@@ -85,12 +79,8 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         <Head>
             <title>Gehenna - My Profile</title>
         </Head>
-        <audio ref={audioRef} hidden>
-            <source src={'/notification.mp3'} />
-        </audio>
         <Link href='/' className="flex flex-col items-center justify-center mb-10">
-            <Image src='/logo.png' width={500} height={450} alt='Gehenna' />
-            <span className="text-sm mr-auto pt-2">Click To Go Back</span>
+            <Gehenna />
         </Link>
         <h1 className="text-4xl font-bold">My Profile</h1>
         <div className="flex flex-col gap-2">
