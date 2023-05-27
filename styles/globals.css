@@ -12,13 +12,33 @@
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-      background: #FFAA00;
+      background: #E67700;
       border-radius: 8px;
       border: 6px solid transparent;
   }
 
   .scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #FFAA00;
+      background: #E67700;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 20px;
+    direction: rtl;
+  }
+
+  ::-webkit-scrollbar-track {
+      background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background: #E67700;
+      border-radius: 8px;
+      border: 6px solid transparent;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+      background: #E67700;
   }
 }
 
@@ -28,9 +48,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
+  
   color: white;
   margin: 0;
-  background-color: #1A1B1E;
+  background-color: #1b1b1b;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 }
@@ -48,3 +69,5 @@ textarea {
 pre {
   white-space: pre-wrap;
 }
+
+

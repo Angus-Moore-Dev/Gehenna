@@ -27,7 +27,7 @@ interface PostIdPageProps
 {
     post: Post;
     poster: Profile;
-    me: Profile;
+    me: Profile | null;
     commenters: Profile[];
     comments: Comment[];
 }
@@ -114,18 +114,21 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
         }).subscribe();
 
 
-        // Listen for new notifications.
-		clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
-			const newNotification = payload.new as Notification;
-			if (newNotification.userId === me.id)
-			{
-				toast.info(newNotification.title, {
-					onClick() {
-						router.push(`${window.location.origin}${newNotification.link}`);
-					}
-				});
-			}
-		}).subscribe((status) => console.log(status));
+        if (me)
+        {
+            // Listen for new notifications.
+            clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
+                const newNotification = payload.new as Notification;
+                if (newNotification.userId === me.id)
+                {
+                    toast.info(newNotification.title, {
+                        onClick() {
+                            router.push(`${window.location.origin}${newNotification.link}`);
+                        }
+                    });
+                }
+            }).subscribe((status) => console.log(status));
+        }
 
     }, []);
 
@@ -149,7 +152,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     </div>
                 }
                 <span className="font-semibold text-xl">
-                    {poster.username} <i>asked:</i>
+                    {poster.username} <i>wrote:</i>
                     <br />
                     <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                 </span>
@@ -170,11 +173,11 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     if (file.mimeType.includes('image'))
                         return <Image src={file.url} alt={v4()} quality={100} width='1000' height='1000' className={`object-cover min-w-[45%] flex-1 rounded-md ${post.attachedFileURLs.length > 1 && 'h-[350px]'}`} />
                     else if (file.mimeType.includes('audio'))
-                        return <audio className="w-[45%]" controls>
+                        return <audio className="min-w-[45%] flex-1" controls>
                             <source src={file.url} type={file.mimeType} />
                         </audio>
                     else if (file.mimeType.includes('video'))
-                        return <video className="w-[45%] rounded-md" controls>
+                        return <video className="min-w-[45%] flex-1 rounded-md" controls>
                             <source src={file.url} type={file.mimeType} />
                         </video>
                 })
@@ -191,7 +194,14 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                 <div className="transition p-2 rounded-xl w-fit hover:text-secondary hover:bg-primary hover:cursor-pointer aria-checked:bg-primary aria-checked:text-secondary" 
                 onClick={async () => {
                     // Update the post likes.
-                    const res = await clientDb.from('post').update({ upvotes: postData.upvotes + 1 }).eq('id', postData.id);
+                    if (me)
+                    {
+                        const res = await clientDb.from('post').update({ upvotes: postData.upvotes + 1 }).eq('id', postData.id);
+                    }
+                    else
+                    {
+                        toast.error('You must be signed in to like a post!');
+                    }
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-up-filled" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -205,7 +215,14 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                 <div className="transition p-2 rounded-xl w-fit hover:text-secondary hover:bg-red-500 hover:cursor-pointer aria-checked:bg-red-500 aria-checked:text-secondary" 
                 onClick={async () => {
                     // Update the post likes.
-                    const res = await clientDb.from('post').update({ downvotes: postData.downvotes + 1 }).eq('id', postData.id);
+                    if (me)
+                    {
+                        const res = await clientDb.from('post').update({ downvotes: postData.downvotes + 1 }).eq('id', postData.id);
+                    }
+                    else
+                    {
+                        toast.error('You must be signed in to dislike a post!');
+                    }
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-down-filled" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -221,77 +238,85 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             <div className="flex-grow h-full flex flex-col">
                 <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">
                     {
+                        postComments.length === 0 &&
+                        <div className="flex-grow flex flex-col items-start justify-center h-14">
+                            <span>No comments :(</span>
+                            {
+                                me && <p className="text-lg">Be the first to comment!</p>
+                            }
+                        </div>
+                    }
+                    {
                         postComments.map(comment => <CommentBox key={comment.id} comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} />)
                     }
                 </div>
-                <div className="w-full flex flex-col gap-0">
-                    <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Write a comment..." className="w-full h-full" />
-                    <CommonButton text='Send Comment' className="ml-auto h-14 -mt-2" onClick={async () => {
-                        const newComment = {
-                            id: v4(),
-                            userId: me.id,
-                            postId: postData.id,
-                            comment: comment,
-                        } as Comment;
+                {
+                    me &&
+                    <div className="w-full flex flex-col gap-0">
+                        <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Write a comment..." className="w-full h-full" />
+                        <CommonButton text='Send Comment' className="ml-auto h-14 -mt-2" onClick={async () => {
+                            const newComment = {
+                                id: v4(),
+                                userId: me.id,
+                                postId: postData.id,
+                                comment: comment,
+                            } as Comment;
 
-                        const res = await clientDb.from('comments').insert(newComment);
-                        if (res.error)
-                        {
-                            toast.error(res.error.message);
-                        }
-                        else
-                        {
-                            setComment('');
-                        }
-
-                        /*
-                            1. If we are the creator, create a notification to all the other posters.
-                            2. If we are not the creator, create a notification to the creator and all the other posters.
-                        */
-
-                        const listOfPeopleToNotify: string[] = [];
-                        if (post.userId === me.id)
-                        {
-                            const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
-                            for (const notifier of postsCommentorsToNotify)
+                            const res = await clientDb.from('comments').insert(newComment);
+                            if (res.error)
                             {
-                                listOfPeopleToNotify.push(notifier);
+                                toast.error(res.error.message);
                             }
-                        }
-                        else
-                        {
-                            // I am not the creator
-                            console.log(post.userId);
-                            listOfPeopleToNotify.push(post.userId);
-                            const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
-                            for (const notifier of postsCommentorsToNotify)
+                            else
                             {
-                                listOfPeopleToNotify.push(notifier);
+                                setComment('');
                             }
-                        }
 
-                        const insertBatch = listOfPeopleToNotify.map(x => ({
-                            id: v4(),
-                            created_at: new Date().toISOString(),
-                            title: `${me.username} commented on ${post.userId === x ? 'your post' : 'a post you commented on'}.`,
-                            text: `Please click this link to view the comment.`,
-                            link: `/${post.id}`,
-                            userId: x,
-                            seen: false // Default, since the intended party has not opened the post yet.
-                        }));
+                            /*
+                                1. If we are the creator, create a notification to all the other posters.
+                                2. If we are not the creator, create a notification to the creator and all the other posters.
+                            */
 
-                        console.log(insertBatch);
-                        // Now we insert the notifications for each of these people
-                        const notificationRes = await clientDb.from('notifications').insert(insertBatch);
+                            const listOfPeopleToNotify: string[] = [];
+                            if (post.userId === me.id)
+                            {
+                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
+                                for (const notifier of postsCommentorsToNotify)
+                                {
+                                    listOfPeopleToNotify.push(notifier);
+                                }
+                            }
+                            else
+                            {
+                                // I am not the creator
+                                listOfPeopleToNotify.push(post.userId);
+                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
+                                for (const notifier of postsCommentorsToNotify)
+                                {
+                                    listOfPeopleToNotify.push(notifier);
+                                }
+                            }
 
-                        console.log(notificationRes);
+                            const insertBatch = listOfPeopleToNotify.map(x => ({
+                                id: v4(),
+                                created_at: new Date().toISOString(),
+                                title: `${me.username} commented on ${post.userId === x ? 'your post' : 'a post you commented on'}.`,
+                                text: `Please click this link to view the comment.`,
+                                link: `/${post.id}`,
+                                userId: x,
+                                seen: false // Default, since the intended party has not opened the post yet.
+                            }));
 
-                        if (notificationRes.error)
-                        {
-                            toast.error(notificationRes.error.message);
-                        }
-                    }} /> 
-                </div>
+                            // Now we insert the notifications for each of these people
+                            const notificationRes = await clientDb.from('notifications').insert(insertBatch);
+
+                            if (notificationRes.error)
+                            {
+                                toast.error(notificationRes.error.message);
+                            }
+                        }} /> 
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -303,18 +328,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 	const db = serverDb(context);
 	const user = (await db.auth.getUser()).data.user;
 
-    if (!user)
-    {
-        return {
-            redirect: {
-                destination: '/',
-                permanent: false
-            }
-        }
-    }
-
 	// Get the profile.
-    const profile = (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile;
+    const profile = user ? (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile : null;
 
     // Now get the post
     const { postId } = context.query as { postId: string };
@@ -323,7 +338,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     // Now get the poster
     const poster = (await db.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
 
-    console.log(poster);
+    console.log(post);
 
     // Now get the comments
     const comments = (await db.from('comments').select('*').eq('postId', postId)).data as Comment[];
@@ -335,7 +350,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 
     return {
         props: {
-            user: user,
             me: profile,
             post: post,
             poster: poster,

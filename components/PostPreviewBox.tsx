@@ -66,7 +66,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     <Skeleton width={40} height={40} circle />
                     <Skeleton width={250} height={25} />
                 </div>
-                
             </div>
             <div className="flex flex-row items-center gap-4">
                 <Skeleton height={40} width='100%' />
@@ -80,7 +79,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
             <>
             <div className="flex flex-row items-center gap-4 p-2">
                 <Image src={profile.avatar} alt='avatar' width={40} height={40} className="rounded-md object-cover w-[40px] h-[40px]" />
-                <span className=""><b>{profile.username}</b> Posted on <span>{new Date(post.createdAt).toLocaleDateString('en-au', { day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}</span></span>
+                <span className=""><b>{profile.username}</b> <span>{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span></span>
             </div>
             <div className="flex flex-row justify-between w-full items-center">
                 <div className="flex flex-row items-center gap-2 p-4 text-lg font-bold text-zinc-100 bg-secondary w-full rounded-md">

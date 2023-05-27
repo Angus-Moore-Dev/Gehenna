@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import CommonButton from "./CommonButton";
 import { toast } from "react-toastify";
+import { Gehenna } from "./Gehenna";
 
 
 export default function SignInForm()
@@ -16,8 +17,9 @@ export default function SignInForm()
     return <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
         {
             passwordReset &&
-            <div className="w-1/2 border-b-4 border-x-4 border-b-secondary border-x-secondary rounded-2xl p-8 flex flex-col items-center gap-2">
-                <Image src='/logo.png' width={1000} height={450} className='w-full' alt='Gehenna' />
+            <div className="w-full flex flex-col items-center gap-4">
+                <CommonButton text='&#x2190; Back' onClick={() => setPasswordReset(false)} className='mr-auto bg-transparent hover:bg-primary text-primary hover:text-white' />
+                <Gehenna />
                 <span className="font-semibold">Please enter your email for your account and you will receive an email to reset your password.</span>
                 <TextInput label="Email" className='w-full mt-4' value={email} onChange={(e) => setEmail(e.target.value)} />
                 <CommonButton text="Send Email To Reset Password" onClick={async () => {
@@ -45,10 +47,8 @@ export default function SignInForm()
         }
         {
             !passwordReset &&
-            <div className='w-1/2 border-b-4 border-x-4 border-b-secondary border-x-secondary rounded-2xl p-8 flex flex-col items-center'>
-                <Image src='/logo.png' width={1000} height={450} className='w-full' alt='Gehenna' />
-                <p className='font-semibold'>Those who travel the fastest, travel alone.</p>
-                <p className='font-semibold text-primary'>Those who travel the furthest, travel together.</p>
+            <div className='w-full flex flex-col items-center'>
+                <Gehenna />
                 <TextInput label="Email" className='w-full mt-4' value={email} onChange={(e) => setEmail(e.target.value)} />
                 <TextInput label="Password" className='w-full mt-4' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
@@ -57,7 +57,7 @@ export default function SignInForm()
                 }}>
                     Forgot Password?
                 </button>
-                <Button className='w-full mt-4 bg-primary text-secondary transition hover:bg-amber-400'
+                <CommonButton text='Login' className='w-full mt-4'
                 onClick={async () => {
                     const res = await fetch('/api/sign-in', {
                         method: 'POST',
@@ -75,7 +75,6 @@ export default function SignInForm()
                         // valid sign in.
                         const data = await res.json();
                         const session = data.session;
-                        const user = data.user;
                         await clientDb.auth.setSession(session);
                         window.location.reload();
                     }
@@ -83,9 +82,7 @@ export default function SignInForm()
                     {
                         alert((await res.json()).error);
                     }
-                }}>
-                    Login
-                </Button>
+                }} />
                 <SignUpModal />
             </div>
         }

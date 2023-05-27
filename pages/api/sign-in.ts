@@ -35,7 +35,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
         }
         else
         {
-            return res.status(200).json({ session: signInRes.session, user: signInRes.user });
+            return res.status(200).json({ session: signInRes.session });
         }
     }
 }
