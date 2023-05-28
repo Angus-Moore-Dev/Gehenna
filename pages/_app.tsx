@@ -25,7 +25,10 @@ export default function App({ Component, pageProps }: AppProps) {
 			}}>
 				<div className='w-screen h-screen flex flex-col'>
 					<Head>
+						<title>Gehenna - Learn, Grow.</title>
 						<link href='/favicon.png' rel='icon' />
+						<meta name='viewport' content='initial-scale=1.0, width=device-width' />
+						<meta name="description" content="Gehenna is a place for people to document their journeys and share their experiences." />
 					</Head>
 					<div className='flex-grow'>
 						<Component {...pageProps} />
