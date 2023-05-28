@@ -8,9 +8,10 @@ interface DropzoneImageProps
 {
     onUpload: (files: File[]) => void;
     isUploading: boolean;
+    height: number;
 }
 
-export function ImageDropzone({ onUpload, isUploading }: DropzoneImageProps)
+export function ImageDropzone({ onUpload, isUploading, height }: DropzoneImageProps)
 {
     const theme = useMantineTheme();
     return (
@@ -21,7 +22,7 @@ export function ImageDropzone({ onUpload, isUploading }: DropzoneImageProps)
         accept={['image/*', 'audio/*', 'video/*']}
         loading={isUploading}
         >
-            <Group position="center" spacing="xl" style={{ minHeight: rem(100), pointerEvents: 'none' }}>
+            <Group position="center" spacing="xl" style={{ minHeight: rem(height), pointerEvents: 'none' }}>
                 <Dropzone.Accept>
                 <IconUpload
                     size="3.2rem"

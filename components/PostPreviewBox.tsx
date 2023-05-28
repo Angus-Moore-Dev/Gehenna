@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { IconPhoto } from "@tabler/icons-react";
 
 interface PostPreviewBoxProps
 {
@@ -24,7 +25,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
         {
             // Fetch the post's profile and other information to provide a rich preview.
             // Also include the number of comments underneath it as well.
-            
             clientDb.from('profiles').select('*').eq('id', post.userId).single().then(async res => {
                 if (!res.error && res.data)
                 {
@@ -56,7 +56,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
         }
     }, [profile, commentCount]);
 
-    return <Link href={`/${post.id}`} className="w-full p-2 border-2 border-primary rounded-md flex flex-col gap-2 max-w-3xl transition hover:shadow-lg hover:bg-secondary bg-tertiary">
+    return <Link href={`/${post.id}`} className="w-[400px] h-[700px] group">
         {
             isLoading &&
             <>
@@ -76,28 +76,43 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
         {
             !isLoading && profile &&
             <>
-            <div className="flex flex-row items-center gap-4 p-2">
-                <Image src={profile.avatar} alt='avatar' width={40} height={40} className="rounded-md object-cover w-[40px] h-[40px]" />
-                <span className=""><b>{profile.username}</b> <span>{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span></span>
-            </div>
-            <div className="flex flex-row justify-between w-full items-center">
-                <div className="flex flex-row items-center gap-2 p-4 text-lg font-bold text-zinc-100 bg-secondary w-full rounded-md">
-                    {post.title}
-                </div>
-            </div>
-            <div className="w-full flex flex-row justify-between">
-                <section className="flex-grow flex flex-row flex-wrap gap-1">
-                    {
-                        post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
-                    }
-                </section>
-                <section>
-                    <div className="flex flex-row items-center gap-4 text-primary font-semibold">
-                        {post.upvotes} Likes
-                    </div>
-                    <div className="pr-2 font-semibold text-sm">
-                        {commentCount} Comment{commentCount !== 1 && 's'}
-                    </div>
+            <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition group-hover:bg-primary-light">
+                {
+                    post.postImageURL.url &&
+                    <Image src={post.postImageURL?.url} alt='' width={400} height={450} className="w-[400px] h-[450px] object-cover" />
+                }
+                {
+                    !post.postImageURL.url &&
+                    <IconPhoto className="w-[400px] h-[450px] object-cover transition" color="#272727" />
+                }
+                <section className="w-full h-full flex flex-col gap-1">
+                    <section className="flex flex-row gap-4 h-16 transition group-hover:bg-primary-light p-2 rounded">
+                        <span className="text-xl font-bold text-white">{post.title.length > 64 ? `${post.title.slice(0, 64)}...` : post.title}</span>
+                    </section>
+                    <section className="w-full flex flex-row items-center p-2 px-4">
+                        <section className="flex-grow flex flex-row items-center gap-2">
+                            <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
+                            <div className="flex flex-col gap-1">
+                                <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
+                                <span className="text-neutral-500 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
+                            </div>
+                        </section>
+                        <section className="flex flex-col">
+                            <span className="text-primary-light font-semibold group-hover:text-white">{post.upvotes.toLocaleString()} Likes</span>
+                            <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comments</small>
+                        </section>
+                    </section>
+                    <section className="flex flex-row flex-wrap items-center gap-2 px-4">
+                        {
+                            post.tags.slice(undefined, 3).map(tag => <Chip key={tag} checked={false} className="text-white">{tag}</Chip>)
+                        }
+                        {
+                            post.tags.length > 3 && <span className="text-white">+{post.tags.length - 3} more</span>
+                        }
+                    </section>
+                    {/* <section className="flex flex-row items-center gap-4 p-2">
+                        <span className="text-primary transition group-hover:text-white font-semibold">{post.upvotes.toLocaleString()} Likes</span>
+                    </section> */}
                 </section>
             </div>
             </>

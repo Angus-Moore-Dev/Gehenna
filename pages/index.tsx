@@ -130,7 +130,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 	}, [globalSearchkeywords]);
 
 	return (
-		<div ref={ref} className="w-full h-full flex flex-col gap-4 max-w-6xl mx-auto py-16">
+		<div ref={ref} className="w-full h-full flex flex-col gap-4 mx-auto py-16">
 			<Head>
 				<title>Gehenna - Learn, Grow.</title>
 			</Head>
@@ -142,7 +142,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 					<span>Please check your inbox (or spam) for an email with a link to confirm <b>{user.email}</b></span>
 				</div>
 			}
-			<div className='w-full h-full flex flex-col items-center gap-8'>
+			<div className='w-full h-full flex flex-col items-center gap-6'>
 				{/* <Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' /> */}
 				<Gehenna />
 				{
@@ -152,12 +152,9 @@ export default function HomePage({ user, profile }: HomePageProps)
 				{
 					profile && 
 					<>
-					<section className='flex flex-col mx-auto gap-2 items-center'>
+					<Link href='/profile' className='flex flex-col mx-auto gap-2 items-center transition p-2 hover:bg-primary-light text-white rounded-md'>
 						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
 						<span className='font-semibold'>{profile.username}</span>
-					</section>
-					<Link href='/profile' className='-mt-6 mb-2 w-full max-w-3xl flex flex-col items-center gap-4 underline text-blue-600 transition hover:text-blue-500'>
-						View My Profile
 					</Link>
 					</>
 				}
@@ -205,7 +202,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 					<NewPostModal user={user} />
 				}
 				{/* The user can see their posts here. */}
-				<div className='w-full h-full flex flex-col items-center gap-4'>
+				<div className='w-full h-full'>
 					{
 						posts &&
 						posts.length === 0 &&
@@ -234,7 +231,8 @@ export default function HomePage({ user, profile }: HomePageProps)
 						hasMore={true} 
 						loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
 						style={{
-							width: '768px',
+							width: '100%',
+							overflow: 'hidden',
 						}}
 						endMessage={
 							<p style={{ textAlign: 'center' }}>
@@ -243,11 +241,10 @@ export default function HomePage({ user, profile }: HomePageProps)
 						}>
 							{
 								posts && posts.length > 0 &&
-								<div className='w-full flex flex-col gap-2 justify-start'>
-								<span className='w-full max-w-3xl font-semibold text-lg'>Top Posts of The Week</span>
-								{
-									posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
-								}
+								<div className=' flex flex-row flex-wrap justify-center gap-4'>
+									{
+										posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+									}
 								</div>
 							}
 						</InfiniteScroll>

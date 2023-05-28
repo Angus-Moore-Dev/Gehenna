@@ -8,6 +8,7 @@ export type Post = {
     downvotes: number;
     tags: string[];
     attachedFileURLs: AttachedFile[];
+    postImageURL: AttachedFile;
 }
 
 export type AttachedFile = {
