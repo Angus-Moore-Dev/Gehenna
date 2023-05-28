@@ -11,7 +11,6 @@ import Footer from '@/components/Footer';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const [supabaseClient] = useState(() => virginDb);
-	const { user } = pageProps;
 
 	return (
 		<SessionContextProvider
