@@ -45,7 +45,6 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 				.eq("id", comment.userId)
 				.single()
 				.then((res) => {
-					console.log(res.data);
 					if (res.error && !res.data) {
 						toast.error("An error occurred while fetching the profile of the person who made this comment.");
 					} else if (res.data) {
@@ -116,7 +115,7 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 										onClick={async () => {
 											const res = await clientDb.from(table).delete().eq("id", comment.id);
 											if (res.error) {
-												console.log(res.error);
+												toast.error(res.error.message);
 											} else {
 												toast.success("Comment deleted successfully.");
 											}
@@ -166,7 +165,7 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 										const res = await clientDb.from(table).update({ comment: newCommentText }).eq("id", comment.id);
 
 										if (res.error) {
-											console.log(res.error);
+											toast.error(res.error.message);
 										} else {
 											setEditComment(false);
 											setCommentText(newCommentText);

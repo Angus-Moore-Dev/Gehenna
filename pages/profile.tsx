@@ -72,7 +72,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
                     }
                 });
             }
-        }).subscribe((status) => console.log(status));
+        }).subscribe();
     }, []);
 
     return <div className="w-full h-full flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">

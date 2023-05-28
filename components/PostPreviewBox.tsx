@@ -37,7 +37,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
             });
 
             clientDb.from('comments').select('*', { count: 'exact' }).eq('postId', post.id).then(async res => {
-                console.log(res);
                 if (!res.error && res.data)
                 {
                     setCommentCount(res.count as number);

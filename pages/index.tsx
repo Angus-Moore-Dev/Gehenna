@@ -86,7 +86,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 
 					setNotifications((prev) => [newNotification, ...prev ?? []] as Notification[]);
 				}
-			}).subscribe((status) => console.log(status));
+			}).subscribe();
 		}
 	}, []);
 

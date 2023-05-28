@@ -22,6 +22,8 @@ import ProfileCard from "@/components/ProfileCard";
 import { useClickAway } from "ahooks";
 import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@supabase/supabase-js";
 
 interface PostIdPageProps
 {
@@ -99,7 +101,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                 const updatedComments = postComments.filter(comment => comment.id !== deletedComment.id);
                 setPostComments(updatedComments);
             }
-        }).subscribe((status) => console.log(status));
+        }).subscribe();
 
 
         clientDb.channel('post-updates').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'post'}, (payload) => {
@@ -127,7 +129,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                         }
                     });
                 }
-            }).subscribe((status) => console.log(status));
+            }).subscribe();
         }
 
     }, []);
@@ -338,12 +340,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     // Now get the poster
     const poster = (await db.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
 
-    console.log(post);
-
     // Now get the comments
     const comments = (await db.from('comments').select('*').eq('postId', postId)).data as Comment[];
-
-    console.log('COMMENTS COMMENTS::, ', comments);
 
     // Now get the commenters
     const commenters = (await db.from('profiles').select('*').in('id', comments.map(c => c.userId))).data as Profile[];
