@@ -88,4 +88,9 @@ export enum Tags
     'Painting' = 'Painting',
     'Sculpture' = 'Sculpture',
     'Animation' = 'Animation',
+    'Startups' = 'Startups',
+    'Entrepreneurship' = 'Entrepreneurship',
+    'Marketing' = 'Marketing',
+    'Advertising' = 'Advertising',
+    'Business Development' = 'Business Development',
 }
