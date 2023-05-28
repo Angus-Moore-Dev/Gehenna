@@ -9,6 +9,7 @@ import { virginDb } from '@/lib/db';
 import 'react-toastify/dist/ReactToastify.css';
 import Footer from '@/components/Footer';
 import { Router } from 'next/router';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const [supabaseClient] = useState(() => virginDb);
@@ -50,6 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
 				primaryColor: 'yellow',
 			}}>
 				<div className='w-screen h-screen flex flex-col'>
+					<Analytics />
 					<Head>
 						<title>Gehenna - Learn, Grow.</title>
 						<link href='/favicon.png' rel='icon' />
