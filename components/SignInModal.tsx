@@ -11,6 +11,6 @@ export default function SignInModal()
     <Modal opened={opened} onClose={close} centered size='lg'>
         <SignInForm />
     </Modal>
-    <CommonButton text='Sign In To Gehenna' onClick={open} className="w-full max-w-3xl py-1.5 text-lg" />
+    <CommonButton text='Sign In To Gehenna' onClick={open} className="w-full max-w-[550px] py-1.5 text-lg" />
     </>
 }
