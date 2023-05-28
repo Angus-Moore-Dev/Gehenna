@@ -61,7 +61,7 @@ export default function App({ Component, pageProps }: AppProps) {
 					<div className='flex-grow'>
 						{
 							loading &&
-							<div className='w-full h-full flex items-center justify-center'>
+							<div className='w-screen h-screen flex items-center justify-center'>
 								<Loader />
 							</div>
 						}
