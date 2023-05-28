@@ -142,10 +142,10 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             <Gehenna />
         </Link>
         <div className="w-full">
-            <div className="flex flex-row gap-4 items-center border-b-4 border-b-primary mb-2 pb-2 relative">
+            <div className="flex flex-row gap-4 items-center mb-4 relative">
                 <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
                 onClick={async () => {
-                    setShowCard(true);
+                    setShowCard(!showCard);
                 }} />
                 {
                     showCard &&
@@ -159,7 +159,15 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                 </span>
             </div>
-            <h1 className="text-4xl font-bold">{postData.title}</h1>
+            <section className="flex flex-row flex-wrap gap-1.5 mb-4">
+            {
+                post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
+            }
+            </section>
+            <h1 className="text-4xl font-bold border-b-2 pb-2 mb-4 border-b-primary-light">
+                {postData.title}
+            </h1>
+            <Image src={post.postImageURL?.url} alt='' quality={100} priority={true} width={1000} height={450} className="w-full h-[450px] object-cover mx-auto rounded-md" />
         </div>
         <TypographyStylesProvider>
             <div dangerouslySetInnerHTML={{ __html: postData.content }} />
@@ -185,11 +193,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                 })
             }
             </section>
-        </section>
-        <section className="flex flex-row flex-wrap gap-1">
-            {
-                post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
-            }
         </section>
         <section className="flex flex-row gap-4 items-center">
             <div className="flex flex-row gap-4 items-center">

@@ -193,7 +193,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 					data={globalSearchkeywords ? autocompletePosts.map(post => ({ id: post.id, value: post.title, tags: post.tags, username: post.username, avatar: post.avatar })) : []} // value instead of title, since Mantine Autocomplete requires it.
 					value={globalSearchkeywords}
 					onChange={(e) => setGlobalSearchkeywords(e)} 
-					className='w-full max-w-[550px] -mt-6'
+					className='w-full max-w-[550px] -mt-2'
 				/>
 				{/* The user can make new posts here. */}
 				{

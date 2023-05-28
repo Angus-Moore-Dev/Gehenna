@@ -9,9 +9,10 @@ interface DropzoneImageProps
     onUpload: (files: File[]) => void;
     isUploading: boolean;
     height: number;
+    accept: string[];
 }
 
-export function ImageDropzone({ onUpload, isUploading, height }: DropzoneImageProps)
+export function ImageDropzone({ onUpload, isUploading, height, accept }: DropzoneImageProps)
 {
     const theme = useMantineTheme();
     return (
@@ -19,7 +20,7 @@ export function ImageDropzone({ onUpload, isUploading, height }: DropzoneImagePr
         onDrop={onUpload}
         onReject={(files) => toast.error('Rejected files! Please upload only images, video and audio files within 3mb')}
         maxSize={3 * 1024 ** 2}
-        accept={['image/*', 'audio/*', 'video/*']}
+        accept={accept}
         loading={isUploading}
         >
             <Group position="center" spacing="xl" style={{ minHeight: rem(height), pointerEvents: 'none' }}>

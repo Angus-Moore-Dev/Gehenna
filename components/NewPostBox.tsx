@@ -81,7 +81,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                     <ImageDropzone onUpload={(files: File[]) => {
                         setCoverImage(files[0]);
                         setIsCropping(true);
-                    }} height={100} isUploading={isCreating} />
+                    }} height={100} isUploading={isCreating} accept={['image/*']} />
                 }
                 {
                     coverImage && isCropping &&
@@ -90,9 +90,9 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                         setCoverImage(file);
                         setIsCropping(false);
                         setPreviewImageURL(URL.createObjectURL(file));
-                    }} width={400} height={450} className='mx-auto flex flex-col items-center w-[450px]' />
+                    }} width={666} height={450} className='mx-auto flex flex-col items-center w-[333px]' />
                     <div className='w-full flex justify-center'>
-                        <CommonButton text='Remove Image' onClick={() => setCoverImage(undefined)} className='w-[450px] mx-auto mt-4 bg-red-500 hover:bg-red-600' />
+                        <CommonButton text='Remove Image' onClick={() => setCoverImage(undefined)} className='w-[333px] mx-auto mt-4 bg-red-500 hover:bg-red-600' />
                     </div>
                     </>
                 }
@@ -150,7 +150,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                 <span className='text-xl font-semibold'>Any Extra Files (Optional)</span>
                 <ImageDropzone onUpload={(files: File[]) => {
                     setFiles(existingFiles => [...existingFiles, ...files]);
-                }} isUploading={isCreating} height={50} />
+                }} isUploading={isCreating} height={50} accept={['image/*', 'audio/*', 'video/*']} />
                 {
                     files.length > 0 &&
                     <span>Files Included</span>

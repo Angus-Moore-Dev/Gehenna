@@ -113,7 +113,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                             <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comments</small>
                         </section>
                     </section>
-                    <section className="flex flex-row flex-wrap items-center gap-2 px-4">
+                    <section className="flex flex-row flex-wrap items-center gap-1.5 px-4">
                         {
                             post.tags.slice(undefined, 3).map(tag => <Chip key={tag} checked={false} className="text-white">{tag}</Chip>)
                         }

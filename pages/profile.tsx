@@ -17,16 +17,17 @@ import { Gehenna } from "@/components/Gehenna";
 
 interface ProfilePageProps
 {
-    profile: Profile;
+    profileData: Profile;
 }
 
-export default function ProfilePage({ profile }: ProfilePageProps)
+export default function ProfilePage({ profileData }: ProfilePageProps)
 {
     const ref = useRef<AvatarEditor>(null);
     const router = useRouter();
-    const [username, setUsername] = useState(profile.username);
-    const [bio, setBio] = useState(profile.bio);
-    const [avatar, setAvatar] = useState(profile.avatar);
+    const [username, setUsername] = useState(profileData.username);
+    const [bio, setBio] = useState(profileData.bio);
+    const [avatar, setAvatar] = useState(profileData.avatar);
+    const [tempAvatar, setTempAvatar] = useState(profileData.avatar);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -54,7 +55,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
             setRotate(0);
             setScale(1);
             const url = URL.createObjectURL(newProfilePicture);
-            setAvatar(url);
+            setTempAvatar(url);
             setNewProfilePicture(newProfilePicture);
         }
         }, [])
@@ -64,7 +65,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         // Listen for new notifications.
         clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
             const newNotification = payload.new as Notification;
-            if (newNotification.userId === profile.id)
+            if (newNotification.userId === profileData.id)
             {
                 toast.info(newNotification.title, {
                     onClick() {
@@ -86,11 +87,11 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         <div className="flex flex-col gap-2">
             {
                 !newProfilePicture &&
-                <div className="flex flex-col gap-2 items-center justify-center transition p-2 rounded-xl hover:cursor-pointer hover:bg-primary">
+                <div className="flex flex-col gap-2 items-center justify-center transition p-2 rounded-xl hover:cursor-pointer hover:bg-primary group">
                     <div {...getRootProps()} className="flex flex-col items-center">
                         <input {...getInputProps()} type='file' accept='image/*' />
                         <Image src={avatar} width={256} height={256} alt='Profile Picture' className="w-[256px] h-[256px] object-cover rounded-md" />
-                        <span>Drag a New Image or Click to Upload a New Avatar</span>
+                        <span className="mt-2 group-hover:text-white">Drag a New Image or Click to Upload a New Avatar</span>
                     </div>
                 </div>
             }
@@ -99,7 +100,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
                 <>
                 <AvatarEditor
                     ref={ref}
-                    image={avatar}
+                    image={tempAvatar}
                     width={256}
                     height={256}
                     border={0}
@@ -130,24 +131,33 @@ export default function ProfilePage({ profile }: ProfilePageProps)
             {
                 newProfilePicture && !isUploading &&
                 <CommonButton text='Update Profile Picture' onClick={async () => {
-                    const newProfilePicture = ref.current?.getImage().toBlob(async (blob: Blob | null) => {
+                    ref.current?.getImage().toBlob(async (blob: Blob | null) => {
                         setIsUploading(true);
                         if (blob)
                         {
+                            // Default value for a profile.
+                            if (avatar !== 'https://fdiavyxctdwgbvoawijj.supabase.co/storage/v1/object/public/profile_pictures/sneaky_joel.PNG')
+                            {
+                                const oldAvatarURL = avatar.split('profile_pictures/')[1];
+                                await clientDb.storage.from('profile_pictures').remove([oldAvatarURL]);
+                            }
+
                             // Create a new unique name, with the filetype at the end;
                             const blobName = `${v4()}.${blob.type.split('/')[1]}`;
 
                             // Upload the blob here.
-                            const res = await clientDb.storage.from('profile_pictures').upload(`${profile.id}/${blobName}`, blob, 
+                            await clientDb.storage.from('profile_pictures').upload(`${profileData.id}/${blobName}`, blob, 
                             {
                                 contentType: blob.type,
                                 cacheControl: '3600', 
                                 upsert: true
                             });
-                            const url = clientDb.storage.from('profile_pictures').getPublicUrl(`${profile.id}/${blobName}`).data.publicUrl;
-                            const storageRes = await clientDb.from('profiles').update({ avatar: url }).eq('id', profile.id);
+
+                            const url = clientDb.storage.from('profile_pictures').getPublicUrl(`${profileData.id}/${blobName}`).data.publicUrl;
+                            const storageRes = await clientDb.from('profiles').update({ avatar: url }).eq('id', profileData.id);
                             setNewProfilePicture(undefined);
                             URL.revokeObjectURL(avatar);
+                            setTempAvatar('');
                             setAvatar(url);
                         }
                         setIsUploading(false);
@@ -160,7 +170,7 @@ export default function ProfilePage({ profile }: ProfilePageProps)
             <TextInput label='Username' value={username} onChange={(e) => setUsername(e.target.value)} className="w-96" maxLength={64} />
             <small className="mr-auto">{64 - username.length} characters left</small>
             <CommonButton text='Update Username' className="m-0" onClick={async () => {
-                const res = await clientDb.from('profiles').update({ username: username }).eq('id', profile.id);
+                const res = await clientDb.from('profiles').update({ username: username }).eq('id', profileData.id);
                 if (res.error)
                 {
                     toast.error(res.error.message);
@@ -171,12 +181,12 @@ export default function ProfilePage({ profile }: ProfilePageProps)
                 }
             }} />
         </div>
-        <TextInput label='Email' value={profile.email} className="w-96" disabled />
+        <TextInput label='Email' value={profileData.email} className="w-96" disabled />
         <div className="flex flex-col gap-2 items-end">
             <Textarea label='Bio (About Yourself)' value={bio} onChange={(e) => setBio(e.target.value)} className="w-96" maxLength={128} />
             <small className="mr-auto">{128 - bio.length} characters left</small>
             <CommonButton text='Update Bio' className="m-0" onClick={async () => {
-                const res = await clientDb.from('profiles').update({ bio: bio }).eq('id', profile.id);
+                const res = await clientDb.from('profiles').update({ bio: bio }).eq('id', profileData.id);
                 if (res.error)
                 {
                     toast.error(res.error.message);
@@ -253,7 +263,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 		return {
 			props: {
 				user: user,
-				profile: profile
+				profileData: profile
 			}
 		}
 	}
