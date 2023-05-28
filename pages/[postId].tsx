@@ -5,15 +5,10 @@ import { Profile } from "@/models/Profile";
 import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { TypographyStylesProvider, Highlight, Textarea, Chip } from "@mantine/core";
-import Superscript from "@tiptap/extension-superscript";
-import TextAlign from "@tiptap/extension-text-align";
-import Underline from "@tiptap/extension-underline";
-import { generateHTML } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { TypographyStylesProvider, Textarea, Chip } from "@mantine/core";
 import CommonButton from "@/components/CommonButton";
 import { v4 } from "uuid";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import CommentBox from "@/components/CommentBox";
 import { Notification } from "@/models/Notification";
@@ -22,8 +17,7 @@ import ProfileCard from "@/components/ProfileCard";
 import { useClickAway } from "ahooks";
 import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { createClient } from "@supabase/supabase-js";
+import PostSettingsModal from "@/components/PostSettingsModal";
 
 interface PostIdPageProps
 {
@@ -44,6 +38,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     const [postData, setPostData] = useState(post);
 
     const [showCard, setShowCard] = useState(false);
+
+    const [showSettings, setShowSettings] = useState(false);
 
     // setup a useClickAway hook
     const ref = useRef(null);
@@ -165,6 +161,12 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     <br />
                     <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                 </span>
+                {
+                    me && post.userId === me.id &&
+                    <div className="flex-grow flex flex-row justify-end gap-4">
+                        <PostSettingsModal postId={post.id} />
+                    </div>
+                }
             </div>
             <section className="flex flex-row flex-wrap gap-1.5 mb-4">
             {
