@@ -80,6 +80,12 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
         <Head>
             <title>Gehenna - My Profile</title>
         </Head>
+        {
+            profileData && !profileData.emailVerified &&
+            <div className='w-full h-full flex items-center justify-center flex-col gap-4 -mt-16 mb-4 bg-primary-light'>
+                <span className='mx-auto text-white font-semibold'>Please verify your email to post and comment!</span>
+            </div>
+        }
         <Link href='/' className="flex flex-col items-center justify-center mb-10">
             <Gehenna />
         </Link>

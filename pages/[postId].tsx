@@ -138,9 +138,16 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
         <Head>
             <title>Gehenna - {post.title}</title>
         </Head>
+        {
+            me && !me.emailVerified &&
+            <div className='w-full h-full flex items-center justify-center flex-col gap-4 -mt-16 mb-4 bg-primary-light'>
+                <span className='mx-auto text-white font-semibold py-2'>Please verify your email to post and comment!</span>
+            </div>
+        }
         <Link href='/' className="flex flex-col items-center justify-center mb-10 group">
             <Gehenna />
         </Link>
+        
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center mb-4 relative">
                 <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
@@ -247,7 +254,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                         <div className="flex-grow flex flex-col items-start justify-center h-14">
                             <span>No comments :(</span>
                             {
-                                me && <p className="text-lg">Be the first to comment!</p>
+                                me && me.emailVerified && <p className="text-lg">Be the first to comment!</p>
                             }
                         </div>
                     }
@@ -256,7 +263,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     }
                 </div>
                 {
-                    me &&
+                    me && me.emailVerified &&
                     <div className="w-full flex flex-col gap-0">
                         <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Write a comment..." className="w-full h-full" />
                         <CommonButton text='Send Comment' className="ml-auto h-14 -mt-2" onClick={async () => {

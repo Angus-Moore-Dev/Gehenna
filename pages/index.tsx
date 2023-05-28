@@ -130,16 +130,14 @@ export default function HomePage({ user, profile }: HomePageProps)
 	}, [globalSearchkeywords]);
 
 	return (
-		<div ref={ref} className="w-full h-full flex flex-col gap-4 mx-auto py-16">
+		<div ref={ref} className="flex-grow flex flex-col gap-4 mx-auto py-16">
 			<Head>
 				<title>Gehenna - Learn, Grow.</title>
 			</Head>
 			{
 				user && profile && !profile.emailVerified &&
-				<div className='w-full h-full flex items-center justify-center flex-col gap-4'>
-					<Image src='/logo.png' width={500} height={450} className='w-1/3 mb-10' alt='Gehenna' />
-					<span className='text-2xl font-bold'>Please verify your email address before you can gain access to Gehenna.</span>
-					<span>Please check your inbox (or spam) for an email with a link to confirm <b>{user.email}</b></span>
+				<div className='w-full h-full flex items-center justify-center flex-col gap-4 -mt-16 mb-4 bg-primary-light'>
+					<span className='mx-auto text-white font-semibold py-2'>Please verify your email to post and comment!</span>
 				</div>
 			}
 			<div className='w-full h-full flex flex-col items-center gap-6'>
@@ -197,7 +195,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 				/>
 				{/* The user can make new posts here. */}
 				{
-					profile && user &&
+					profile && user && profile.emailVerified &&
 					<NewPostModal user={user} />
 				}
 				{/* The user can see their posts here. */}

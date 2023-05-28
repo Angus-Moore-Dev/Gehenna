@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import { MantineProvider } from '@mantine/core';
 import { virginDb } from '@/lib/db';
 import 'react-toastify/dist/ReactToastify.css';
+import Footer from '@/components/Footer';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const [supabaseClient] = useState(() => virginDb);
@@ -44,6 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
 						pauseOnHover
 						theme="dark"
 					/>
+					<Footer />
 				</div>
 			</MantineProvider>
 		</SessionContextProvider>
