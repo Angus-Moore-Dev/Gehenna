@@ -157,7 +157,8 @@ export default function ProfilePage({ profile }: ProfilePageProps)
         </div>
         
         <div className="flex flex-col gap-2 items-end">
-            <TextInput label='Username' value={username} onChange={(e) => setUsername(e.target.value)} className="w-96" />
+            <TextInput label='Username' value={username} onChange={(e) => setUsername(e.target.value)} className="w-96" maxLength={64} />
+            <small className="mr-auto">{64 - username.length} characters left</small>
             <CommonButton text='Update Username' className="m-0" onClick={async () => {
                 const res = await clientDb.from('profiles').update({ username: username }).eq('id', profile.id);
                 if (res.error)

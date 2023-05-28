@@ -1,3 +1,5 @@
+import { AttachedFile } from "./Post";
+
 export class Profile
 {
     id: string = '';
@@ -8,4 +10,5 @@ export class Profile
     avatar: string = '';
     bio: string = '';
     emailVerified: boolean = false;
+    profileBannerURL: AttachedFile = { url: '', mimeType: '', byteSize: 0 };
 }
