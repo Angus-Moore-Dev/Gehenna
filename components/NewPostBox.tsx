@@ -168,7 +168,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
             <div className='w-full flex flex-col gap-2'>
                 <span className='text-xl font-semibold'>Add Tags To Your Post (Optional)</span>
                 <TextInput placeholder='Search Tags' className='w-full' value={tagsFilter} onChange={(e) => setTagsFilter(e.target.value)} />
-                <div className='w-full flex flex-row gap-1 flex-wrap'>
+                <div className='w-full flex flex-row gap-1 flex-wrap justify-center'>
                     {
                         Object.values(Tags).filter(x => x.toLowerCase().startsWith(tagsFilter.toLowerCase())).map(tag => <button>
                             <Chip checked={tags.some(x => x === tag)} color="yellow" onClick={() => {

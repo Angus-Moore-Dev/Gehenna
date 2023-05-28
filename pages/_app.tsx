@@ -50,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
 				focusRing: 'never', 
 				primaryColor: 'yellow',
 			}}>
-				<div className='w-screen h-screen flex flex-col'>
+				<div className='w-screen min-h-screen flex flex-col'>
 					<Analytics />
 					<Head>
 						<title>Gehenna - Learn, Grow.</title>
