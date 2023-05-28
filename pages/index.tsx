@@ -50,7 +50,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 		const weekAgo = new Date();
 		weekAgo.setDate(weekAgo.getDate() - 7);
 
-		clientDb.from('post').select('*').limit(postCount).gt('createdAt', weekAgo.toISOString()).order('upvotes', { ascending: false }).then(async res => {
+		clientDb.from('post').select('*').limit(postCount).gt('createdAt', weekAgo.toISOString()).order('createdAt', { ascending: false }).then(async res => {
 			if (!res.error && res.data)
 			{
 				setPosts(res.data as Post[]);
@@ -189,8 +189,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 							</Link>
 						}
 					</div>}
-					label="Search For A Post" 
-					placeholder='Search By Title' 
+					placeholder='Search For A Post...' 
 					data={globalSearchkeywords ? autocompletePosts.map(post => ({ id: post.id, value: post.title, tags: post.tags, username: post.username, avatar: post.avatar })) : []} // value instead of title, since Mantine Autocomplete requires it.
 					value={globalSearchkeywords}
 					onChange={(e) => setGlobalSearchkeywords(e)} 
@@ -202,7 +201,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 					<NewPostModal user={user} />
 				}
 				{/* The user can see their posts here. */}
-				<div className='w-full h-full'>
+				<div className='w-full h-full mt-10'>
 					{
 						posts &&
 						posts.length === 0 &&
@@ -216,7 +215,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 						<InfiniteScroll 
 						dataLength={posts.length} 
 						next={async () => {
-							clientDb.from('post').select('*').limit(postCount + 2).order('upvotes', { ascending: false }).then(async res => {
+							clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
 								if (!res.error && res.data)
 								{
 									setPosts(res.data as Post[]);

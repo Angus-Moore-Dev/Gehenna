@@ -97,7 +97,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     <IconPhoto className="w-[400px] h-[450px] object-cover transition bg-quaternary" color="#272727" />
                 }
                 <section className="w-full h-full flex flex-col gap-1 transition group-hover:bg-primary-light">
-                    <section className="flex flex-row gap-4 h-16 transition p-2 rounded">
+                    <section className="flex flex-row gap-4 h-16 transition p-2 px-4 rounded">
                         <span className="text-xl font-bold text-white">{post.title.length > 64 ? `${post.title.slice(0, 64)}...` : post.title}</span>
                     </section>
                     <section className="w-full flex flex-row items-center p-2 px-4">
@@ -108,7 +108,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                                 <span className="text-neutral-500 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                             </div>
                         </section>
-                        <section className="flex flex-col">
+                        <section className="flex flex-col items-end">
                             <span className="text-primary-light font-semibold group-hover:text-white">{post.upvotes.toLocaleString()} Likes</span>
                             <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comments</small>
                         </section>
