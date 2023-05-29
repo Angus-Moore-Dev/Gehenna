@@ -1,22 +1,16 @@
-import NewPostBox from '@/components/NewPostBox';
 import PostPreviewBox from '@/components/PostPreviewBox';
-import SignInForm from '@/components/SignInForm';
-import SignUpModal from '@/components/SignUpModal';
 import { clientDb, serverDb } from '@/lib/db';
 import { Post } from '@/models/Post';
 import { Profile } from '@/models/Profile';
-import { Autocomplete, Box, Button, Chip, Loader, Skeleton, TextInput } from '@mantine/core';
+import { Autocomplete, Chip, Loader } from '@mantine/core';
 import { User } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useInfiniteScroll } from 'ahooks';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Notification } from '@/models/Notification';
-import CommonButton from '@/components/CommonButton';
 import { useRouter } from 'next/router';
 import NewPostModal from '@/components/NewPostModal';
 import { Gehenna } from '@/components/Gehenna';
@@ -26,12 +20,13 @@ interface HomePageProps
 {
 	user: User | null;
 	profile: Profile | null;
+	staticPosts: Post[];
 }
 
-export default function HomePage({ user, profile }: HomePageProps)
+export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 {
 	const router = useRouter();
-	const [postCount, setPostCount] = useState(10);
+	const [postCount, setPostCount] = useState(50);
 	const [posts, setPosts] = useState<Post[]>();
 	const ref = useRef<HTMLDivElement>(null);
 

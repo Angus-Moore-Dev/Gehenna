@@ -196,7 +196,9 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                         setIsCreating(true);
 
                         // Upload the files first, then get their URLs and attach them to the post under the name attachedFileURLs
-                        const id = v4();
+                        // create id being the alphanumerics (with - replacing spaces) from the title (no special characters and it cannot start with a number) and the end of the uuid
+                        const id = `${title.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-')}-${v4().split('-')[4]}`;
+                        
 
                         // Upload the post cover image
                         const coverImageRes = await clientDb.storage.from('post_files').upload(`${id}/${coverImage.name}`, coverImage, {

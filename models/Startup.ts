@@ -16,7 +16,7 @@ export type Startup = {
 
 export type TeamRole = {
     userId: string; // foreign key uuid
-    type: string;
-    description: string;
-    skills: string[];
+    type: string; // Founder, Co-Founder, Employee, Advisor, Investor
+    description: string; // description of role
+    skills: string[]; // array of skills
 }
