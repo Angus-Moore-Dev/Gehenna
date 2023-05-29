@@ -34,9 +34,6 @@ export default function HomePage({ user, profile }: HomePageProps)
 	const [postCount, setPostCount] = useState(10);
 	const [posts, setPosts] = useState<Post[]>();
 	const ref = useRef<HTMLDivElement>(null);
-	const [searchResults, setSearchResults] = useState('');
-	const [notifications, setNotifications] = useState<Notification[]>();
-	const [createNewPost, setCreateNewPost] = useState(false);
 
 	const [autocompletePosts, setAutocompletePosts] = useState<{ id: string, title: string, tags: string[], userId: string, username: string, avatar: string }[]>([]);
 	const [globalSearchkeywords, setGlobalSearchkeywords] = useState('');
@@ -50,7 +47,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 		const weekAgo = new Date();
 		weekAgo.setDate(weekAgo.getDate() - 7);
 
-		clientDb.from('post').select('*').limit(postCount).gt('createdAt', weekAgo.toISOString()).order('createdAt', { ascending: false }).then(async res => {
+		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).then(async res => {
 			if (!res.error && res.data)
 			{
 				setPosts(res.data as Post[]);
@@ -61,33 +58,6 @@ export default function HomePage({ user, profile }: HomePageProps)
 			}
 		});
 
-		if (user)
-		{
-			// Get all unseen notifications
-			clientDb.from('notifications').select('*').eq('userId', user.id).eq('seen', false).order('created_at', { ascending: false }).then(async res => {
-				setNotifications(res.data as Notification[]);
-			});
-
-			// Listen for new notifications.
-			clientDb.channel('notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications'}, (payload) => {
-				const newNotification = payload.new as Notification;
-				if (newNotification.userId === user.id)
-				{
-					toast.info(newNotification.title, {
-						async onClick() {
-							// Let the system know that we've clicked and viewed this post.
-							await clientDb.from('notifications').update({
-								seen: true
-							}).eq('id', newNotification.id);
-
-							router.push(`${window.location.origin}${newNotification.link}`);
-						}
-					});
-
-					setNotifications((prev) => [newNotification, ...prev ?? []] as Notification[]);
-				}
-			}).subscribe();
-		}
 	}, []);
 
 	useEffect(() => {
