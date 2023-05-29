@@ -10,7 +10,7 @@ export default function ProfileCard({ profile }: ProfileCardProps)
 {
     // formatted date of when the created_at timestamp
     // was created.
-    const formattedDate = new Date(profile.created_at).toLocaleDateString('en-au', { dateStyle: 'long' });
+    const formattedDate = new Date(profile.createdAt).toLocaleDateString('en-au', { dateStyle: 'long' });
 
     return <div className="w-96 h-60 bg-gradient-to-b from-black to-primary rounded-2xl p-1 flex items-center justify-center">
         <div className="flex-grow h-full bg-[#111111] rounded-2xl p-4 flex flex-col gap-4">

@@ -254,7 +254,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     {
                         postComments.length === 0 &&
                         <div className="flex-grow flex flex-col items-start justify-center h-14">
-                            <span>No comments :(</span>
+                            {
+                                !me && <span>No comments :(</span>
+                            }
                             {
                                 me && me.emailVerified && <p className="text-lg">Be the first to comment!</p>
                             }
@@ -268,7 +270,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
                     me && me.emailVerified &&
                     <div className="w-full flex flex-col gap-0">
                         <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Write a comment..." className="w-full h-full" />
-                        <CommonButton text='Send Comment' className="ml-auto h-14 -mt-2" onClick={async () => {
+                        <CommonButton text='Send Comment' className="ml-auto mt-2" onClick={async () => {
                             const newComment = {
                                 id: v4(),
                                 userId: me.id,

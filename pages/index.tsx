@@ -69,7 +69,6 @@ export default function HomePage({ user, profile }: HomePageProps)
 			clientDb.from('post').select(`id, title, tags, userId`).ilike('title', `%${globalSearchkeywords}%`).limit(50).then(async res => {
 				if (!res.error && res.data)
 				{
-					
 					// To anyone that knows RPC or PostgREST, I am sorry. I tried getting the inner join working but kept getting 400 status codes... :'(
 					const profiles = (await clientDb.from('profiles').select('id, username, avatar').in('id', res.data.map(x => x.userId))).data as { id: string, username: string, avatar: string }[];
 					// We have results
@@ -83,7 +82,7 @@ export default function HomePage({ user, profile }: HomePageProps)
 							post.username = profile.username;
 							post.avatar = profile.avatar;
 						}
-					})
+					});
 
 					setAutocompletePosts(autoCompleteResults);
 				}
