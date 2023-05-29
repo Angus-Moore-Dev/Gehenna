@@ -133,6 +133,16 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Head>
             <title>Gehenna - {post.title}</title>
+            <meta property="og:title" content={post.title} />
+            <meta property="og:description" content={post.content} />
+            <meta property="og:image" content={post.postImageURL.url} />
+            <meta property="og:url" content={`${window.location.origin}/${post.id}`} />
+            <meta property="og:type" content="website" />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={post.title} />
+            <meta name="twitter:description" content={"Click here to read this article on Gehenna"} />
+            <meta name="twitter:image" content={post.postImageURL.url} />
+            <meta name="twitter:url" content={`${window.location.origin}/${post.id}`} />
         </Head>
         {
             me && !me.emailVerified &&
