@@ -202,7 +202,7 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 						}>
 							{
 								posts && posts.length > 0 &&
-								<div className=' flex flex-row flex-wrap justify-center gap-4'>
+								<div className=' flex flex-row flex-wrap justify-center gap-10'>
 									{
 										posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
 									}

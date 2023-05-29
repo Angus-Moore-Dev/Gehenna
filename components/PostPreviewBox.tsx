@@ -87,16 +87,16 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
         {
             !isLoading && profile &&
             <>
-            <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition">
+            <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition relative">
                 {
                     post.postImageURL.url &&
-                    <Image src={post.postImageURL?.url} alt='' width={400} height={450} className="w-[400px] h-[450px] object-cover" />
+                    <Image src={post.postImageURL?.url} alt='' width={400} height={450} className="w-[400px] h-[666px] object-cover absolute z-0" />
                 }
                 {
                     !post.postImageURL.url &&
                     <IconPhoto className="w-[400px] h-[450px] object-cover transition bg-quaternary" color="#272727" />
                 }
-                <section className="w-full h-full flex flex-col gap-1 transition group-hover:bg-primary-light">
+                <section className="w-full h-full flex flex-col gap-1 transition bg-secondary bg-opacity-50 backdrop-blur-md group-hover:bg-tertiary group-hover:bg-opacity-40 z-10 mt-auto absolute top-[450px]">
                     <section className="flex flex-row gap-4 h-16 transition p-2 px-4 rounded">
                         <span className="text-xl font-bold text-white">{post.title.length > 64 ? `${post.title.slice(0, 64)}...` : post.title}</span>
                     </section>
@@ -105,7 +105,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                             <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
                             <div className="flex flex-col gap-1">
                                 <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
-                                <span className="text-neutral-500 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
+                                <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                             </div>
                         </section>
                         <section className="flex flex-col items-end">

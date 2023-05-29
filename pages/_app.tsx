@@ -58,7 +58,7 @@ export default function App({ Component, pageProps }: AppProps) {
 						<meta name='viewport' content='initial-scale=1.0, width=device-width' />
 						<meta name="description" content="Gehenna is a place for people to document their journeys and share their experiences." />
 					</Head>
-					<div className='flex-grow'>
+					<div className='flex-grow flex flex-col'>
 						{
 							loading &&
 							<div className='w-screen h-screen flex items-center justify-center'>
@@ -69,6 +69,7 @@ export default function App({ Component, pageProps }: AppProps) {
 							!loading &&
 							<Component {...pageProps} />
 						}
+						<Footer />
 					</div>
 					<ToastContainer
 						position="top-center"
@@ -81,7 +82,6 @@ export default function App({ Component, pageProps }: AppProps) {
 						pauseOnHover
 						theme="dark"
 					/>
-					<Footer />
 				</div>
 			</MantineProvider>
 		</SessionContextProvider>
