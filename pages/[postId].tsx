@@ -136,13 +136,13 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             <meta property="og:title" content={post.title} />
             <meta property="og:description" content={post.content} />
             <meta property="og:image" content={post.postImageURL.url} />
-            <meta property="og:url" content={`${window.location.origin}/${post.id}`} />
+            <meta property="og:url" content={`https://www.gehenna.dev/${post.id}`} />
             <meta property="og:type" content="website" />
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={post.title} />
             <meta name="twitter:description" content={"Click here to read this article on Gehenna"} />
             <meta name="twitter:image" content={post.postImageURL.url} />
-            <meta name="twitter:url" content={`${window.location.origin}/${post.id}`} />
+            <meta name="twitter:url" content={`https://www.gehenna.dev/${post.id}`} />
         </Head>
         {
             me && !me.emailVerified &&
