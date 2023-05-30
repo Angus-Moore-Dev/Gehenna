@@ -6,7 +6,7 @@ export default function Footer()
         </div>
         <div className="flex flex-row gap-2">
             <span className="text-neutral-600 font-semibold">angusmoore.dev@gmail.com</span>
-            <span className="text-amber-600 font-semibold">Gehenna is currently in alpha.</span>
+            <span className="text-amber-600 font-semibold">Gehenna is a personal project and should not have sensitive information posted here.</span>
         </div>
     </footer>
 }
