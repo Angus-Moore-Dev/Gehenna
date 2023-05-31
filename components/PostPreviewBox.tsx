@@ -5,7 +5,7 @@ import { Chip, Loader, Skeleton } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { IconPhoto } from "@tabler/icons-react";
@@ -106,7 +106,9 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
             <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition relative">
                 {
                     post.postImageURL.url &&
-                    <Image src={post.postImageURL?.url} alt='' width={400} height={450} className="w-[400px] h-[666px] object-cover absolute z-0" />
+                    <Suspense fallback={<Skeleton width={400} height={666} className="w-[400px] h-[666px] absolute z-0" />}>
+                        <Image src={post.postImageURL?.url} alt='' width={400} height={666} className="w-[400px] h-[666px] object-cover absolute z-0" />
+                    </Suspense>
                 }
                 {
                     !post.postImageURL.url &&
@@ -118,7 +120,9 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     </section>
                     <section className="w-full flex flex-row items-center p-2 px-4">
                         <section className="flex-grow flex flex-row items-center gap-2">
-                            <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
+                            <Suspense fallback={<Skeleton width={40} height={40} className="rounded-full w-[40px] h-[40px]" />}>
+                                <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
+                            </Suspense>
                             <div className="flex flex-col gap-1">
                                 <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
                                 <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
