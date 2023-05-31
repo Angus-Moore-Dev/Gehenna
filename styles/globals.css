@@ -60,6 +60,24 @@ textarea {
   resize: none;
 }
 
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+li {
+  list-style-type: square;
+}
+
+blockquote {
+  font-weight:lighter;
+}
+
+
+
 #text-box {
   font-family: 'Open Sans', sans-serif;
   white-space: pre-wrap;

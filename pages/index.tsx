@@ -97,6 +97,21 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 		<div ref={ref} className="flex-grow flex flex-col gap-4 mx-auto py-16">
 			<Head>
 				<title>Gehenna - Learn, Grow.</title>
+				<link href='/favicon.png' rel='icon' />
+				<meta name='viewport' content='initial-scale=1.0, width=device-width' />
+				<meta name="description" content="Gehenna is a place for people to document their journeys and share their experiences." />
+				<meta property="og:url" content="https://www.gehenna.dev" />
+				<meta property="og:type" content="website" />
+				<meta property="og:title" content="Gehenna - Learn, Grow." />
+				<meta property="og:description" content="Gehenna is a place for people to document their journeys and share their experiences." />
+				<meta property="og:image" content="https://www.gehenna.dev/favicon.png" />
+
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta property="twitter:domain" content="gehenna.dev" />
+				<meta property="twitter:url" content="https://www.gehenna.dev" />
+				<meta name="twitter:title" content="Gehenna - Learn, Grow." />
+				<meta name="twitter:description" content="Gehenna is a place for people to document their journeys and share their experiences." />
+				<meta name="twitter:image" content="https://www.gehenna.dev/favicon.png" />
 			</Head>
 			{
 				user && profile && !profile.emailVerified &&
