@@ -5,7 +5,7 @@ import { Profile } from "@/models/Profile";
 import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { TypographyStylesProvider, Textarea, Chip } from "@mantine/core";
+import { TypographyStylesProvider, Textarea, Chip, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
 import CommonButton from "@/components/CommonButton";
 import { v4 } from "uuid";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +20,7 @@ import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
 import { Reaction } from "@/models/Reaction";
 import Reactions from "@/components/Reactions";
+import { IconLink } from "@tabler/icons-react";
 
 interface PostIdPageProps
 {
@@ -54,7 +55,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Head>
             <title>Gehenna - {post.title}</title>
-            <meta property="og:title" content={`Gehenna - ${post.title}`} />
+            <meta property="og:title" content={`Gehenna | ${post.title}`} />
             <meta property="og:description" content='Click to read this post on Gehenna now!' />
             <meta property="og:image" content={post.postImageURL.url} />
             <meta property="og:url" content={`https://www.gehenna.dev/${post.id}`} />
@@ -92,12 +93,28 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                     <br />
                     <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                 </span>
-                {
-                    me && post.userId === me.id &&
-                    <div className="flex-grow flex flex-row justify-end gap-4">
+                <div className="flex-grow flex flex-row justify-end gap-4">
+                    <CopyButton value={`https://www.gehenna.dev/${post.id}`} timeout={25000}>
+                        {({ copied, copy }) => (
+                            <>
+                            <Tooltip label={copied ? 'Copied!' : 'Copy link to clipboard'} position="bottom">
+                                <ActionIcon onClick={copy} size="xl">
+                                    {
+                                        copied ?
+                                        <IconLink size={24} onClick={copy} className="text-green-500"  />
+                                        :
+                                        <IconLink size={24} onClick={copy} className="text-neutral-400" />
+                                    }
+                                </ActionIcon>
+                            </Tooltip>
+                            </>
+                        )}
+                    </CopyButton>
+                    {
+                        me && me.id === poster.id &&
                         <PostSettingsModal postId={post.id} />
-                    </div>
-                }
+                    }
+                </div>
             </div>
             <section className="flex flex-row flex-wrap gap-1.5 mb-4">
             {
