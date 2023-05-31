@@ -137,8 +137,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Head>
             <title>Gehenna - {post.title}</title>
-            <meta property="og:title" content='Gehenna - Learn, Grow.' />
-            <meta property="og:description" content='Read this post on Gehenna now!' />
+            <meta property="og:title" content={`Gehenna - ${post.title}`} />
+            <meta property="og:description" content='Click to read this post on Gehenna now!' />
             <meta property="og:image" content={post.postImageURL.url} />
             <meta property="og:url" content={`https://www.gehenna.dev/${post.id}`} />
             <meta property="og:type" content="website" />
