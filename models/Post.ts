@@ -5,8 +5,6 @@ export type Post = {
     content: string;
     userId: string;
     createdAt: string;
-    upvotes: number;
-    downvotes: number;
     tags: string[];
     attachedFileURLs: AttachedFile[];
     postImageURL: AttachedFile;

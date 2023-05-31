@@ -20,11 +20,11 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
     const [isLoading, setIsLoading] = useState(true);
     const [profile, setProfile] = useState<Profile>();
     const [commentCount, setCommentCount] = useState<number>();
+    const [upvotes, setUpvotes] = useState<number>();
+
     useEffect(() => {
         if (post)
         {
-            // Fetch the post's profile and other information to provide a rich preview.
-            // Also include the number of comments underneath it as well.
             clientDb.from('profiles').select('*').eq('id', post.userId).single().then(async res => {
                 if (!res.error && res.data)
                 {
@@ -45,16 +45,32 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                 {
                     toast.error(res.error.message);
                 }
-            })
+            });
+
+            clientDb.from('reactions').select('upvote').eq('postId', post.id).then(async res => {
+                
+                if (res.data)
+                {
+                    const reactions = res.data as { upvote: boolean }[];
+
+                    const totalLikes = reactions.filter(reaction => reaction.upvote).length;
+                    const totalDislikes = reactions.filter(reaction => !reaction.upvote).length;
+                    setUpvotes(totalLikes - totalDislikes);
+                }
+                else
+                {
+                    setUpvotes(0);
+                }
+            });
         }
     }, [post]);
 
     useEffect(() => {
-        if (profile && commentCount !== undefined)
+        if (profile && commentCount !== undefined && upvotes !== undefined)
         {
             setIsLoading(false);
         }
-    }, [profile, commentCount]);
+    }, [profile, commentCount, upvotes]);
 
     return <Link href={`/${post.id}`} className="w-[400px] h-[666px] group">
         {
@@ -85,7 +101,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
             </div>
         }
         {
-            !isLoading && profile &&
+            !isLoading && profile && upvotes !== undefined && commentCount !== undefined &&
             <>
             <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition relative">
                 {
@@ -109,8 +125,8 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                             </div>
                         </section>
                         <section className="flex flex-col items-end">
-                            <span className="text-primary-light font-semibold group-hover:text-white">{post.upvotes.toLocaleString()} Likes</span>
-                            <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comments</small>
+                            <span className="text-primary-light font-semibold group-hover:text-white">{upvotes} Like{upvotes === 0 || upvotes > 1 || upvotes < 0 ? 's' : ''}</span>
+                            <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comment{commentCount === 0 || commentCount > 1 ? 's' : ''}</small>
                         </section>
                     </section>
                     <section className="flex flex-row flex-wrap items-center gap-1.5 px-4">
@@ -121,9 +137,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                             post.tags.length > 3 && <small className="text-neutral-500 group-hover:text-white">+{post.tags.length - 3} more</small>
                         }
                     </section>
-                    {/* <section className="flex flex-row items-center gap-4 p-2">
-                        <span className="text-primary transition group-hover:text-white font-semibold">{post.upvotes.toLocaleString()} Likes</span>
-                    </section> */}
                 </section>
             </div>
             </>

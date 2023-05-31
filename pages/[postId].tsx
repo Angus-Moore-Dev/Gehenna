@@ -18,6 +18,8 @@ import { useClickAway } from "ahooks";
 import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
+import { Reaction } from "@/models/Reaction";
+import Reactions from "@/components/Reactions";
 
 interface PostIdPageProps
 {
@@ -26,9 +28,10 @@ interface PostIdPageProps
     me: Profile | null;
     commenters: Profile[];
     comments: Comment[];
+    reactions: Reaction[];
 }
 
-export default function PostIdPage({ post, poster, me, comments, commenters }: PostIdPageProps)
+export default function PostIdPage({ post, poster, me, comments, commenters, reactions }: PostIdPageProps)
 {
     const router = useRouter();
     const [postCommentors, setPostCommentors] = useState(commenters);
@@ -36,6 +39,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
     const [comment, setComment] = useState('');
     const commentBoxRef = useRef<HTMLDivElement>(null);
     const [postData, setPostData] = useState(post);
+    const [reactionsData, setReactionsData] = useState(reactions);
 
     const [showCard, setShowCard] = useState(false);
 
@@ -213,50 +217,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters }: P
             }
             </section>
         </section>
-        <section className="flex flex-row gap-4 items-center">
-            <div className="flex flex-row gap-4 items-center">
-                <div className="transition p-2 rounded-xl w-fit hover:text-secondary hover:bg-primary hover:cursor-pointer aria-checked:bg-primary aria-checked:text-secondary" 
-                onClick={async () => {
-                    // Update the post likes.
-                    if (me)
-                    {
-                        const res = await clientDb.from('post').update({ upvotes: postData.upvotes + 1 }).eq('id', postData.id);
-                    }
-                    else
-                    {
-                        toast.error('You must be signed in to like a post!');
-                    }
-                }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-up-filled" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M13 3a3 3 0 0 1 2.995 2.824l.005 .176v4h2a3 3 0 0 1 2.98 2.65l.015 .174l.005 .176l-.02 .196l-1.006 5.032c-.381 1.626 -1.502 2.796 -2.81 2.78l-.164 -.008h-8a1 1 0 0 1 -.993 -.883l-.007 -.117l.001 -9.536a1 1 0 0 1 .5 -.865a2.998 2.998 0 0 0 1.492 -2.397l.007 -.202v-1a3 3 0 0 1 3 -3z" strokeWidth="0" fill="currentColor"></path>
-                        <path d="M5 10a1 1 0 0 1 .993 .883l.007 .117v9a1 1 0 0 1 -.883 .993l-.117 .007h-1a2 2 0 0 1 -1.995 -1.85l-.005 -.15v-7a2 2 0 0 1 1.85 -1.995l.15 -.005h1z" strokeWidth="0" fill="currentColor"></path>
-                    </svg>
-                </div>
-                <span className="text-2xl font-bold">{postData.upvotes}</span>
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-                <div className="transition p-2 rounded-xl w-fit hover:text-secondary hover:bg-red-500 hover:cursor-pointer aria-checked:bg-red-500 aria-checked:text-secondary" 
-                onClick={async () => {
-                    // Update the post likes.
-                    if (me)
-                    {
-                        const res = await clientDb.from('post').update({ downvotes: postData.downvotes + 1 }).eq('id', postData.id);
-                    }
-                    else
-                    {
-                        toast.error('You must be signed in to dislike a post!');
-                    }
-                }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-thumb-down-filled" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M13 21.008a3 3 0 0 0 2.995 -2.823l.005 -.177v-4h2a3 3 0 0 0 2.98 -2.65l.015 -.173l.005 -.177l-.02 -.196l-1.006 -5.032c-.381 -1.625 -1.502 -2.796 -2.81 -2.78l-.164 .008h-8a1 1 0 0 0 -.993 .884l-.007 .116l.001 9.536a1 1 0 0 0 .5 .866a2.998 2.998 0 0 1 1.492 2.396l.007 .202v1a3 3 0 0 0 3 3z" strokeWidth="0" fill="currentColor"></path>
-                        <path d="M5 14.008a1 1 0 0 0 .993 -.883l.007 -.117v-9a1 1 0 0 0 -.883 -.993l-.117 -.007h-1a2 2 0 0 0 -1.995 1.852l-.005 .15v7a2 2 0 0 0 1.85 1.994l.15 .005h1z" strokeWidth="0" fill="currentColor"></path>
-                    </svg>
-                </div>
-                <span className="text-2xl font-bold">{postData.downvotes}</span>
-            </div>
-        </section>
+        <Reactions reactions={reactions} me={me} post={post} />
         <div className="flex-grow flex flex-col gap-4 mt-4">
             <h1 className="text-2xl font-bold">Comments <small className="text-xs text-primary">(Still a bit buggy...)</small></h1>
             <div className="flex-grow h-full flex flex-col">
@@ -370,13 +331,16 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     // Now get the commenters
     const commenters = (await db.from('profiles').select('*').in('id', comments.map(c => c.userId))).data as Profile[];
 
+    const reactions = (await db.from('reactions').select('*').eq('postId', postId)).data as Reaction[];
+
     return {
         props: {
-            me: profile,
             post: post,
+            me: profile,
             poster: poster,
             comments: comments,
-            commenters: commenters
+            reactions: reactions,
+            commenters: commenters,
         }
     }
 }
