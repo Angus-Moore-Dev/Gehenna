@@ -71,14 +71,14 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
             <meta name="description" content={profile.bio} />
             <meta property="og:url" content={`https://www.gehenna.dev/profile/${profile.id}`} />
             <meta property="og:type" content="website" />
-            <meta property="og:title" content={`Gehenna - ${profile.username}`} />
-            <meta property="og:description" content={`Gehenna - ${profile.bio}`} />
+            <meta property="og:title" content={`${profile.username}`} />
+            <meta property="og:description" content={`${profile.bio}`} />
             <meta property="og:image" content={profile.avatar} />
 
             <meta name="twitter:card" content="summary_large_image" />
             <meta property="twitter:domain" content="gehenna.dev" />
             <meta property="twitter:url" content={`https://www.gehenna.dev/profile/${profile.id}`} />
-            <meta name="twitter:title" content={`Gehenna - ${profile.username}`} />
+            <meta name="twitter:title" content={`${profile.username}`} />
             <meta name="twitter:description" content={profile.bio} />
             <meta name="twitter:image" content={profile.avatar} />
         </Head>
@@ -159,6 +159,7 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
             </section>
         </div>
         <div className='w-full h-full mt-10'>
+            <p className="text-xl font-semibold mb-4 text-center">Posts From {profile.username}</p>
             {
                 posts &&
                 posts.length === 0 &&
@@ -197,7 +198,7 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
                 }>
                     {
                         posts && posts.length > 0 &&
-                        <div className=' flex flex-row flex-wrap justify-center gap-10'>
+                        <div className='w-full flex flex-row flex-wrap justify-center gap-10'>
                             {
                                 posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
                             }

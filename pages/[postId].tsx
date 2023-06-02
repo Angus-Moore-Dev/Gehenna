@@ -35,7 +35,7 @@ interface PostIdPageProps
 export default function PostIdPage({ post, poster, me, comments, commenters, reactions }: PostIdPageProps)
 {
     const router = useRouter();
-    const [postCommentors, setPostCommentors] = useState(commenters);
+    const [postCommentors] = useState(commenters);
     const [postComments, setPostComments] = useState(comments);
     const [comment, setComment] = useState('');
     const commentBoxRef = useRef<HTMLDivElement>(null);
@@ -51,6 +51,35 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
     useClickAway(() => {
         setShowCard(false);
     }, ref);
+
+
+    // Uncomment when stable again.
+    // useEffect(() => {
+    //     clientDb.channel('comment_updates').on('postgres_changes', { schema: 'public', event: '*', table: 'comments' }, async (payload) => {
+    //         if (payload.eventType === 'INSERT' && (payload.new as Comment).postId === post.id)
+    //         {
+    //             setPostComments([...postComments, payload.new as Comment]);
+    //         }
+    //         else if (payload.eventType === 'UPDATE' && (payload.new as Comment).postId === post.id)
+    //         {
+    //             setPostComments(postComments.map((comment) => {
+    //                 if (comment.id === (payload.new as Comment).id)
+    //                 {
+    //                     return payload.new as Comment;
+    //                 }
+    //                 else
+    //                 {
+    //                     return comment;
+    //                 }
+    //             }));
+    //         }
+    //         else if (payload.eventType === 'DELETE')
+    //         {
+    //             const id = payload.old.id as string;
+    //             setPostComments(postComments.filter((comment) => comment.id !== id));
+    //         }
+    //     }).subscribe();
+    // }, []);
 
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Head>
@@ -75,7 +104,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
         <Link href='/' className="flex flex-col items-center justify-center mb-10 group">
             <Gehenna />
         </Link>
-        
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center mb-4 relative">
                 <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
@@ -168,7 +196,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                         </div>
                     }
                     {
-                        postComments.map(comment => <CommentBox key={comment.id} comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} />)
+                        postComments.map((comment, index) => <CommentBox key={index} comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} me={me} removeComment={(id) => {
+                            setPostComments(postComments.filter(x => x.id !== id));
+                        }} />)
                     }
                 </div>
                 {
@@ -190,6 +220,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             }
                             else
                             {
+                                setPostComments([...postComments, newComment]);
                                 setComment('');
                             }
 

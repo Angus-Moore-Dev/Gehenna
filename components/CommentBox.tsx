@@ -1,16 +1,20 @@
-import { Comment } from "@/models/Comment";
+import { Comment, CommentReaction } from "@/models/Comment";
 import { Profile } from "@/models/Profile";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { useUser } from "@supabase/auth-helpers-react";
+import { User, useUser } from "@supabase/auth-helpers-react";
 import { clientDb } from "@/lib/db";
-import { Skeleton } from "@mantine/core";
+import { Skeleton, Tooltip } from "@mantine/core";
+import { IconThumbDown, IconThumbUp } from "@tabler/icons-react";
+import Link from "next/link";
 
 interface CommentBoxProps {
 	profile: Profile | undefined;
 	comment: Comment;
 	table: string;
+	me: Profile | null;
+	removeComment: (id: string) => void;
 }
 
 /**
@@ -19,7 +23,7 @@ interface CommentBoxProps {
  * @param comment the comment itself.
  * @returns
  */
-export default function CommentBox({ profile, comment, table }: CommentBoxProps) {
+export default function CommentBox({ profile, comment, table, me, removeComment }: CommentBoxProps) {
 	/**
 	 * profileData is the profile of the person who made the comment.
 	 * We use this because an educator / supervisor may no longer be with the project,
@@ -32,9 +36,38 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 	const [editComment, setEditComment] = useState(false);
 	const [commentText, setCommentText] = useState(comment.comment);
 	const [showProfileDialog, setShowProfileDialog] = useState<Profile>();
+	const [upvotes, setUpvotes] = useState<number>();
+	const [reaction, setReaction] = useState<CommentReaction>();
 
 	// Uncomment this when we can come back and address the smaller issues.
 	// const [currentChannelState, setCurrentChannelState] = useState<'' | 'SUBSCRIBED' | 'CHANNEL_ERROR' | 'TIMED_OUT'>('');
+
+	useEffect(() => {
+		// Get the total number of upvotes for this comment
+		clientDb.from('commentReactions').select('*', { count: 'exact', head: true }).eq('commentId', comment.id).then(async res => {
+			if (res.count)
+			{
+				setUpvotes(res.count);
+			}
+			else
+			{
+				setUpvotes(0);
+			}
+		});
+
+		// Check if I have liked / disliked this comment
+		if (me)
+		{
+			clientDb.from('commentReactions').select('*').eq('commentId', comment.id).eq('userId', me?.id).single().then(async res => {
+				if (res.data)
+				{
+					const reaction = res.data as CommentReaction;
+					setReaction(reaction);
+				}
+			});
+		}
+
+	}, []);
 
 	useEffect(() => {
 		if (!profile) {
@@ -65,7 +98,7 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 
 	return (
 		<div
-			className="w-full p-2 rounded-md border-b-2 border-b-primary flex flex-row items-start gap-4 overflow-auto min-h-fit"
+			className="w-full p-2 rounded-md flex flex-row items-start gap-4 overflow-auto min-h-fit"
 			onMouseOver={() => setShowOptions(true)}
 			onMouseLeave={() => setShowOptions(false)}
 		>
@@ -82,16 +115,18 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 			)}
 			{profileData && (
 				<>
-					<Image
-						src={profileData.avatar}
-						alt="profile_picture"
-						width={60}
-						height={60}
-						className="w-[60px] h-[60px] object-cover rounded-md"
-						onClick={() => {
-							setShowProfileDialog(profileData);
-						}}
-					/>
+					<Link href={`/profile/${profileData.id}`}>
+						<Image
+							src={profileData.avatar}
+							alt="profile_picture"
+							width={60}
+							height={60}
+							className="w-[60px] h-[60px] object-cover rounded-md shadow-sm hover:shadow-primary-light"
+							onClick={() => {
+								setShowProfileDialog(profileData);
+							}}
+						/>
+					</Link>
 					<div className="flex flex-col gap-2 w-full">
 						<div className="flex flex-row items-center gap-2 w-full">
 							<span className="font-semibold">
@@ -118,6 +153,7 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 												toast.error(res.error.message);
 											} else {
 												toast.success("Comment deleted successfully.");
+												removeComment(comment.id);
 											}
 										}}
 									>
@@ -127,9 +163,130 @@ export default function CommentBox({ profile, comment, table }: CommentBoxProps)
 							)}
 						</div>
 						{!editComment && (
-							<p className="w-full whitespace-pre" id="commentTextHeight">
-								{commentText}
-							</p>
+							<div className="w-full max-w-3xl flex flex-col gap-2">
+								<p className="w-full whitespace-pre-line" id="commentTextHeight">
+									{commentText}
+								</p>
+								{
+									upvotes !== undefined &&
+									<div className="flex flex-row gap-2 items-center">
+										<span className="text-neutral-400">{upvotes}</span>
+										<Tooltip label="Like Comment" position="bottom">
+											<IconThumbUp size={16} className="text-green-500 hover:fill-green-500 rounded-md hover:cursor-pointer aria-checked:fill-green-500"
+											aria-checked={reaction && reaction.upvote === true}
+											onClick={async () => {
+												if (me)
+												{
+													if (reaction) // I have reacted to this before.
+													{
+														// If I have liked the comment already
+														if (reaction.upvote === true)
+														{
+															// Remove the like
+															const res = await clientDb.from('commentReactions').delete().eq('id', reaction.id);
+															if (res.error)
+																toast.error(res.error.message);
+															else
+															{
+																setUpvotes(upvotes - 1);
+																setReaction(undefined);
+															}
+														}
+														else if (reaction.upvote === false)
+														{
+															// Change the dislike to a like
+															const res = await clientDb.from('commentReactions').update({ upvote: true }).eq('id', reaction.id);
+															if (res.error)
+																toast.error(res.error.message);
+															else
+															{
+																setUpvotes(upvotes + 2);
+																setReaction({ ...reaction, upvote: true });
+															}
+														}
+													}
+													else
+													{
+														const res = await clientDb.from('commentReactions').insert({
+															commentId: comment.id,
+															userId: me.id,
+															upvote: true,
+															postId: comment.postId, // This is redundant lol
+														}).select('*').single();
+
+														if (res.error)
+															toast.error(res.error.message);
+														else
+														{
+															setUpvotes(upvotes + 1);
+															setReaction(res.data as CommentReaction);
+														}
+													}
+												}
+												else
+													toast.error('You must be signed in to like comments');
+											}} />
+										</Tooltip>
+										<Tooltip label="Dislike Comment" position="bottom">
+											<IconThumbDown size={16} className="text-red-500 hover:fill-red-500 rounded-md hover:cursor-pointer aria-checked:fill-red-500"
+											aria-checked={reaction && reaction.upvote === false}
+											onClick={async () => {
+												if (me)
+												{
+													if (reaction) // I have reacted to this before.
+													{
+														// If I have disliked the comment already
+														if (reaction.upvote === true)
+														{
+															// Change the like to a dislike
+															const res = await clientDb.from('commentReactions').update({ upvote: false }).eq('id', reaction.id);
+															if (res.error)
+																toast.error(res.error.message);
+															else
+															{
+																setUpvotes(upvotes - 2);
+																setReaction({ ...reaction, upvote: false });
+															}
+															
+														}
+														else if (reaction.upvote === false)
+														{
+															// Remove the dislike
+															const res = await clientDb.from('commentReactions').delete().eq('id', reaction.id);
+															if (res.error)
+																toast.error(res.error.message);
+															else
+															{
+																setUpvotes(upvotes + 1);
+																setReaction(undefined);
+															}
+														}
+													}
+													else
+													{
+														const res = await clientDb.from('commentReactions').insert({
+															commentId: comment.id,
+															userId: me.id,
+															upvote: false,
+															postId: comment.postId, // This is redundant lol
+														}).select('*').single();
+
+														if (res.error)
+															toast.error(res.error.message);
+														else
+														{
+															setUpvotes(upvotes - 1);
+															setReaction(res.data as CommentReaction);
+														}
+													}
+												}
+												else
+													toast.error('You must be signed in to dislike comments');
+											}} />
+										</Tooltip>
+									</div>
+								}
+							</div>
 						)}
 						{editComment && (
 							<textarea

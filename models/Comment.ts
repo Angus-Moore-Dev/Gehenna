@@ -4,6 +4,13 @@ export type Comment = {
     postId: string;
     comment: string;
     userId: string;
-    upvotes: number;
-    downvotes: number;
+}
+
+export type CommentReaction = {
+    id: number;
+    createdAt: string; // timestamptz
+    upvote: boolean;
+    userId: string;
+    postId: string;
+    commentId: string;
 }
