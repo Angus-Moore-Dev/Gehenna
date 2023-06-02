@@ -85,75 +85,77 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
         <Link href='/'>
             <Gehenna />
         </Link>
-        <div className="w-full relative mb-64">
-            <section className="w-full flex flex-row gap-2 items-end flex-wrap p-2 absolute">
-                <section className="w-full flex-row gap-2 items-end flex-wrap p-2 relative">
-                    {
-                        !profile.profileBannerURL.url &&
-                        <section className="w-full h-full absolute top-0 left-0 rounded-md bg-gradient-to-b from-black to-secondary z-10" />
-                    }
-                    {
-                        profile.profileBannerURL.url &&
-                        <Image src={profile.profileBannerURL.url} width={1000} height={256} alt="Profile Banner" className="object-cover rounded-md w-full h-[256px] absolute z-0" />
-                    }
-                    <section className="flex flex-row gap-4 items-center flex-wrap z-20 absolute top-4 left-[14px] bg-tertiary bg-opacity-80 backdrop-blur-sm px-4 py-2 rounded-md">
-                        <Image src={profile.avatar} width={100} height={100} alt="Profile Picture" className="object-cover rounded-md w-[100px] h-[100px]" />
-                        <div className="flex flex-col gap-[1px]">
-                            <div className="flex flex-row gap-2 items-center">
-                                <span className="text-2xl font-semibold">{profile.username}</span>
+        <div className="w-full flex flex-col">
+            <section className="w-full">
+                {
+                    !profile.profileBannerURL.url &&
+                    <section className="w-full h-full rounded-md bg-gradient-to-b from-black to-secondary z-10" />
+                }
+                {
+                    profile.profileBannerURL.url &&
+                    <Image src={profile.profileBannerURL.url} width={1000} height={256} alt="Profile Banner" className="object-cover rounded-t-md w-full h-[256px]" />
+                }
+            </section>
+            <section className="w-full flex flex-row gap-4 items-start bg-tertiary p-4 rounded-b-md">
+                <Image src={profile.avatar} width={100} height={100} alt="Profile Picture" className="object-cover rounded-md w-[100px] h-[100px] mt-2" />
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-row gap-2 items-center">
+                        <span className="text-2xl font-semibold">{profile.username}</span>
+                        {
+                            me?.id === profile.id &&
+                            <Link href='/profile'>
+                                <IconSettings size={20} className="transition hover:text-primary-light" />
+                            </Link>
+                        }
+                    </div>
+                    <small className="font-light">{profile.handle}</small>
+                    <div className="flex flex-row items-end gap-4 h-full">
+                        <span className="text-sm font-semibold text-neutral-100"><span className="text-neutral-400 text-xs">Joined on&nbsp;<br /></span>{formattedDate}</span>
+                        {
+                            followers === undefined &&
+                            <Skeleton width={96} height='' className="rounded-md" />
+                        }
+                        {
+                            followers !== undefined &&
+                            <div className="flex flex-row items-center gap-2">
+                                <IconUser size='20' />
+                                <span className="text-sm font-semibold">{followers?.toLocaleString()} Follower{followers === 0 || followers > 1 && 's'}</span>
                                 {
-                                    me?.id === profile.id &&
-                                    <Link href='/profile'>
-                                        <IconSettings size={20} className="transition hover:text-primary-light" />
-                                    </Link>
-                                }
-                            </div>
-                            <small className="font-light">{profile.handle}</small>
-                            <span className="text-neutral-200 text-sm max-w-[325px]">{profile.bio}</span>
-                            <div className="flex flex-row items-end gap-4">
-                                <span className="text-sm font-semibold text-neutral-100"><span className="text-neutral-400 text-xs">Joined on&nbsp;<br /></span>{formattedDate}</span>
-                                {
-                                    followers === undefined &&
-                                    <Skeleton width={96} height='' className="rounded-md" />
-                                }
-                                {
-                                    followers !== undefined &&
-                                    <div className="flex flex-row items-center gap-2">
-                                        <IconUser size='20' />
-                                        <span className="text-sm font-semibold">{followers?.toLocaleString()} Follower{followers === 0 || followers > 1 && 's'}</span>
+                                    me && me.id !== profile.id &&
+                                    <CommonButton text={following ? 'Unfollow' : 'Follow'} onClick={async () => {
+                                        if (!following)
                                         {
-                                            me && me.id !== profile.id &&
-                                            <CommonButton text={following ? 'Unfollow' : 'Follow'} onClick={async () => {
-                                                if (!following)
-                                                {
-                                                    // Follow
-                                                    const res = await clientDb.from('followers').insert({ followerId: me?.id, followingId: profile.id });
-                                                    if (!res.error)
-                                                    {
-                                                        setFollowing(true);
-                                                        setFollowers(followers! + 1);
-                                                    }
-                                                    else toast.error(res.error.message);
-                                                }
-                                                else
-                                                {
-                                                    // Unfollow
-                                                    const res = await clientDb.from('followers').delete().eq('followerId', me?.id).eq('followingId', profile.id);
-                                                    if (!res.error)
-                                                    {
-                                                        setFollowing(false);
-                                                        setFollowers(followers!- 1);
-                                                    }
-                                                    else toast.error(res.error.message);
-                                                }
-                                            }} className="text-xs py-0 p-1 h-6" />
+                                            // Follow
+                                            const res = await clientDb.from('followers').insert({ followerId: me?.id, followingId: profile.id });
+                                            if (!res.error)
+                                            {
+                                                setFollowing(true);
+                                                setFollowers(followers! + 1);
+                                            }
+                                            else toast.error(res.error.message);
                                         }
-                                    </div>
+                                        else
+                                        {
+                                            // Unfollow
+                                            const res = await clientDb.from('followers').delete().eq('followerId', me?.id).eq('followingId', profile.id);
+                                            if (!res.error)
+                                            {
+                                                setFollowing(false);
+                                                setFollowers(followers!- 1);
+                                            }
+                                            else toast.error(res.error.message);
+                                        }
+                                    }} className="text-xs py-0 p-1 h-6" />
                                 }
                             </div>
-                        </div>
-                    </section>
-                </section>
+                        }
+                    </div>
+                </div>
+                <div className="flex-grow max-w-[50%] ml-auto">
+                    <p className="text-sm">
+                        {profile.bio}
+                    </p>
+                </div>
             </section>
         </div>
         <div className='w-full h-full mt-10'>
