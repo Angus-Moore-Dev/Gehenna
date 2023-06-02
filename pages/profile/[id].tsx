@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { IconSettings, IconUser } from "@tabler/icons-react";
 import { toast } from "react-toastify";
-import { Skeleton } from "@mantine/core";
+import { ScrollArea, Skeleton } from "@mantine/core";
 import { Post } from "@/models/Post";
 import PostPreviewBox from "@/components/PostPreviewBox";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -152,9 +152,9 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
                     </div>
                 </div>
                 <div className="flex-grow max-w-[50%] ml-auto">
-                    <p className="text-sm">
+                    <ScrollArea h={100} className="text-sm" color="yellow" type="auto" offsetScrollbars scrollbarSize={4}>
                         {profile.bio}
-                    </p>
+                    </ScrollArea>
                 </div>
             </section>
         </div>
