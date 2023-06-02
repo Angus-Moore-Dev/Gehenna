@@ -40,6 +40,8 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
         });
     }, []);
 
+    const x = () => {}
+    const y = x;
     useEffect(() => {
 		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
 
@@ -59,7 +61,6 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
 				toast.error(res.error.message);
 			}
 		});
-
 	}, []);
 
     return <div className="flex-grow w-full flex flex-col gap-4 mx-auto py-16 items-center max-w-4xl">
@@ -93,9 +94,9 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
                     }
                     {
                         profile.profileBannerURL.url &&
-                        <Image id='profileCardBanner' src={profile.profileBannerURL.url} width={1000} height={256} alt="Profile Banner" className="object-cover rounded-md w-full h-[256px] absolute z-0" />
+                        <Image src={profile.profileBannerURL.url} width={1000} height={256} alt="Profile Banner" className="object-cover rounded-md w-full h-[256px] absolute z-0" />
                     }
-                    <section className="flex flex-row gap-4 items-center flex-wrap z-20 absolute top-32 left-4">
+                    <section className="flex flex-row gap-4 items-center flex-wrap z-20 absolute top-4 left-[14px] bg-tertiary bg-opacity-80 backdrop-blur-sm px-4 py-2 rounded-md">
                         <Image src={profile.avatar} width={100} height={100} alt="Profile Picture" className="object-cover rounded-md w-[100px] h-[100px]" />
                         <div className="flex flex-col gap-[1px]">
                             <div className="flex flex-row gap-2 items-center">

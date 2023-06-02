@@ -49,7 +49,8 @@ export default function ProfileBannerManager({ profileData }: { profileData: Pro
         }, [])
     const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-    return <div className="w-full mx-auto group transition hover:bg-primary hover:text-white p-2 rounded-md">
+    return <div className="w-full mx-auto group transition aria-checked:hover:bg-primary hover:text-white p-2 rounded-md"
+    aria-checked={!newProfileBanner}>
         {
             !isUploading &&
             <span className="text-2xl font-semibold">Profile Banner</span>
