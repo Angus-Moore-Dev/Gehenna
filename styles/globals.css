@@ -89,3 +89,6 @@ pre {
 }
 
 
+#profileCardBanner {
+  filter: brightness(0.4);
+}

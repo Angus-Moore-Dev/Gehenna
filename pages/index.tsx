@@ -129,7 +129,7 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 				{
 					profile && 
 					<>
-					<Link href='/profile' className='flex flex-col mx-auto gap-2 items-center transition p-2 hover:bg-primary-light text-white rounded-md'>
+					<Link href={`/profile/${profile.id}`} className='flex flex-col mx-auto gap-2 items-center transition p-2 hover:bg-primary-light text-white rounded-md'>
 						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
 						<span className='font-semibold'>{profile.username}</span>
 					</Link>
@@ -229,7 +229,7 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 				</div>
 			</div>
 			{
-				posts && posts.length === 10 &&
+				posts && posts.length === 50 &&
 				<div ref={ref} className='w-full h-full flex items-center justify-center' />
 			}
 		</div>

@@ -31,6 +31,9 @@ export default function SignUpModal()
 
         const res = await fetch('/api/sign-up', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 username: username,
                 email: email,

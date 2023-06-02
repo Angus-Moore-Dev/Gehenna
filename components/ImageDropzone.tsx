@@ -10,9 +10,10 @@ interface DropzoneImageProps
     isUploading: boolean;
     height: number;
     accept: string[];
+    multiple?: boolean; // false by default.
 }
 
-export function ImageDropzone({ onUpload, isUploading, height, accept }: DropzoneImageProps)
+export function ImageDropzone({ onUpload, isUploading, height, accept, multiple = false }: DropzoneImageProps)
 {
     const theme = useMantineTheme();
     return (
@@ -44,10 +45,15 @@ export function ImageDropzone({ onUpload, isUploading, height, accept }: Dropzon
 
                 <div>
                 <Text size="xl" inline>
-                    Drag images / video / audio files here or click to select files
+                    Drag {accept.map(type => (type === 'image/*' ? 'images' : type === 'video/*' ? 'videos' : type === 'audio/*' ? 'audio' : 'files')).join(' / ')} here
                 </Text>
                 <Text size="sm" color="dimmed" inline mt={7}>
-                    Attach as many files as you like, the total must not exceed 5mb
+                    {
+                        multiple && 'Attach as many files as you like, the total must not exceed 3mb.'
+                    }
+                    {
+                        !multiple && 'Attach a single file, the total must not exceed 3mb.'
+                    }
                 </Text>
                 </div>
             </Group>

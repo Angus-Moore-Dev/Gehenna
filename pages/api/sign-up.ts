@@ -4,6 +4,7 @@ import * as sgMail from '@sendgrid/mail';
 sgMail.setApiKey(process.env.SENDGRID_MAIL_KEY!);
 import * as jwt from 'jsonwebtoken';
 import { generateSHA256Hash } from "@/utils/stringHash";
+import { v4 } from "uuid";
 
 /**
  * Handles the request to create a new user.
@@ -14,7 +15,7 @@ import { generateSHA256Hash } from "@/utils/stringHash";
 export default async function handle(req: NextApiRequest, res: NextApiResponse)
 {
     const serverSuperClient = superClient(process.env.POSTGRES_SERVICE_ROLE_KEY!)
-    const { username, password, email } = JSON.parse(req.body);
+    const { username, password, email } = req.body as { username: string, password: string, email: string };
     // Check if user already exists guard clause.
     const userExistsAlready = await serverSuperClient.from('profiles').select('id').eq('email', email).single();
     if (userExistsAlready.data)
@@ -65,6 +66,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
         id: createUserRes.data.user?.id,
         username: username,
         email: createUserRes.data.user?.email,
+        handle: `@${username.toLowerCase().replace(/[^a-z0-9]/g, '') + '-' + v4().split('-')[4]}`,
     }).single();
 
     if (error)

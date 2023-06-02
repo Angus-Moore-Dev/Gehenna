@@ -150,7 +150,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                 <span className='text-xl font-semibold'>Any Extra Files (Optional)</span>
                 <ImageDropzone onUpload={(files: File[]) => {
                     setFiles(existingFiles => [...existingFiles, ...files]);
-                }} isUploading={isCreating} height={50} accept={['image/*', 'audio/*', 'video/*']} />
+                }} isUploading={isCreating} height={50} accept={['image/*', 'audio/*', 'video/*']} multiple={true} />
                 {
                     files.length > 0 &&
                     <span>Files Included</span>
