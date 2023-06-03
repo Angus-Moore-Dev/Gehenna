@@ -12,7 +12,6 @@ interface NewPostModalProps
 
 export default function NewPostModal({ user }: NewPostModalProps)
 {
-    const [createNewPost, setCreateNewPost] = useState(false);
     const [opened, { open, close }] = useDisclosure(false);
 
     return <>

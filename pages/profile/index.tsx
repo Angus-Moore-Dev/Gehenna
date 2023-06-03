@@ -47,7 +47,7 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
         }).subscribe();
     }, []);
 
-    return <div className="w-full h-full flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">
+    return <div className="flex-grow flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">
         <Head>
             <title>Gehenna - My Profile</title>
         </Head>
@@ -61,6 +61,9 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
             <Gehenna />
         </Link>
         <h1 className="text-4xl font-bold">My Profile</h1>
+        <Link href={`/profile/${profileData.id}`} className="flex flex-col items-center justify-center font-semibold text-white bg-primary transition hover:bg-primary-light p-2 rounded-md">
+            View Public Profile
+        </Link>
         <ProfileBannerManager profileData={profileData} />
         <ProfilePictureManager profileData={profileData} />
         <div className="flex flex-col gap-2 items-end">
@@ -80,9 +83,18 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
         </div>
         <TextInput label='Email' value={profileData.email} className="w-96" disabled />
         <TextInput label='Handle (coming soon)' value={profileData.handle} className="w-96" disabled />
+        {/* <div className="w-96 flex flex-col gap-2">
+            <span>Startup</span>
+            {
+                !profileData.startup &&
+                <Link href='/startup/create' className="w-96 flex flex-col items-center justify-center font-semibold text-white bg-primary transition hover:bg-primary-light p-2 rounded-md">
+                    Create Startup
+                </Link>
+            }
+        </div> */}
         <div className="flex flex-col gap-2 items-end">
-            <Textarea label='Bio (About Yourself)' value={bio} onChange={(e) => setBio(e.target.value)} className="w-96" maxLength={64} />
-            <small className="mr-auto">{64 - bio.length} characters left</small>
+            <Textarea label='Bio (About Yourself)' value={bio} onChange={(e) => setBio(e.target.value)} className="w-96" maxLength={500} autosize />
+            <small className="mr-auto">{500 - bio.length} characters left</small>
             <CommonButton text='Update Bio' className="m-0" onClick={async () => {
                 const res = await clientDb.from('profiles').update({ bio: bio }).eq('id', profileData.id);
                 if (res.error)

@@ -20,7 +20,7 @@ import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
 import { Reaction } from "@/models/Reaction";
 import Reactions from "@/components/Reactions";
-import { IconLink } from "@tabler/icons-react";
+import { IconClock, IconLink } from "@tabler/icons-react";
 
 interface PostIdPageProps
 {
@@ -34,17 +34,11 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me, comments, commenters, reactions }: PostIdPageProps)
 {
-    const router = useRouter();
     const [postCommentors] = useState(commenters);
     const [postComments, setPostComments] = useState(comments);
     const [comment, setComment] = useState('');
-    const commentBoxRef = useRef<HTMLDivElement>(null);
     const [postData, setPostData] = useState(post);
-    const [reactionsData, setReactionsData] = useState(reactions);
-
     const [showCard, setShowCard] = useState(false);
-
-    const [showSettings, setShowSettings] = useState(false);
 
     // setup a useClickAway hook
     const ref = useRef(null);
@@ -52,48 +46,19 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
         setShowCard(false);
     }, ref);
 
-
-    // Uncomment when stable again.
-    // useEffect(() => {
-    //     clientDb.channel('comment_updates').on('postgres_changes', { schema: 'public', event: '*', table: 'comments' }, async (payload) => {
-    //         if (payload.eventType === 'INSERT' && (payload.new as Comment).postId === post.id)
-    //         {
-    //             setPostComments([...postComments, payload.new as Comment]);
-    //         }
-    //         else if (payload.eventType === 'UPDATE' && (payload.new as Comment).postId === post.id)
-    //         {
-    //             setPostComments(postComments.map((comment) => {
-    //                 if (comment.id === (payload.new as Comment).id)
-    //                 {
-    //                     return payload.new as Comment;
-    //                 }
-    //                 else
-    //                 {
-    //                     return comment;
-    //                 }
-    //             }));
-    //         }
-    //         else if (payload.eventType === 'DELETE')
-    //         {
-    //             const id = payload.old.id as string;
-    //             setPostComments(postComments.filter((comment) => comment.id !== id));
-    //         }
-    //     }).subscribe();
-    // }, []);
-
     return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
         <Head>
-            <title>Gehenna - {post.title}</title>
-            <meta property="og:title" content={`Gehenna | ${post.title}`} />
+            <title>Gehenna - {postData.title}</title>
+            <meta property="og:title" content={`Gehenna | ${postData.title}`} />
             <meta property="og:description" content='Click to read this post on Gehenna now!' />
-            <meta property="og:image" content={post.postImageURL.url} />
-            <meta property="og:url" content={`https://www.gehenna.dev/${post.id}`} />
+            <meta property="og:image" content={postData.postImageURL.url} />
+            <meta property="og:url" content={`https://www.gehenna.dev/${postData.id}`} />
             <meta property="og:type" content="website" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content={post.title} />
+            <meta name="twitter:title" content={postData.title} />
             <meta name="twitter:description" content={"Click here to read this article on Gehenna"} />
-            <meta name="twitter:image" content={post.postImageURL.url} />
-            <meta name="twitter:url" content={`https://www.gehenna.dev/${post.id}`} />
+            <meta name="twitter:image" content={postData.postImageURL.url} />
+            <meta name="twitter:url" content={`https://www.gehenna.dev/${postData.id}`} />
         </Head>
         {
             me && !me.emailVerified &&
@@ -119,10 +84,18 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                 <span className="font-semibold text-xl">
                     {poster.username} <i>wrote:</i>
                     <br />
-                    <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
+                    <div className="flex flex-row gap-4 items-center mt-2">
+                        <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
+                        <div className="flex flex-row items-center gap-2">
+                            <IconClock size={16} className='text-neutral-400' />
+                            <small className="text-neutral-400 font-extralight text-xs">
+                                {Math.ceil(postData.content.length / 250)} min read
+                            </small>
+                        </div>
+                    </div>
                 </span>
                 <div className="flex-grow flex flex-row justify-end gap-4">
-                    <CopyButton value={`https://www.gehenna.dev/${post.id}`} timeout={25000}>
+                    <CopyButton value={`https://www.gehenna.dev/${postData.id}`} timeout={25000}>
                         {({ copied, copy }) => (
                             <>
                             <Tooltip label={copied ? 'Copied!' : 'Copy link to clipboard'} position="bottom">
@@ -140,33 +113,33 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                     </CopyButton>
                     {
                         me && me.id === poster.id &&
-                        <PostSettingsModal postId={post.id} />
+                        <PostSettingsModal post={postData} setPost={setPostData} />
                     }
                 </div>
             </div>
             <section className="flex flex-row flex-wrap gap-1.5 mb-4">
             {
-                post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
+                postData.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
             }
             </section>
             <h1 className="text-4xl font-bold border-b-2 pb-2 mb-4 border-b-primary-light">
                 {postData.title}
             </h1>
-            <Image src={post.postImageURL?.url} alt='' quality={100} priority={true} width={1000} height={450} className="w-full h-[450px] object-cover mx-auto rounded-md" />
+            <Image src={postData.postImageURL.url} alt='' quality={100} priority={true} width={1000} height={450} className="w-full h-[450px] object-cover mx-auto rounded-md" />
         </div>
         <TypographyStylesProvider>
             <div dangerouslySetInnerHTML={{ __html: postData.content }} />
         </TypographyStylesProvider>
         <section className="flex flex-col flex-wrap gap-2 border-t-2 border-t-secondary pt-2">
             {
-                post.attachedFileURLs.length > 0 &&
+                postData.attachedFileURLs.length > 0 &&
                 <span className="text-lg font-semibold">Attached Files</span>
             }
             <section className="w-full flex flex-row flex-wrap gap-2 items-start">
             {
-                post.attachedFileURLs.map(file => {
+                postData.attachedFileURLs.map(file => {
                     if (file.mimeType.includes('image'))
-                        return <Image src={file.url} alt={v4()} quality={100} width='1000' height='1000' className={`object-cover min-w-[45%] flex-1 rounded-md ${post.attachedFileURLs.length > 1 && 'h-[350px]'}`} />
+                        return <Image src={file.url} alt={v4()} quality={100} width='1000' height='1000' className={`object-cover min-w-[45%] flex-1 rounded-md ${postData.attachedFileURLs.length > 1 && 'h-[350px]'}`} />
                     else if (file.mimeType.includes('audio'))
                         return <audio className="min-w-[45%] flex-1" controls>
                             <source src={file.url} type={file.mimeType} />
@@ -230,9 +203,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             */
 
                             const listOfPeopleToNotify: string[] = [];
-                            if (post.userId === me.id)
+                            if (postData.userId === me.id)
                             {
-                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
+                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== postData.userId).map(x => x.id);
                                 for (const notifier of postsCommentorsToNotify)
                                 {
                                     listOfPeopleToNotify.push(notifier);
@@ -241,8 +214,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             else
                             {
                                 // I am not the creator
-                                listOfPeopleToNotify.push(post.userId);
-                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== post.userId).map(x => x.id);
+                                listOfPeopleToNotify.push(postData.userId);
+                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== postData.userId).map(x => x.id);
                                 for (const notifier of postsCommentorsToNotify)
                                 {
                                     listOfPeopleToNotify.push(notifier);
@@ -252,9 +225,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             const insertBatch = listOfPeopleToNotify.map(x => ({
                                 id: v4(),
                                 created_at: new Date().toISOString(),
-                                title: `${me.username} commented on ${post.userId === x ? 'your post' : 'a post you commented on'}.`,
+                                title: `${me.username} commented on ${postData.userId === x ? 'your post' : 'a post you commented on'}.`,
                                 text: `Please click this link to view the comment.`,
-                                link: `/${post.id}`,
+                                link: `/${postData.id}`,
                                 userId: x,
                                 seen: false // Default, since the intended party has not opened the post yet.
                             }));

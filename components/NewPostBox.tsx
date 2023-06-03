@@ -26,7 +26,6 @@ interface NewPostBoxProps
 
 export default function NewPostBox({ user }: NewPostBoxProps)
 {
-    const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -198,7 +197,6 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                         // Upload the files first, then get their URLs and attach them to the post under the name attachedFileURLs
                         // create id being the alphanumerics (with - replacing spaces) from the title (no special characters and it cannot start with a number) and the end of the uuid
                         const id = `${title.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-')}-${v4().split('-')[4]}`;
-                        
 
                         // Upload the post cover image
                         const coverImageRes = await clientDb.storage.from('post_files').upload(`${id}/${coverImage.name}`, coverImage, {
@@ -257,7 +255,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                             setContent('');
                         }
                         setIsCreating(false);
-                    }} className='ml-auto text-md font-semibold' />
+                    }} className='ml-auto text-md font-semibold mt-4' />
                 }
                 {
                     isCreating && <Loader size='sm' className='w-32' />

@@ -56,26 +56,17 @@
   overflow-x: hidden;
 }
 
-textarea {
-  resize: none;
-}
-
-ul {
-  list-style-type: disc;
-}
-
-ol {
+ol > li {
   list-style-type: decimal;
 }
 
-li {
+ul > li {
   list-style-type: square;
 }
 
 blockquote {
   font-weight:lighter;
 }
-
 
 
 #text-box {
