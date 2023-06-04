@@ -1,4 +1,4 @@
-export const Gehenna = () => <pre className='leading-4 transition hover:text-primary-light hover:cursor-pointer'>
+export const Gehenna = () => <pre className='text-xs scale-50 lg:scale-100 lg:text-md leading-3 transition hover:text-primary-light hover:cursor-pointer'>
 
 ▄████ ▓█████  ██░ ██ ▓█████  ███▄    █  ███▄    █  ▄▄▄      <br />
 ██▒ ▀█▒▓█   ▀ ▓██░ ██▒▓█   ▀  ██ ▀█   █  ██ ▀█   █ ▒████▄    <br />
