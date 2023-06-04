@@ -1,6 +1,6 @@
 export default function Footer()
 {
-    return <footer className="hidden lg:w-full flex flex-row items-center px-16 bg-tertiary">
+    return <footer className="hidden lg:w-full md:flex flex-row items-center px-16 bg-tertiary">
         <div className="flex-grow py-2">
             <span className="text-neutral-600 font-semibold">Copyright Angus Moore, 2023</span>
         </div>
