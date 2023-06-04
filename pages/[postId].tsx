@@ -89,7 +89,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                         <div className="flex flex-row items-center gap-2">
                             <IconClock size={16} className='text-neutral-400' />
                             <small className="text-neutral-400 font-extralight text-xs">
-                                {Math.ceil(postData.content.length / 250)} min read
+                                {Math.ceil(postData.content.split(' ').length / 250)} min read
                             </small>
                         </div>
                     </div>
