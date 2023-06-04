@@ -154,7 +154,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
         </section>
         <Reactions reactions={reactions} me={me} post={post} />
         <div className="flex-grow flex flex-col gap-4 mt-4">
-            <h1 className="text-2xl font-bold">Comments <small className="text-xs text-primary">(Still a bit buggy...)</small></h1>
+            <h1 className="text-2xl font-bold">Comments</h1>
             <div className="flex-grow h-full flex flex-col">
                 <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">
                     {
