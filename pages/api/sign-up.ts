@@ -48,7 +48,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
     await sgMail.send({
         from: {
             name: 'Gehenna Forum',
-            email: 'nubytube@gmail.com'
+            email: 'angusmoore.dev@gmail.com'
         },
         to: email,
         subject: 'Confirm Your Email For Gehenna Forum',
