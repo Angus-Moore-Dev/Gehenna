@@ -21,7 +21,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
 
     // Check if the user exists in the database before sending an email
     const adminClient = superClient(process.env.POSTGRES_SERVICE_ROLE_KEY!);
-    const user = (await adminClient.from('profiles').select('id').eq('email', email).single()).data as Profile;
+    const user = (await adminClient.from('profiles').select('id').eq('email', email).single()).data;
 
     if (!user)
     {
@@ -33,6 +33,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse)
     // Generate the URL that the user will click. This is a PostgREST function to generate a JWT token that will be used to verify the user's identity.
     const link = await adminClient.auth.admin.generateLink({ email: email, type: 'recovery', options: { redirectTo: `${checkEnvironment()}/reset-password` } });
     const url = link.data.properties?.action_link;
+
+    if (!url)
+    {
+        return res.status(500).json({ error: 'Your invite code was unable to be generated, please ensure you have an account or try again!' });
+    }
 
     await sgMail.send({
         from: {
