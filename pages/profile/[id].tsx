@@ -48,10 +48,7 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
 		// generate two timestamptz, one right now and one from a week ago.
 		// then we can use the week ago timestamp to get the posts from the last week.
 
-		const weekAgo = new Date();
-		weekAgo.setDate(weekAgo.getDate() - 7);
-
-		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).then(async res => {
+		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).eq('userId', profile.id).then(async res => {
 			if (!res.error && res.data)
 			{
 				setPosts(res.data as Post[]);
