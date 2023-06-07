@@ -33,7 +33,7 @@ export default function ImageCropper({ file, setFile, width, height, className }
         />
         <div className={`w-full`}>
             <span>Scale</span>
-            <Slider value={scale} onChange={(e) => setScale(e)} min={1} max={15} step={0.1} label={scale} />
+            <Slider value={scale} onChange={(e) => setScale(e)} min={0} max={15} step={0.1} label={scale} />
             <span>Rotate</span>
             <Slider value={rotate} onChange={(e) => setRotate(e)} min={0} max={360} step={1} label={rotate} />
         </div>

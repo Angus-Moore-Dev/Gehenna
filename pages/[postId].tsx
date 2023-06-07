@@ -20,7 +20,7 @@ import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
 import { Reaction } from "@/models/Reaction";
 import Reactions from "@/components/Reactions";
-import { IconClock, IconLink } from "@tabler/icons-react";
+import { IconClock, IconLink, IconMessage } from "@tabler/icons-react";
 
 interface PostIdPageProps
 {
@@ -34,6 +34,7 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me, comments, commenters, reactions }: PostIdPageProps)
 {
+    const commentRef = useRef<HTMLDivElement>(null);
     const [postCommentors] = useState(commenters);
     const [postComments, setPostComments] = useState(comments);
     const [comment, setComment] = useState('');
@@ -111,6 +112,11 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             </>
                         )}
                     </CopyButton>
+                    <Tooltip label="Comment" position="bottom">
+                        <ActionIcon size="xl" onClick={() => commentRef.current?.scrollIntoView({ 'behavior': 'smooth' })}>
+                            <IconMessage className='text-neutral-400 transition hover:text-white' />
+                        </ActionIcon>
+                    </Tooltip>
                     {
                         me && me.id === poster.id &&
                         <PostSettingsModal post={postData} setPost={setPostData} />
@@ -122,7 +128,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                 postData.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
             }
             </section>
-            <h1 className="text-4xl font-bold border-b-2 pb-2 mb-4 border-b-primary-light">
+            <h1 className="text-5xl font-bold border-b-2 pb-2 mb-4 border-b-primary-light text-white">
                 {postData.title}
             </h1>
             <Image src={postData.postImageURL.url} alt='' quality={100} priority={true} width={1000} height={450} className="w-full h-[450px] object-cover mx-auto rounded-md" />
@@ -153,7 +159,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
             </section>
         </section>
         <Reactions reactions={reactions} me={me} post={post} />
-        <div className="flex-grow flex flex-col gap-4 mt-4">
+        <div ref={commentRef} className="flex-grow flex flex-col gap-4 mt-4">
             <h1 className="text-2xl font-bold">Comments</h1>
             <div className="flex-grow h-full flex flex-col">
                 <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">

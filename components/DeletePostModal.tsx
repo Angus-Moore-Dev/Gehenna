@@ -38,8 +38,11 @@ export default function DeletePostModal({ postId }: DeletePostModalProps)
                         urls.push(fileName);
                     }
 
+                    console.log(urls);
                     const deletionRes = await clientDb.storage.from('post_files').remove(urls);
                     const res = await clientDb.from('post').delete().eq('id', postId);
+
+                    // now we remove the files since the URLs are disconnected.
 
                     if (res.error) toast.error(res.error.message);
                     else
