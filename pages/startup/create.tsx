@@ -127,17 +127,15 @@ export default function CreateNewStartup()
         <div className="w-full mx-auto flex flex-col gap-2 justify-center">
             <span>Team Members</span>
             <div className="w-full flex flex-row gap-4 flex-wrap">
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-                <TeamMemberAddition />
-
+                <TeamMemberAddition onProfileUpload={function (file: File): void {
+                    throw new Error("Function not implemented.");
+                } } setName={function (name: string): void {
+                    throw new Error("Function not implemented.");
+                } } setRole={function (role: string): void {
+                    throw new Error("Function not implemented.");
+                } } setBio={function (bio: string): void {
+                    throw new Error("Function not implemented.");
+                } } />
             </div>
         </div>
         <div className="w-96 mx-auto flex flex-col gap-4">
