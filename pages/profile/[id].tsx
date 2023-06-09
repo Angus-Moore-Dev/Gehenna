@@ -60,7 +60,7 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
 		});
 	}, []);
 
-    return <div className="flex-grow w-full flex flex-col gap-4 mx-auto py-16 items-center max-w-4xl">
+    return <div className="flex-grow w-full flex flex-col gap-4 mx-auto py-8 items-center max-w-4xl">
         <Head>
             <title>Gehenna - {profile.username}</title>
             <link href='/favicon.png' rel='icon' />

@@ -95,7 +95,7 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 	}, [globalSearchkeywords]);
 
 	return (
-		<div ref={ref} className="flex-grow flex flex-col gap-4 mx-auto py-16">
+		<div ref={ref} className="flex-grow flex flex-col gap-4 mx-auto py-8">
 			<Head>
 				<title>Gehenna - Learn, Grow.</title>
 				<link href='/favicon.png' rel='icon' />

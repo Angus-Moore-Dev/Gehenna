@@ -47,7 +47,7 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
         }).subscribe();
     }, []);
 
-    return <div className="flex-grow flex flex-col gap-4 mx-auto py-16 items-center max-w-3xl">
+    return <div className="flex-grow flex flex-col gap-4 mx-auto py-8 items-center max-w-3xl">
         <Head>
             <title>Gehenna - My Profile</title>
         </Head>

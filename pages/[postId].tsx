@@ -47,7 +47,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
         setShowCard(false);
     }, ref);
 
-    return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-16">
+    return <div className="w-full h-full flex flex-col gap-4 max-w-3xl mx-auto py-8">
         <Head>
             <title>Gehenna - {postData.title}</title>
             <meta property="og:title" content={`Gehenna | ${postData.title}`} />

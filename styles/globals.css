@@ -22,7 +22,7 @@
   }
 
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
     height: 20px;
     direction: rtl;
   }
