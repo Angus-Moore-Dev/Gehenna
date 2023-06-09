@@ -8,7 +8,7 @@ interface TeamMemberAdditionProps
 
 export default function TeamMemberAddition({ onProfileUpload, setName, setRole, setBio }: TeamMemberAdditionProps)
 {
-    return <div>
-        
+    return <div className="w-[31.63%] h-72 bg-primary rounded-md">
+
     </div>
 }
