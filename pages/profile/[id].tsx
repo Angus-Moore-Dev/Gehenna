@@ -15,8 +15,9 @@ import { Post } from "@/models/Post";
 import PostPreviewBox from "@/components/PostPreviewBox";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Head from "next/head";
+import { Startup } from "@/models/Startup";
 
-export default function ProfilePage({ me, profile, isFollowing }: { me: User | null, profile: Profile, isFollowing: boolean })
+export default function ProfilePage({ me, profile, startups, isFollowing }: { me: User | null, profile: Profile, startups: Startup[], isFollowing: boolean })
 {
     const router = useRouter();
     const { id } = router.query as { id: string };
@@ -155,8 +156,27 @@ export default function ProfilePage({ me, profile, isFollowing }: { me: User | n
                 </div>
             </section>
         </div>
+        {
+            startups.length > 0 &&
+            <div className="w-full flex flex-col gap-4">
+                {
+                    startups.map((startup, index) => <div key={index} className="relative w-full p-4 bg-tertiary rounded-md flex flex-row gap-4 items-center">
+                        <Image src={startup.bannerURL} width={768} height={256} alt="Banner" className="w-full h-full absolute top-0 left-0 rounded-md object-cover z-0 opacity-20" />
+                        <Image src={startup.avatar} alt="Startup Avatar" width={128} height={128} className="w-[128px] h-[128px] rounded-md object-cover z-10" />
+                        <section className="flex-grow h-full mb-auto z-10">
+                            <section className="flex flex-row items-center gap-2">
+                                <h1 className="font-bold">{startup.name}</h1>
+                                <CommonButton text='View Page' onClick={() => router.push(`/startup/${startup.id}`)} className="text-xs" />
+                            </section>
+                            <p>{startup.industry ? startup.industry : 'Startup'}</p>
+                            <p>{startup.country ? startup.country : 'Remote'}</p>
+                        </section>
+                    </div>)
+                }
+            </div>
+        }
         <div className='w-full h-full mt-10'>
-            <p className="text-xl font-semibold mb-4 text-center">Posts From {profile.username}</p>
+            <p className="text-xl font-semibold mb-4 text-left">Posts From {profile.username}</p>
             {
                 posts &&
                 posts.length === 0 &&
@@ -215,6 +235,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     const me = (await supabase.auth.getUser()).data.user;
     const profile = (await supabase.from('profiles').select('*').eq('id', context.params?.id).single()).data as Profile | null;
 
+    const startups = profile ? (await supabase.from('startups').select('*').in('id', profile?.startups)).data as Startup[] : [];
+    
     let isFollowing: boolean = false;
     // If the profile I'm viewing is not mine, check if I am following this person.
     if (profile?.id !== me?.id)
@@ -230,6 +252,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
         props: {
             me,
             profile,
+            startups,
             isFollowing
         }
     }

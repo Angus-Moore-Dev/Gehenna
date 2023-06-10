@@ -83,15 +83,9 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
         </div>
         <TextInput label='Email' value={profileData.email} className="w-96" disabled />
         <TextInput label='Handle (coming soon)' value={profileData.handle} className="w-96" disabled />
-        {/* <div className="w-96 flex flex-col gap-2">
-            <span>Startup</span>
-            {
-                !profileData.startup &&
-                <Link href='/startup/create' className="w-96 flex flex-col items-center justify-center font-semibold text-white bg-primary transition hover:bg-primary-light p-2 rounded-md">
-                    Create Startup
-                </Link>
-            }
-        </div> */}
+        <Link href='/startup/create' className="w-96 flex flex-col items-center justify-center font-semibold text-white bg-primary transition hover:bg-primary-light p-2 rounded-md">
+            Create Startup
+        </Link>
         <div className="flex flex-col gap-2 items-end">
             <Textarea label='Bio (About Yourself)' value={bio} onChange={(e) => setBio(e.target.value)} className="w-96" maxLength={500} autosize />
             <small className="mr-auto">{500 - bio.length} characters left</small>
