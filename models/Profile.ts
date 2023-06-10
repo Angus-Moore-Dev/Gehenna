@@ -10,7 +10,7 @@ export class Profile
     avatar: string = '';
     bio: string = '';
     emailVerified: boolean = false;
-    startup: string = '';
+    startups: string[] = [];
     handle: string = '';
     profileBannerURL: AttachedFile = { url: '', mimeType: '', byteSize: 0 };
 }

@@ -1,22 +1,22 @@
 export type Startup = {
     id: string; // uuid
     name: string;
-    team: TeamRole[];
     bio: string;
-    createdAt: string; // timestamptz
+    createdAt?: string; // timestamptz
     country: string;
-    city: string;
-    vision: string;
+    mission: string;
+    domain: string;
+    industry: string;
     avatar: string;
     bannerURL: string;
-    primaryColour: string;
-    secondaryColour: string;
+    team: TeamRole[];
+    theme: "Light" | "Dark";
 }
 
 
 export type TeamRole = {
-    userId: string; // foreign key uuid
-    type: string; // Founder, Co-Founder, Employee, Advisor, Investor
-    description: string; // description of role
-    skills: string[]; // array of skills
+    avatar: string;
+    name: string;
+    email: string;
+    role: string;
 }
