@@ -60,7 +60,7 @@ export default function StartupPage({ startup, me, membersWithProfiles }: { star
             {
                 startup.team.filter(member => membersWithProfiles.some(x => x.email === member.email)).map((member, index) => 
                 <div key={index} className="w-[32.73%] h-96 rounded-md bg-tertiary flex flex-col gap-2 items-center justify-start p-4 group">
-                    <Image src={membersWithProfiles.find(x => x.email === member.email)?.avatar!} width={256} height={256} quality={100} alt="Profile Picture" className="w-[256px] h-[256px] object-cover rounded-md" />
+                    <Image src={membersWithProfiles.find(x => x.email === member.email)?.avatar ?? '/blade.webp'} width={256} height={256} quality={100} alt="Profile Picture" className="w-[256px] h-[256px] object-cover rounded-md" />
                     <h1 className="text-xl font-semibold w-full">{membersWithProfiles.find(x => x.email === member.email)?.username}</h1>
                     <p className="text-sm font-light w-full">{member.role}</p>
                     <Link href={`/profile/${membersWithProfiles.find(x => x.email === member.email)?.id}`} className="p-1 bg-primary hover:bg-primary-light text-white rounded-md mr-auto text-xs font-light px-2">
@@ -72,7 +72,7 @@ export default function StartupPage({ startup, me, membersWithProfiles }: { star
                 startup.team.filter(member => !membersWithProfiles.some(x => x.email === member.email)).map((member, index) => 
                 <div key={index} 
                 className="w-[32.73%] h-96 rounded-md bg-tertiary flex flex-col gap-2 items-center justify-start p-4">
-                    <Image src={member.avatar} width={256} height={256} quality={100} alt="Profile Picture" className="object-cover rounded-md" />
+                    <Image src={member.avatar ?? '/blade.webp'} width={256} height={256} quality={100} alt="Profile Picture" className="object-cover rounded-md" />
                     <h1 className="text-xl font-semibold w-full">{member.name}</h1>
                     <p className="text-sm font-light w-full">{member.role}</p>
                 </div>)
