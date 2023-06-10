@@ -31,7 +31,7 @@ export default function CreateNewStartup()
 
     const [isCreating, setIsCreating] = useState(false);
 
-    return <div className="flex-grow flex flex-col gap-4 mx-auto py-8 items-center max-w-3xl">
+    return <div className="flex-grow flex flex-col gap-10 mx-auto py-8 items-center max-w-3xl">
         <Link href='/'>
             <Gehenna />
         </Link>
@@ -39,9 +39,10 @@ export default function CreateNewStartup()
             Add Your Startup / Organisation
         </h1>
         <span>
-            Add your startup to Gehenna, so that you can start sharing your journey and experiences.
+            Add your startup to Gehenna, so that you can start sharing your journey and experiences
+            from your org's perspective.
         </span>
-        <div className="w-full mx-auto flex flex-col gap-2 justify-center mb-10">
+        <div className="w-[768px] mx-auto flex flex-col gap-2 justify-center">
             <span>Your Startup Banner</span>
             {
                 !banner &&
@@ -124,18 +125,49 @@ export default function CreateNewStartup()
             <TextInput label="Domain" placeholder="yourcompany.domain" value={domain} onChange={(e) => setDomain(e.target.value)} />
             <TextInput label="Country" placeholder="Where is your startup located?" value={country} onChange={(e) => setCountry(e.target.value)} />
         </div>
-        <div className="w-full mx-auto flex flex-col gap-2 justify-center">
-            <span>Team Members</span>
-            <div className="w-full flex flex-row gap-4 flex-wrap">
+        <div className="w-full mx-auto flex flex-col gap-4 justify-center">
+            <div className="flex flex-row items-center gap-4">
+                <span>Team Members</span>
+                <CommonButton text='Add Member' onClick={() => {
+
+                }} className="text-xs py-1" />
+            </div>
+            <div className="w-full flex flex-row gap-4 flex-wrap justify-between">
                 <TeamMemberAddition onProfileUpload={function (file: File): void {
                     throw new Error("Function not implemented.");
-                } } setName={function (name: string): void {
+                }} setName={function (name: string): void {
                     throw new Error("Function not implemented.");
-                } } setRole={function (role: string): void {
+                }} setRole={function (role: string): void {
                     throw new Error("Function not implemented.");
-                } } setBio={function (bio: string): void {
+                }} />
+                <TeamMemberAddition onProfileUpload={function (file: File): void {
                     throw new Error("Function not implemented.");
-                } } />
+                }} setName={function (name: string): void {
+                    throw new Error("Function not implemented.");
+                }} setRole={function (role: string): void {
+                    throw new Error("Function not implemented.");
+                }} />
+                <TeamMemberAddition onProfileUpload={function (file: File): void {
+                    throw new Error("Function not implemented.");
+                }} setName={function (name: string): void {
+                    throw new Error("Function not implemented.");
+                }} setRole={function (role: string): void {
+                    throw new Error("Function not implemented.");
+                }} />
+                <TeamMemberAddition onProfileUpload={function (file: File): void {
+                    throw new Error("Function not implemented.");
+                }} setName={function (name: string): void {
+                    throw new Error("Function not implemented.");
+                }} setRole={function (role: string): void {
+                    throw new Error("Function not implemented.");
+                }} />
+                <TeamMemberAddition onProfileUpload={function (file: File): void {
+                    throw new Error("Function not implemented.");
+                }} setName={function (name: string): void {
+                    throw new Error("Function not implemented.");
+                }} setRole={function (role: string): void {
+                    throw new Error("Function not implemented.");
+                }} />
             </div>
         </div>
         <div className="w-96 mx-auto flex flex-col gap-4">
