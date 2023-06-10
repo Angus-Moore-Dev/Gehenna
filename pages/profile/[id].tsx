@@ -159,6 +159,7 @@ export default function ProfilePage({ me, profile, startups, isFollowing }: { me
         {
             startups.length > 0 &&
             <div className="w-full flex flex-col gap-4">
+                <span className="text-xl font-semibold">Startups / Organisations</span>
                 {
                     startups.map((startup, index) => <div key={index} className="relative w-full p-4 bg-tertiary rounded-md flex flex-row gap-4 items-center">
                         <Image src={startup.bannerURL} width={768} height={256} alt="Banner" className="w-full h-full absolute top-0 left-0 rounded-md object-cover z-0 opacity-20" />
