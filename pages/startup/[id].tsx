@@ -50,7 +50,7 @@ export default function StartupPage({ startup, me }: { startup: Startup, me: Pro
             <Tabs defaultValue="Posts" className="w-full" orientation="horizontal">
                 <Tabs.List>
                     <Tabs.Tab value="Posts" className={`${me && 'w-1/3'} ${!me && 'w-1/2'}`}>Posts</Tabs.Tab>
-                    <Tabs.Tab value="Members" className={`${me && 'w-1/3'} ${!me && 'w-1/2'}`}>Members</Tabs.Tab>
+                    <Tabs.Tab value="Team" className={`${me && 'w-1/3'} ${!me && 'w-1/2'}`}>Team</Tabs.Tab>
                     {
                         me &&
                         me.startups.some(s => s === startup.id) && <Tabs.Tab value="Settings" className="w-1/3">Settings</Tabs.Tab>
