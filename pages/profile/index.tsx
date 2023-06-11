@@ -61,7 +61,7 @@ export default function ProfilePage({ profileData }: ProfilePageProps)
             <Gehenna />
         </Link>
         <h1 className="text-4xl font-bold">My Profile</h1>
-        <Link href={`/profile/${profileData.id}`} className="flex flex-col items-center justify-center font-semibold text-white bg-primary transition hover:bg-primary-light p-2 rounded-md">
+        <Link href={`/profile/${profileData.handle}`} className="flex flex-col items-center justify-center font-semibold text-white bg-primary transition hover:bg-primary-light p-2 rounded-md">
             View Public Profile
         </Link>
         <ProfileBannerManager profileData={profileData} />

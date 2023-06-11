@@ -115,7 +115,7 @@ export default function CommentBox({ profile, comment, table, me, removeComment 
 			)}
 			{profileData && (
 				<>
-					<Link href={`/profile/${profileData.id}`}>
+					<Link href={`/profile/${profileData.handle}`}>
 						<Image
 							src={profileData.avatar}
 							alt="profile_picture"

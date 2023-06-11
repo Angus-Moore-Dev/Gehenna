@@ -67,7 +67,7 @@ export default function ProfilePage({ me, profile, startups, isFollowing }: { me
             <link href='/favicon.png' rel='icon' />
             <meta name='viewport' content='initial-scale=1.0, width=device-width' />
             <meta name="description" content={profile.bio} />
-            <meta property="og:url" content={`https://www.gehenna.dev/profile/${profile.id}`} />
+            <meta property="og:url" content={`https://www.gehenna.dev/profile/${profile.handle}`} />
             <meta property="og:type" content="website" />
             <meta property="og:title" content={`${profile.username}`} />
             <meta property="og:description" content={`${profile.bio}`} />
@@ -75,7 +75,7 @@ export default function ProfilePage({ me, profile, startups, isFollowing }: { me
 
             <meta name="twitter:card" content="summary_large_image" />
             <meta property="twitter:domain" content="gehenna.dev" />
-            <meta property="twitter:url" content={`https://www.gehenna.dev/profile/${profile.id}`} />
+            <meta property="twitter:url" content={`https://www.gehenna.dev/profile/${profile.handle}`} />
             <meta name="twitter:title" content={`${profile.username}`} />
             <meta name="twitter:description" content={profile.bio} />
             <meta name="twitter:image" content={profile.avatar} />
@@ -234,7 +234,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 {
     const supabase = serverDb(context);
     const me = (await supabase.auth.getUser()).data.user;
-    const profile = (await supabase.from('profiles').select('*').eq('id', context.params?.id).single()).data as Profile | null;
+    const profile = (await supabase.from('profiles').select('*').eq('handle', context.params?.id).single()).data as Profile | null;
 
     const startups = profile ? (await supabase.from('startups').select('*').in('id', profile?.startups)).data as Startup[] : [];
     

@@ -32,7 +32,7 @@ export default function ProfileCard({ profile }: ProfileCardProps)
                     </div>
                 </section>
             </section>
-            <Link href={`/profile/${profile.id}`} className="p-1 w-fit px-2 ml-4 bg-primary text-white hover:bg-primary-light rounded-md text-center text-xs">
+            <Link href={`/profile/${profile.handle}`} className="p-1 w-fit px-2 ml-4 bg-primary text-white hover:bg-primary-light rounded-md text-center text-xs">
                 View Profile
             </Link>
             <section className="w-full flex flex-row gap-2 p-4">
