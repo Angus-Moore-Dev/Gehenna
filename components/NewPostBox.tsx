@@ -19,12 +19,14 @@ import { ImageDropzone } from './ImageDropzone';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from 'next/image';
 import ImageCropper from './ImageCropper';
+import { Startup } from '@/models/Startup';
 interface NewPostBoxProps
 {
     user: User;
+    startup?: Startup;
 }
 
-export default function NewPostBox({ user }: NewPostBoxProps)
+export default function NewPostBox({ user, startup }: NewPostBoxProps)
 {
     const router = useRouter();
     const [title, setTitle] = useState('');
@@ -70,7 +72,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
 
     return <div className='w-full flex flex-col items-center scrollbar'>
         <div className='w-full flex flex-col items-center gap-4'>
-            <span className='text-2xl font-bold mr-auto'>Start a New Thread</span>
+            <span className='text-2xl font-bold mr-auto'>Create A New Post { startup && `For ${startup.name}`}</span>
             <TextInput placeholder='Thread Title' className='w-full font-semibold' value={title} onChange={(e) => setTitle(e.target.value)} size='xl' maxLength={96} />
             <small className='-mt-2 text-gray-500 mr-auto'>{96 - title.length} characters left</small>
             <span className='-mb-2 mr-auto font-bold text-xl'>Cover Image</span>
@@ -100,7 +102,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                     <Image src={previewImageURL} alt='' width={400} height={450} className='mx-auto flex flex-col items-center w-[450px] rounded-md' />
                 }
             </div>
-            <span className='text-xl font-semibold -mb-2 mr-auto'>Thread Content</span>
+            <span className='text-xl font-semibold -mb-2 mr-auto'>Post Content</span>
             <RichTextEditor editor={editor} style={{
                 width: '100%'
             }}>
@@ -242,6 +244,7 @@ export default function NewPostBox({ user }: NewPostBoxProps)
                             tags: tags,
                             attachedFileURLs: fileURLs,
                             postImageURL: postImage,
+                            startupId: startup ? startup.id : null,
                         });
                         if (res.error)
                         {

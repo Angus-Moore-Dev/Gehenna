@@ -21,6 +21,7 @@ import PostSettingsModal from "@/components/PostSettingsModal";
 import { Reaction } from "@/models/Reaction";
 import Reactions from "@/components/Reactions";
 import { IconClock, IconLink, IconMessage } from "@tabler/icons-react";
+import { Startup } from "@/models/Startup";
 
 interface PostIdPageProps
 {
@@ -30,9 +31,10 @@ interface PostIdPageProps
     commenters: Profile[];
     comments: Comment[];
     reactions: Reaction[];
+    startup?: Startup | null;
 }
 
-export default function PostIdPage({ post, poster, me, comments, commenters, reactions }: PostIdPageProps)
+export default function PostIdPage({ post, poster, me, comments, commenters, reactions, startup }: PostIdPageProps)
 {
     const commentRef = useRef<HTMLDivElement>(null);
     const [postCommentors] = useState(commenters);
@@ -72,10 +74,19 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
         </Link>
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center mb-4 relative">
-                <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
-                onClick={async () => {
-                    setShowCard(!showCard);
-                }} />
+                {
+                    !startup &&
+                    <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
+                    onClick={async () => {
+                        setShowCard(!showCard);
+                    }} />
+                }
+                {
+                    startup &&
+                    <Link href={`/startup/${startup.id}`}>
+                        <Image ref={ref} src={startup.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse" />
+                    </Link>
+                }
                 {
                     showCard &&
                     <div className="absolute top-14">
@@ -83,7 +94,14 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                     </div>
                 }
                 <span className="font-semibold text-xl">
-                    {poster.username} <i>wrote:</i>
+                    {
+                        !startup &&
+                        <span>{poster.username} <i>wrote:</i></span>
+                    }
+                    {
+                        startup &&
+                        <span>{startup.name} <i>wrote:</i></span>
+                    }
                     <br />
                     <div className="flex flex-row gap-4 items-center mt-2">
                         <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
@@ -277,11 +295,15 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
 
     const reactions = (await db.from('reactions').select('*').eq('postId', postId)).data as Reaction[];
 
+    const startup: Startup | null = (await db.from('startups').select('*').eq('id', post.startupId).single()).data as Startup | null;
+    
+
     return {
         props: {
             post: post,
             me: profile,
             poster: poster,
+            startup: startup,
             comments: comments,
             reactions: reactions,
             commenters: commenters,

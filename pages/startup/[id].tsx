@@ -1,15 +1,23 @@
+import CommonButton from "@/components/CommonButton";
 import { Gehenna } from "@/components/Gehenna";
+import NewPostModal from "@/components/NewPostModal";
+import PostPreviewBox from "@/components/PostPreviewBox";
 import { serverDb } from "@/lib/db";
+import { Post } from "@/models/Post";
 import { Profile } from "@/models/Profile";
 import { Startup } from "@/models/Startup";
 import { ScrollArea, Tabs } from "@mantine/core";
+import { User } from "@supabase/supabase-js";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
-export default function StartupPage({ startup, me, membersWithProfiles }: { startup: Startup, me: Profile | null, membersWithProfiles: Profile[] })
+export default function StartupPage({ user, startup, me, membersWithProfiles, posts }: { user: User | null, startup: Startup, me: Profile | null, membersWithProfiles: Profile[], posts: Post[] })
 {
+    const [view, setView] = useState<string | null>('Posts');
+
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-4xl mx-auto py-8">
         <Head>
             <title>Gehenna - {startup.name}</title>
@@ -46,38 +54,76 @@ export default function StartupPage({ startup, me, membersWithProfiles }: { star
                 </section>
             </section>
         </section>
-        <span className="text-xl font-semibold">Meet The Team</span>
         <section className="w-full flex flex-row gap-2 flex-wrap">
-            {/* <Tabs defaultValue="Posts" className="w-full" orientation="horizontal">
+            <Tabs defaultValue="Posts" className="w-full" orientation="horizontal" value={view} onTabChange={setView}>
                 <Tabs.List>
-                    <Tabs.Tab value="About" className={`${me && 'w-1/3'} ${!me && 'w-1/2'}`}>Posts</Tabs.Tab>
+                    <Tabs.Tab value="Posts" className={`${me && 'w-1/3'} ${!me && 'w-1/2'}`}>Posts</Tabs.Tab>
                     <Tabs.Tab value="Team" className={`${me && 'w-1/3'} ${!me && 'w-1/2'}`}>Team</Tabs.Tab>
                     {
                         me &&
                         me.startups.some(s => s === startup.id) && <Tabs.Tab value="Settings" className="w-1/3">Settings</Tabs.Tab>
                     }
                 </Tabs.List>
-            </Tabs> */}
-            
+            </Tabs>
             {
-                startup.team.filter(member => membersWithProfiles.some(x => x.email === member.email)).map((member, index) => 
-                <div key={index} className="w-[32.73%] h-96 rounded-md bg-tertiary flex flex-col gap-2 items-center justify-start p-4 group">
-                    <Image src={membersWithProfiles.find(x => x.email === member.email)?.avatar ?? '/blade.webp'} width={256} height={256} quality={100} alt="Profile Picture" className="w-[256px] h-[256px] object-cover rounded-md" />
-                    <h1 className="text-xl font-semibold w-full">{membersWithProfiles.find(x => x.email === member.email)?.username}</h1>
-                    <p className="text-sm font-light w-full">{member.role}</p>
-                    <Link href={`/profile/${membersWithProfiles.find(x => x.email === member.email)?.handle}`} className="p-1 bg-primary hover:bg-primary-light text-white rounded-md mr-auto text-xs font-light px-2">
-                        View Profile
-                    </Link>
-                </div>)
+                view === 'Posts' &&
+                <section className="w-full py-4">
+                    {
+                        me && user &&
+                        me.startups.some(x => x === startup.id) &&
+                        <div className="w-full flex items-center justify-center">
+                            <NewPostModal user={user} startup={startup} />
+                        </div>
+                    }
+                    {
+                        posts.length === 0 &&
+                        <section className="w-full flex flex-row flex-wrap justify-center gap-4 mt-8">
+                            <h1 className="text-2xl font-semibold">No posts yet.</h1>
+                        </section>
+                    }
+                    {
+                        posts.length > 0 &&
+                        <section className="w-full flex flex-row flex-wrap justify-center gap-4 mt-8">
+                        {
+                            posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+                        }
+                        </section>
+                    }
+                    
+                </section>
             }
             {
-                startup.team.filter(member => !membersWithProfiles.some(x => x.email === member.email)).map((member, index) => 
-                <div key={index} 
-                className="w-[32.73%] h-96 rounded-md bg-tertiary flex flex-col gap-2 items-center justify-start p-4">
-                    <Image src={member.avatar ?? '/blade.webp'} width={256} height={256} quality={100} alt="Profile Picture" className="object-cover rounded-md" />
-                    <h1 className="text-xl font-semibold w-full">{member.name}</h1>
-                    <p className="text-sm font-light w-full">{member.role}</p>
-                </div>)
+                view === 'Team' &&
+                <section className="w-full flex flex-col gap-2">
+                    <div className="w-full flex flex-row gap-2 flex-wrap">
+                    {
+                        startup.team.filter(member => membersWithProfiles.some(x => x.email === member.email)).map((member, index) => 
+                        <div key={index} className="w-[32.73%] h-96 rounded-md bg-tertiary flex flex-col gap-2 items-center justify-start p-4 group">
+                            <Image src={membersWithProfiles.find(x => x.email === member.email)?.avatar ?? '/blade.webp'} width={256} height={256} quality={100} alt="Profile Picture" className="w-[256px] h-[256px] object-cover rounded-md" />
+                            <h1 className="text-xl font-semibold w-full">{membersWithProfiles.find(x => x.email === member.email)?.username}</h1>
+                            <p className="text-sm font-light w-full">{member.role}</p>
+                            <Link href={`/profile/${membersWithProfiles.find(x => x.email === member.email)?.handle}`} className="p-1 bg-primary hover:bg-primary-light text-white rounded-md mr-auto text-xs font-light px-2">
+                                View Profile
+                            </Link>
+                        </div>)
+                    }
+                    {
+                        startup.team.filter(member => !membersWithProfiles.some(x => x.email === member.email)).map((member, index) => 
+                        <div key={index} 
+                        className="w-[32.73%] h-96 rounded-md bg-tertiary flex flex-col gap-2 items-center justify-start p-4">
+                            <Image src={member.avatar ?? '/blade.webp'} width={256} height={256} quality={100} alt="Profile Picture" className="object-cover rounded-md" />
+                            <h1 className="text-xl font-semibold w-full">{member.name}</h1>
+                            <p className="text-sm font-light w-full">{member.role}</p>
+                        </div>)
+                    }
+                    </div>
+                </section>
+            }
+            {
+                view === 'Settings' &&
+                <section className="w-full">
+                    Settings
+                </section>
             }
         </section>
     </div>
@@ -92,12 +138,16 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     // Check if any of the members have emails that match the startup team's emails
     const team = (await supabase.from('profiles').select('*').in('email', startup.team.map(t => t.email))).data as Profile[];
 
+    const posts = (await supabase.from('post').select('*').eq('startupId', startup.id)).data as Post[];
+
     if (user)
     {
         const me = (await supabase.from('profiles').select('*').eq('id', user.id).single()).data as Profile;
         return {
             props: {
+                user,
                 startup,
+                posts,
                 membersWithProfiles: team,
                 me
             }
@@ -107,7 +157,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     {
         return {
             props: {
+                user: null,
                 startup,
+                posts,
                 membersWithProfiles: team,
                 me: null
             }

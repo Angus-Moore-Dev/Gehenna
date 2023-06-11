@@ -8,6 +8,7 @@ export type Post = {
     tags: string[];
     attachedFileURLs: AttachedFile[];
     postImageURL: AttachedFile;
+    startupId: string | null; // The id of the startup that this post COULD be associated with
 }
 
 export type AttachedFile = {
