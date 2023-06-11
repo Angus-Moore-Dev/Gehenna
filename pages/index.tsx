@@ -24,7 +24,7 @@ interface HomePageProps
 }
 
 export const config = {
-	runtime: 'edge'
+	runtime: 'experimental-edge'
 }
 
 export default function HomePage({ user, profile, staticPosts }: HomePageProps)
