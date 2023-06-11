@@ -23,10 +23,6 @@ interface HomePageProps
 	staticPosts: Post[];
 }
 
-export const config = {
-	runtime: 'experimental-edge'
-}
-
 export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 {
 	const router = useRouter();
