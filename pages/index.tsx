@@ -15,13 +15,16 @@ import { useRouter } from 'next/router';
 import NewPostModal from '@/components/NewPostModal';
 import { Gehenna } from '@/components/Gehenna';
 import SignInModal from '@/components/SignInModal';
-import CommonButton from '@/components/CommonButton';
 
 interface HomePageProps
 {
 	user: User | null;
 	profile: Profile | null;
 	staticPosts: Post[];
+}
+
+export const config = {
+	runtime: 'edge'
 }
 
 export default function HomePage({ user, profile, staticPosts }: HomePageProps)

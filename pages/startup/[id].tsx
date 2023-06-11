@@ -89,7 +89,6 @@ export default function StartupPage({ user, startup, me, membersWithProfiles, po
                         }
                         </section>
                     }
-                    
                 </section>
             }
             {
