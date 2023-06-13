@@ -1,6 +1,5 @@
 export type Post = {
     id: string;
-    articleId: string; // My bad
     title: string;
     content: string;
     userId: string;
