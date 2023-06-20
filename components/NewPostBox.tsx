@@ -14,7 +14,7 @@ import { User } from '@supabase/supabase-js';
 import { toast } from 'react-toastify';
 import { v4 } from 'uuid';
 import { useRouter } from 'next/router';
-import { AttachedFile, Tags } from '@/models/Post';
+import { AttachedFile, Post, Tags } from '@/models/Post';
 import { ImageDropzone } from './ImageDropzone';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from 'next/image';
@@ -24,15 +24,18 @@ interface NewPostBoxProps
 {
     user: User;
     startup?: Startup;
+    handleClose: () => void;
+    draftPost?: Post;
+    setDraftPost?: (post: Post) => void;
 }
 
-export default function NewPostBox({ user, startup }: NewPostBoxProps)
+export default function NewPostBox({ user, startup, handleClose, draftPost, setDraftPost }: NewPostBoxProps)
 {
     const router = useRouter();
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [title, setTitle] = useState(draftPost ? draftPost.title : '');
+    const [content, setContent] = useState(draftPost ? draftPost.content : '');
     const [isCreating, setIsCreating] = useState(false);
-    const [tags, setTags] = useState<string[]>([]);
+    const [tags, setTags] = useState<string[]>(draftPost ? draftPost.tags : []);
     const [tagsFilter, setTagsFilter] = useState('');
 
     const [files, setFiles] = useState<File[]>([]);
@@ -76,6 +79,7 @@ export default function NewPostBox({ user, startup }: NewPostBoxProps)
             <TextInput placeholder='Thread Title' className='w-full font-semibold' value={title} onChange={(e) => setTitle(e.target.value)} size='xl' maxLength={96} />
             <small className='-mt-2 text-gray-500 mr-auto'>{96 - title.length} characters left</small>
             <span className='-mb-2 mr-auto font-bold text-xl'>Cover Image</span>
+            <small className='mr-auto -mt-1'>This will not be saved if you save a draft</small>
             <div className='w-full'>
                 {
                     !coverImage &&
@@ -149,6 +153,7 @@ export default function NewPostBox({ user, startup }: NewPostBoxProps)
             </RichTextEditor>
             <div className='w-full flex flex-col gap-2'>
                 <span className='text-xl font-semibold'>Any Extra Files (Optional)</span>
+                <small className='mr-auto -mt-1'>These will not be saved if you save a draft</small>
                 <ImageDropzone onUpload={(files: File[]) => {
                     setFiles(existingFiles => [...existingFiles, ...files]);
                 }} isUploading={isCreating} height={50} accept={['image/*', 'audio/*', 'video/*']} multiple={true} />
@@ -190,6 +195,83 @@ export default function NewPostBox({ user, startup }: NewPostBoxProps)
                 {
                     isFilesTooLarge &&
                     <span className='text-red-500'>Files are too large. Please keep your image count below 5mb :(</span>
+                }
+                {
+                    !isCreating &&
+                    <CommonButton text='Save Draft' onClick={async () => {
+                        setIsCreating(true);
+                        if (draftPost)
+                        {
+                            // Update call here with the existing ID, no need to create a new one
+                            const id = draftPost.id;
+                            const res = await clientDb.from('draftPost').update({
+                                id,
+                                title,
+                                content,
+                                userId: user.id,
+                                tags: tags,
+                                attachedFileURLs: [],
+                                postImageURL: {},
+                                startupId: startup ? startup.id : null,
+                            }).eq('id', id);
+
+                            res.error && toast.error('Failed to save draft');
+                            if (!res.error)
+                            {
+                                toast.success('Saved draft');
+                                if (setDraftPost)
+                                {
+                                    setDraftPost({
+                                        id,
+                                        title,
+                                        createdAt: draftPost.createdAt,
+                                        content,
+                                        userId: user.id,
+                                        tags: tags,
+                                        attachedFileURLs: [],
+                                        postImageURL: {
+                                            url: '',
+                                            mimeType: '',
+                                            byteSize: 0,
+                                        },
+                                        startupId: startup ? startup.id : null,
+                                    });
+                                }
+                                setTags([]);
+                                setTitle('');
+                                setContent('');
+                                handleClose();
+                            }
+                        }
+                        else
+                        {
+                            const id = v4();
+                            const res = await clientDb.from('draftPost').insert({
+                                id,
+                                title,
+                                content,
+                                userId: user.id,
+                                tags: tags,
+                                attachedFileURLs: [],
+                                postImageURL: {},
+                                startupId: startup ? startup.id : null,
+                            });
+        
+                            if (res.error)
+                            {
+                                toast.error('Failed to save draft');
+                            }
+                            else
+                            {
+                                setTags([]);
+                                setTitle('');
+                                setContent('');
+                                toast.success('Saved draft');
+                                handleClose();
+                            }
+                        }
+                        setIsCreating(false);
+                    }} className='bg-blue-700 hover:bg-blue-500 mt-4' />
                 }
                 {
                     !isCreating && !isFilesTooLarge && coverImage && title && content &&

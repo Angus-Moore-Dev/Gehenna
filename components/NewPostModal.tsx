@@ -18,8 +18,8 @@ export default function NewPostModal({ user, startup }: NewPostModalProps)
 
     return <>
     <Modal opened={opened} onClose={close} centered size='xl'>
-        <NewPostBox user={user} startup={startup} />
+        <NewPostBox user={user} startup={startup} handleClose={() => close()} />
     </Modal>
-    <CommonButton onClick={open} className='w-full max-w-[550px] py-2 text-xl font-bold text-white' text='Create New Post' />
+    <CommonButton onClick={open} className='w-full max-w-[550px] py-2 text-lg font-bold text-white' text='Create New Post' />
     </>
 }

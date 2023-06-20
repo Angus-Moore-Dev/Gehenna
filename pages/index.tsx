@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import NewPostModal from '@/components/NewPostModal';
 import { Gehenna } from '@/components/Gehenna';
 import SignInModal from '@/components/SignInModal';
+import DraftPosts from '@/components/DraftPosts';
 
 interface HomePageProps
 {
@@ -179,6 +180,10 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 					}} className='rounded-r-md rounded-l-none text-xs font-normal' /> */}
 				</section>
 				{/* The user can make new posts here. */}
+				{
+					profile && user && profile.emailVerified &&
+					<DraftPosts user={user} />
+				}
 				{
 					profile && user && profile.emailVerified &&
 					<NewPostModal user={user} />
