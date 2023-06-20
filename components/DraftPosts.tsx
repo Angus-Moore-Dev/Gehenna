@@ -41,7 +41,13 @@ export default function DraftPosts({ user }: { user: User })
             }
             {
                 !isLoading &&
-                draftPosts.map((post, index) => <DraftPostBox key={index} user={user} draftPost={post} />)
+                draftPosts.map((post, index) => <DraftPostBox key={index} user={user} draftPost={post} parentClose={() => close()} />)
+            }
+            {
+                draftPosts.length === 0 && !isLoading &&
+                <div className='text-center text-gray-500'>
+                    <h1 className='text-2xl font-bold'>No draft posts</h1>
+                </div>
             }
         </div>
     </Modal>
