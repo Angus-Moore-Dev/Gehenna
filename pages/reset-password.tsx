@@ -30,7 +30,10 @@ export default function ResetPasswordPage({ user }: ResetPasswordPageProps)
                     clientDb.auth.setSession(session);
                 }
             }
-            window.location.reload();
+            else
+            {
+                window.location.reload();
+            }
         });
         
         if (!user)

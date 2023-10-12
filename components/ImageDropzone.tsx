@@ -19,8 +19,8 @@ export function ImageDropzone({ onUpload, isUploading, height, accept, multiple 
     return (
         <Dropzone
         onDrop={onUpload}
-        onReject={(files) => toast.error('Rejected files! Please upload only images, video and audio files within 3mb')}
-        maxSize={2 * 1024 ** 2}
+        onReject={(files) => toast.error('Rejected files! Please upload only images, video and audio files within 50mb')}
+        maxSize={50 * (1024 ** 2)}
         accept={accept}
         multiple={multiple}
         loading={isUploading}

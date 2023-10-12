@@ -28,9 +28,9 @@ export default function ProfilePictureManager({ profileData }: { profileData: Pr
         }
         
         // if the byte size is greater than 4mb, turn em away as well.
-        if (newProfilePicture.size > 3 * 1024 * 1024)
+        if (newProfilePicture.size > 25 * 1024 * 1024)
         {
-            toast.error('Your image must be less than 3mb.');
+            toast.error('Your image must be less than 25MB.');
         }
 
         if (newProfilePicture)
