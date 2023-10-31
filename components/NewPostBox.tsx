@@ -177,7 +177,7 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
                 <div className='w-full flex flex-row gap-1 flex-wrap justify-center'>
                     {
                         Object.values(Tags).filter(x => x.toLowerCase().startsWith(tagsFilter.toLowerCase())).map(tag => <button>
-                            <Chip checked={tags.some(x => x === tag)} color="yellow" onClick={() => {
+                            <Chip checked={tags.some(x => x === tag)} onClick={() => {
                                 if (tags.some(x => x === tag))
                                 {
                                     setTags(tags.filter(x => x !== tag));

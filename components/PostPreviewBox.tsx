@@ -168,10 +168,10 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                                 <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                             </div>
                         </section>
-                        <section className="flex flex-col items-end">
+                        {/* <section className="flex flex-col items-end">
                             <span className="text-primary-light font-semibold group-hover:text-white">{upvotes} Like{upvotes === 0 || upvotes > 1 || upvotes < 0 ? 's' : ''}</span>
                             <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comment{commentCount === 0 || commentCount > 1 ? 's' : ''}</small>
-                        </section>
+                        </section> */}
                     </section>
                     <section className="flex flex-row flex-wrap items-center gap-1.5 px-4">
                         {
