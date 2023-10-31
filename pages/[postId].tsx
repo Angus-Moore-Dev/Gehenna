@@ -76,22 +76,13 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
             <div className="flex flex-row gap-4 items-center mb-4 relative">
                 {
                     !startup &&
-                    <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse"
-                    onClick={async () => {
-                        setShowCard(!showCard);
-                    }} />
+                    <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse" />
                 }
                 {
                     startup &&
                     <Link href={`/startup/${startup.id}`}>
                         <Image ref={ref} src={startup.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse" />
                     </Link>
-                }
-                {
-                    showCard &&
-                    <div className="absolute top-14">
-                        <ProfileCard profile={poster} /> 
-                    </div>
                 }
                 <span className="font-semibold text-xl">
                     {
