@@ -7,7 +7,6 @@ import { ToastContainer } from 'react-toastify';
 import { Loader, MantineProvider } from '@mantine/core';
 import { virginDb } from '@/lib/db';
 import 'react-toastify/dist/ReactToastify.css';
-import Footer from '@/components/Footer';
 import { Router } from 'next/router';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -48,7 +47,21 @@ export default function App({ Component, pageProps }: AppProps) {
 			theme={{
 				colorScheme: 'dark',
 				focusRing: 'never', 
-				primaryColor: 'yellow',
+				primaryColor: 'green',
+				colors: {
+					green: [
+						"#e4ffeb",
+						"#cdffdb",
+						"#9bffb7",
+						"#64ff90",
+						"#39ff6f",
+						"#1fff5a",
+						"#09ff4f",
+						"#00e33f",
+						"#00c935",
+						"#00ae28"
+					]
+				},
 			}}>
 				<div className='w-screen min-h-screen flex flex-col'>
 					<Analytics />
@@ -67,7 +80,6 @@ export default function App({ Component, pageProps }: AppProps) {
 							!loading &&
 							<Component {...pageProps} />
 						}
-						<Footer />
 					</div>
 					<ToastContainer
 						position="top-center"

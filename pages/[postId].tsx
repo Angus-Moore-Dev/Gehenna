@@ -130,11 +130,11 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             </>
                         )}
                     </CopyButton>
-                    <Tooltip label="Comment" position="bottom">
+                    {/* <Tooltip label="Comment" position="bottom">
                         <ActionIcon size="xl" onClick={() => commentRef.current?.scrollIntoView({ 'behavior': 'smooth' })}>
                             <IconMessage className='text-neutral-400 transition hover:text-white' />
                         </ActionIcon>
-                    </Tooltip>
+                    </Tooltip> */}
                     {
                         me && me.id === poster.id &&
                         <PostSettingsModal post={postData} setPost={setPostData} />
@@ -176,8 +176,8 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
             }
             </section>
         </section>
-        <Reactions reactions={reactions} me={me} post={post} />
-        <div ref={commentRef} className="flex-grow flex flex-col gap-4 mt-4">
+        {/* <Reactions reactions={reactions} me={me} post={post} /> */}
+        {/* <div ref={commentRef} className="flex-grow flex flex-col gap-4 mt-4">
             <h1 className="text-2xl font-bold">Comments</h1>
             <div className="flex-grow h-full flex flex-col">
                 <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">
@@ -221,11 +221,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                                 setComment('');
                             }
 
-                            /*
-                                1. If we are the creator, create a notification to all the other posters.
-                                2. If we are not the creator, create a notification to the creator and all the other posters.
-                            */
-
                             const listOfPeopleToNotify: string[] = [];
                             if (postData.userId === me.id)
                             {
@@ -267,7 +262,7 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                     </div>
                 }
             </div>
-        </div>
+        </div> */}
     </div>
 }
 

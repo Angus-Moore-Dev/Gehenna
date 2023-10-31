@@ -94,10 +94,10 @@ export default function SignUpModal()
                 </Group>
             </div>
         </Modal>
-        <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
+        {/* <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
         onClick={open}>
             Don't have an account? Sign up!
-        </button>
+        </button> */}
         </>
     );
 }
