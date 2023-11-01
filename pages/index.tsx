@@ -100,18 +100,18 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 				<title>Gehenna - Learn, Grow.</title>
 				<link href='/favicon.png' rel='icon' />
 				<meta name='viewport' content='initial-scale=1.0, width=device-width' />
-				<meta name="description" content="Gehenna is a place for people to document their journeys and share their experiences." />
+				<meta name="description" content="A place of thoughts and ideas." />
 				<meta property="og:url" content="https://www.gehenna.dev" />
 				<meta property="og:type" content="website" />
 				<meta property="og:title" content="Gehenna - Learn, Grow." />
-				<meta property="og:description" content="Gehenna is a place for people to document their journeys and share their experiences." />
+				<meta property="og:description" content="A place of thoughts and ideas." />
 				<meta property="og:image" content="https://www.gehenna.dev/favicon.png" />
 
 				<meta name="twitter:card" content="summary_large_image" />
 				<meta property="twitter:domain" content="gehenna.dev" />
 				<meta property="twitter:url" content="https://www.gehenna.dev" />
 				<meta name="twitter:title" content="Gehenna - Learn, Grow." />
-				<meta name="twitter:description" content="Gehenna is a place for people to document their journeys and share their experiences." />
+				<meta name="twitter:description" content="A place of thoughts and ideas." />
 				<meta name="twitter:image" content="https://www.gehenna.dev/favicon.png" />
 			</Head>
 			{
