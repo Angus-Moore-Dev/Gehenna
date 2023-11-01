@@ -1,7 +1,7 @@
 import { useDisclosure } from "@mantine/hooks";
 import CommonButton from "./CommonButton";
-import { Chip, Loader, Modal, TextInput } from "@mantine/core";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Button, Chip, Loader, Modal, TextInput } from "@mantine/core";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Post, Tags } from "@/models/Post";
 import { RichTextEditor, Link } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
@@ -39,10 +39,30 @@ export default function EditPostModal({ post, setPostData, parentOnClose }: { po
             setContent(editor.getHTML());
         },
 	});
+
+    const [isChanged, setIsChanged] = useState(false);
+    const [alertOpened, { open: alertOpen, close: alertClose }] = useDisclosure(false);
+
+    useEffect(() => {
+        if (title !== post.title || tags !== post.tags || content !== post.content)
+            setIsChanged(true);
+        else
+            setIsChanged(false);
+    }, [title, tags, content]);
     
     return <>
     <CommonButton className="w-full" text='Edit Post' onClick={open} />
-    <Modal opened={opened} onClose={close} size='xl' centered>
+    <Modal opened={opened} onClose={() => {
+        if (isChanged)
+            alertOpen();
+        else
+        {
+            close();
+            parentOnClose();
+            setIsChanged(false);
+            alertClose();
+        }
+    }} size='xl' centered>
         <div className="w-full flex flex-col gap-4">
             <TextInput placeholder='Thread Title' className='w-full font-semibold' value={title} onChange={(e) => setTitle(e.target.value)} size='xl' maxLength={96} />
             <small className='-mt-2 text-gray-500 mr-auto'>{96 - title.length} characters left</small>
@@ -98,7 +118,7 @@ export default function EditPostModal({ post, setPostData, parentOnClose }: { po
             <div className='w-full flex flex-row gap-1 flex-wrap justify-center'>
                 {
                     Object.values(Tags).filter(x => x.toLowerCase().startsWith(tagsFilter.toLowerCase())).map(tag => <button>
-                        <Chip checked={tags.some(x => x === tag)} color="yellow" onClick={() => {
+                        <Chip checked={tags.some(x => x === tag)} onClick={() => {
                             if (tags.some(x => x === tag))
                             {
                                 setTags(tags.filter(x => x !== tag));
@@ -137,6 +157,26 @@ export default function EditPostModal({ post, setPostData, parentOnClose }: { po
                 isUpdating &&
                 <Loader className="my-2 mr-12 ml-auto" />
             }
+        </div>
+    </Modal>
+    <Modal opened={alertOpened} onClose={alertClose} centered size='sm' className="background-opacity-60">
+        <div className="p-2">
+            <h1 className="text-xl font-bold">
+                Are You Sure?
+            </h1>
+            <p>
+                You have unsaved changes that you will lose if you continue.
+            </p>
+            <Button onClick={() => alertClose()} className="mt-2 mr-2" variant="light">
+                Cancel
+            </Button>
+            <Button onClick={() => {
+                setIsChanged(false);
+                close();
+                alertClose();
+            }} className="mt-2" variant='outline'>
+                Continue
+            </Button>
         </div>
     </Modal>
     </>;
