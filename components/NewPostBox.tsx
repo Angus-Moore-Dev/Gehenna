@@ -27,9 +27,10 @@ interface NewPostBoxProps
     handleClose: () => void;
     draftPost?: Post;
     setDraftPost?: (post: Post) => void;
+    setIsChanged: (isChanged: boolean) => void;
 }
 
-export default function NewPostBox({ user, startup, handleClose, draftPost, setDraftPost }: NewPostBoxProps)
+export default function NewPostBox({ user, startup, handleClose, draftPost, setDraftPost, setIsChanged }: NewPostBoxProps)
 {
     const router = useRouter();
     const [title, setTitle] = useState(draftPost ? draftPost.title : '');
@@ -44,6 +45,32 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
     const [previewImageURL, setPreviewImageURL] = useState('');
 
     const [isFilesTooLarge, setIsFilesTooLarge] = useState(false);
+
+    useEffect(() => {
+        // If the content and/or title have been changed, set isChanged to true
+        if (draftPost)
+        {
+            if (title !== draftPost.title || content !== draftPost.content || tags !== draftPost.tags)
+            {
+                setIsChanged(true);
+            }
+            else
+            {
+                setIsChanged(false);
+            }
+        }
+        else
+        {
+            if (title !== '' || content !== '' || tags.length > 0)
+            {
+                setIsChanged(true);
+            }
+            else
+            {
+                setIsChanged(false);
+            }
+        }
+    }, [content, title, tags]);
 
 	const editor = useEditor({
 		extensions: [
