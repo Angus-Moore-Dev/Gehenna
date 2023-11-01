@@ -1,44 +1,28 @@
 import { Post } from "@/models/Post";
-import { Comment } from '@/models/Comment';
-import { clientDb, serverDb } from "@/lib/db";
+import { serverDb } from "@/lib/db";
 import { Profile } from "@/models/Profile";
 import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { TypographyStylesProvider, Textarea, Chip, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
-import CommonButton from "@/components/CommonButton";
+import { TypographyStylesProvider, Chip, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
 import { v4 } from "uuid";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
-import CommentBox from "@/components/CommentBox";
-import { Notification } from "@/models/Notification";
-import { useRouter } from "next/router";
-import ProfileCard from "@/components/ProfileCard";
+import { useRef, useState } from "react";
 import { useClickAway } from "ahooks";
 import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
-import { Reaction } from "@/models/Reaction";
-import Reactions from "@/components/Reactions";
-import { IconClock, IconLink, IconMessage } from "@tabler/icons-react";
-import { Startup } from "@/models/Startup";
+import { IconClock, IconLink } from "@tabler/icons-react";
 
 interface PostIdPageProps
 {
     post: Post;
     poster: Profile;
     me: Profile | null;
-    commenters: Profile[];
-    comments: Comment[];
-    reactions: Reaction[];
-    startup?: Startup | null;
 }
 
-export default function PostIdPage({ post, poster, me, comments, commenters, reactions, startup }: PostIdPageProps)
+export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 {
     const commentRef = useRef<HTMLDivElement>(null);
-    const [postCommentors] = useState(commenters);
-    const [postComments, setPostComments] = useState(comments);
     const [comment, setComment] = useState('');
     const [postData, setPostData] = useState(post);
     const [showCard, setShowCard] = useState(false);
@@ -74,25 +58,9 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
         </Link>
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center mb-4 relative">
-                {
-                    !startup &&
-                    <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
-                }
-                {
-                    startup &&
-                    <Link href={`/startup/${startup.id}`}>
-                        <Image ref={ref} src={startup.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px] transition shadow-md hover:shadow-primary hover:cursor-pointer hover:animate-pulse" />
-                    </Link>
-                }
+                <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
                 <span className="font-semibold text-xl">
-                    {
-                        !startup &&
-                        <span>{poster.username} <i>wrote:</i></span>
-                    }
-                    {
-                        startup &&
-                        <span>{startup.name} <i>wrote:</i></span>
-                    }
+                    <span>{poster.username} <i>wrote:</i></span>
                     <br />
                     <div className="flex flex-row gap-4 items-center mt-2">
                         <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
@@ -121,11 +89,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
                             </>
                         )}
                     </CopyButton>
-                    {/* <Tooltip label="Comment" position="bottom">
-                        <ActionIcon size="xl" onClick={() => commentRef.current?.scrollIntoView({ 'behavior': 'smooth' })}>
-                            <IconMessage className='text-neutral-400 transition hover:text-white' />
-                        </ActionIcon>
-                    </Tooltip> */}
                     {
                         me && me.id === poster.id &&
                         <PostSettingsModal post={postData} setPost={setPostData} />
@@ -167,93 +130,6 @@ export default function PostIdPage({ post, poster, me, comments, commenters, rea
             }
             </section>
         </section>
-        {/* <Reactions reactions={reactions} me={me} post={post} /> */}
-        {/* <div ref={commentRef} className="flex-grow flex flex-col gap-4 mt-4">
-            <h1 className="text-2xl font-bold">Comments</h1>
-            <div className="flex-grow h-full flex flex-col">
-                <div className="flex-grow flex flex-col gap-2 mb-4 border-t-2 border-t-primary">
-                    {
-                        postComments.length === 0 &&
-                        <div className="flex-grow flex flex-col items-start justify-center h-14">
-                            {
-                                !me && <span>No comments :(</span>
-                            }
-                            {
-                                me && me.emailVerified && <p className="text-lg">Be the first to comment!</p>
-                            }
-                        </div>
-                    }
-                    {
-                        postComments.map((comment, index) => <CommentBox key={index} comment={comment} profile={postCommentors.find(x => x.id === comment.userId)!} table={"comments"} me={me} removeComment={(id) => {
-                            setPostComments(postComments.filter(x => x.id !== id));
-                        }} />)
-                    }
-                </div>
-                {
-                    me && me.emailVerified &&
-                    <div className="w-full flex flex-col gap-0">
-                        <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Write a comment..." className="w-full h-full" />
-                        <CommonButton text='Send Comment' className="ml-auto mt-2" onClick={async () => {
-                            const newComment = {
-                                id: v4(),
-                                userId: me.id,
-                                postId: postData.id,
-                                comment: comment,
-                            } as Comment;
-
-                            const res = await clientDb.from('comments').insert(newComment);
-                            if (res.error)
-                            {
-                                toast.error(res.error.message);
-                            }
-                            else
-                            {
-                                setPostComments([...postComments, newComment]);
-                                setComment('');
-                            }
-
-                            const listOfPeopleToNotify: string[] = [];
-                            if (postData.userId === me.id)
-                            {
-                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== postData.userId).map(x => x.id);
-                                for (const notifier of postsCommentorsToNotify)
-                                {
-                                    listOfPeopleToNotify.push(notifier);
-                                }
-                            }
-                            else
-                            {
-                                // I am not the creator
-                                listOfPeopleToNotify.push(postData.userId);
-                                const postsCommentorsToNotify = postCommentors.filter(x => x.id !== me.id && x.id !== postData.userId).map(x => x.id);
-                                for (const notifier of postsCommentorsToNotify)
-                                {
-                                    listOfPeopleToNotify.push(notifier);
-                                }
-                            }
-
-                            const insertBatch = listOfPeopleToNotify.map(x => ({
-                                id: v4(),
-                                created_at: new Date().toISOString(),
-                                title: `${me.username} commented on ${postData.userId === x ? 'your post' : 'a post you commented on'}.`,
-                                text: `Please click this link to view the comment.`,
-                                link: `/${postData.id}`,
-                                userId: x,
-                                seen: false // Default, since the intended party has not opened the post yet.
-                            }));
-
-                            // Now we insert the notifications for each of these people
-                            const notificationRes = await clientDb.from('notifications').insert(insertBatch);
-
-                            if (notificationRes.error)
-                            {
-                                toast.error(notificationRes.error.message);
-                            }
-                        }} /> 
-                    </div>
-                }
-            </div>
-        </div> */}
     </div>
 }
 
@@ -273,26 +149,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     // Now get the poster
     const poster = (await db.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
 
-    // Now get the comments
-    const comments = (await db.from('comments').select('*').eq('postId', postId)).data as Comment[];
-
-    // Now get the commenters
-    const commenters = (await db.from('profiles').select('*').in('id', comments.map(c => c.userId))).data as Profile[];
-
-    const reactions = (await db.from('reactions').select('*').eq('postId', postId)).data as Reaction[];
-
-    const startup: Startup | null = (await db.from('startups').select('*').eq('id', post.startupId).single()).data as Startup | null;
-    
-
     return {
         props: {
             post: post,
             me: profile,
             poster: poster,
-            startup: startup,
-            comments: comments,
-            reactions: reactions,
-            commenters: commenters,
         }
     }
 }

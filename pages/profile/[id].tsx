@@ -17,38 +17,12 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Head from "next/head";
 import { Startup } from "@/models/Startup";
 
-export default function ProfilePage({ me, profile, startups, isFollowing }: { me: User | null, profile: Profile, startups: Startup[], isFollowing: boolean })
+export default function ProfilePage({ me, profile }: { me: User | null, profile: Profile })
 {
-    const router = useRouter();
-    const { id } = router.query as { id: string };
-    const formattedDate = new Date(profile.createdAt).toLocaleDateString('en-au', { dateStyle: 'long' });
-    const [followers, setFollowers] = useState<number>();
-    const [following, setFollowing] = useState(isFollowing);
     const [postCount, setPostCount] = useState(50);
 	const [posts, setPosts] = useState<Post[]>();
-	const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        clientDb.from('followers').select('*', { count: 'exact', head: true }).eq('followingId', profile.id).then(({ count }) => {
-            if (count)
-            {
-                setFollowers(count);
-            }
-            else
-            {
-                setFollowers(0);
-            }
-        });
-    }, []);
-
-    const x = () => {}
-    const y = x;
-    useEffect(() => {
-		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
-
-		// generate two timestamptz, one right now and one from a week ago.
-		// then we can use the week ago timestamp to get the posts from the last week.
-
 		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).eq('userId', profile.id).then(async res => {
 			if (!res.error && res.data)
 			{
@@ -107,47 +81,6 @@ export default function ProfilePage({ me, profile, startups, isFollowing }: { me
                         }
                     </div>
                     <small className="font-light">{profile.handle}</small>
-                    <div className="flex flex-row items-end gap-4 h-full">
-                        <span className="text-sm font-semibold text-neutral-100"><span className="text-neutral-400 text-xs">Joined on&nbsp;<br /></span>{formattedDate}</span>
-                        {
-                            followers === undefined &&
-                            <Skeleton width={96} height='' className="rounded-md" />
-                        }
-                        {
-                            followers !== undefined &&
-                            <div className="flex flex-row items-center gap-2">
-                                <IconUser size='20' />
-                                <span className="text-sm font-semibold">{followers?.toLocaleString()} Follower{followers === 0 || followers > 1 && 's'}</span>
-                                {
-                                    me && me.id !== profile.id &&
-                                    <CommonButton text={following ? 'Unfollow' : 'Follow'} onClick={async () => {
-                                        if (!following)
-                                        {
-                                            // Follow
-                                            const res = await clientDb.from('followers').insert({ followerId: me?.id, followingId: profile.id });
-                                            if (!res.error)
-                                            {
-                                                setFollowing(true);
-                                                setFollowers(followers! + 1);
-                                            }
-                                            else toast.error(res.error.message);
-                                        }
-                                        else
-                                        {
-                                            // Unfollow
-                                            const res = await clientDb.from('followers').delete().eq('followerId', me?.id).eq('followingId', profile.id);
-                                            if (!res.error)
-                                            {
-                                                setFollowing(false);
-                                                setFollowers(followers!- 1);
-                                            }
-                                            else toast.error(res.error.message);
-                                        }
-                                    }} className="text-xs py-0 p-1 h-6" />
-                                }
-                            </div>
-                        }
-                    </div>
                 </div>
                 <div className="flex-grow max-w-[50%] ml-auto">
                     <ScrollArea h={100} className="text-sm" color="yellow" type="auto" offsetScrollbars scrollbarSize={4}>
@@ -156,26 +89,6 @@ export default function ProfilePage({ me, profile, startups, isFollowing }: { me
                 </div>
             </section>
         </div>
-        {
-            startups.length > 0 &&
-            <div className="w-full flex flex-col gap-4">
-                <span className="text-xl font-semibold">Startups / Organisations</span>
-                {
-                    startups.map((startup, index) => <div key={index} className="relative w-full p-4 bg-tertiary rounded-md flex flex-row gap-4 items-center">
-                        <Image src={startup.bannerURL} width={768} height={256} alt="Banner" className="w-full h-full absolute top-0 left-0 rounded-md object-cover z-0 opacity-20" />
-                        <Image src={startup.avatar} alt="Startup Avatar" width={128} height={128} className="w-[128px] h-[128px] rounded-md object-cover z-10" />
-                        <section className="flex-grow h-full mb-auto z-10">
-                            <section className="flex flex-row items-center gap-2">
-                                <h1 className="font-bold">{startup.name}</h1>
-                                <CommonButton text='View Page' onClick={() => router.push(`/startup/${startup.id}`)} className="text-xs" />
-                            </section>
-                            <p>{startup.industry ? startup.industry : 'Startup'}</p>
-                            <p>{startup.country ? startup.country : 'Remote'}</p>
-                        </section>
-                    </div>)
-                }
-            </div>
-        }
         <div className='w-full h-full mt-10'>
             <p className="text-xl font-semibold mb-4 text-left">Posts From {profile.username}</p>
             {
@@ -236,25 +149,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) =>
     const me = (await supabase.auth.getUser()).data.user;
     const profile = (await supabase.from('profiles').select('*').eq('handle', context.params?.id).single()).data as Profile | null;
 
-    const startups = profile ? (await supabase.from('startups').select('*').in('id', profile?.startups)).data as Startup[] : [];
-    
-    let isFollowing: boolean = false;
-    // If the profile I'm viewing is not mine, check if I am following this person.
-    if (profile?.id !== me?.id)
-    {
-        const isFollowingRes = await supabase.from('followers').select('*').eq('followerId', me?.id).eq('followingId', profile?.id).single();
-        if (!isFollowingRes.error && isFollowingRes.data)
-        {
-            isFollowing = true;
-        }
-    }
-
     return {
         props: {
             me,
             profile,
-            startups,
-            isFollowing
         }
     }
 }

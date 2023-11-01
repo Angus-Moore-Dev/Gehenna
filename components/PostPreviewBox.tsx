@@ -37,47 +37,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     toast.error(res.error.message);
                 }
             });
-
-            clientDb.from('comments').select('*', { count: 'exact' }).eq('postId', post.id).then(async res => {
-                if (!res.error && res.data)
-                {
-                    setCommentCount(res.count as number);
-                }
-                else if (res.error)
-                {
-                    toast.error(res.error.message);
-                }
-            });
-
-            clientDb.from('reactions').select('upvote').eq('postId', post.id).then(async res => {
-                
-                if (res.data)
-                {
-                    const reactions = res.data as { upvote: boolean }[];
-
-                    const totalLikes = reactions.filter(reaction => reaction.upvote).length;
-                    const totalDislikes = reactions.filter(reaction => !reaction.upvote).length;
-                    setUpvotes(totalLikes - totalDislikes);
-                }
-                else
-                {
-                    setUpvotes(0);
-                }
-            });
-
-            if (post.startupId)
-            {
-                clientDb.from('startups').select('id, name, avatar').eq('id', post.startupId).single().then(async ({ data, error }) => {
-                    if (error)
-                    {
-                        toast.error(error.message);
-                    }
-                    else if (data)
-                    {
-                        setStartup(data as Startup);
-                    }
-                });
-            }
         }
     }, [post]);
 
@@ -111,10 +70,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                             <div className="flex flex-col gap-1 flex-grow">
                                 <Skeleton width='100px' height='20px' className="mt-2" />
                                 <Skeleton width='75px' height='20px' className="mt-2" />
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <Skeleton width='100px' height='20px' className="mt-2" />
-                                <Skeleton width='75px' height='20px' className="mt-2 ml-auto" />
                             </div>
                         </section>
                     </div>
@@ -168,10 +123,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                                 <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                             </div>
                         </section>
-                        {/* <section className="flex flex-col items-end">
-                            <span className="text-primary-light font-semibold group-hover:text-white">{upvotes} Like{upvotes === 0 || upvotes > 1 || upvotes < 0 ? 's' : ''}</span>
-                            <small className="text-neutral-200 font-semibold group-hover:text-white">{commentCount} Comment{commentCount === 0 || commentCount > 1 ? 's' : ''}</small>
-                        </section> */}
                     </section>
                     <section className="flex flex-row flex-wrap items-center gap-1.5 px-4">
                         {

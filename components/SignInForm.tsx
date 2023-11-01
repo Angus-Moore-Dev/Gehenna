@@ -1,7 +1,5 @@
 import { clientDb } from "@/lib/db";
 import { TextInput, Button } from "@mantine/core";
-import SignUpModal from "./SignUpModal";
-import Image from "next/image";
 import { useState } from "react";
 import CommonButton from "./CommonButton";
 import { toast } from "react-toastify";
@@ -51,12 +49,6 @@ export default function SignInForm()
                 <Gehenna />
                 <TextInput label="Email" className='w-full mt-4' value={email} onChange={(e) => setEmail(e.target.value)} />
                 <TextInput label="Password" className='w-full mt-4' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                {/* <button className='mr-auto text-blue-600 underline transition hover:text-blue-500 text-xs mt-2'
-                onClick={() => {
-                    setPasswordReset(true);
-                }}>
-                    Forgot Password?
-                </button> */}
                 <CommonButton text='Login' className='w-full mt-4'
                 onClick={async () => {
                     const res = await fetch('/api/sign-in', {
@@ -83,7 +75,6 @@ export default function SignInForm()
                         alert((await res.json()).error);
                     }
                 }} />
-                <SignUpModal />
             </div>
         }
     </div>

@@ -121,8 +121,10 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 				</div>
 			}
 			<div className='w-full h-full flex flex-col items-center gap-6'>
-				{/* <Image src='/logo.png' width={500} height={450} className='w-1/3' alt='Gehenna' /> */}
-				<Gehenna />
+				{
+					profile &&
+					<Gehenna />
+				}
 				{
 					!profile &&
 					<SignInModal />
