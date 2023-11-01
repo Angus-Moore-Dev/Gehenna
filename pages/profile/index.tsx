@@ -1,20 +1,15 @@
 import CommonButton from "@/components/CommonButton";
 import { clientDb, serverDb } from "@/lib/db";
 import { Profile } from "@/models/Profile";
-import { Loader, Slider, TextInput, Textarea } from "@mantine/core";
+import { TextInput, Textarea } from "@mantine/core";
 import { GetServerSidePropsContext } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Dropzone, { useDropzone } from 'react-dropzone';
-import AvatarEditor from 'react-avatar-editor';
-import { v4 } from "uuid";
 import { Notification } from "@/models/Notification";
 import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
-import { ImageDropzone } from "@/components/ImageDropzone";
 import ProfilePictureManager from "@/components/profile/ProfilePictureManager";
 import ProfileBannerManager from "@/components/profile/ProfileBannerManager";
 
