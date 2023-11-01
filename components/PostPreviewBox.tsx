@@ -20,9 +20,6 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
 {
     const [isLoading, setIsLoading] = useState(true);
     const [profile, setProfile] = useState<Profile>();
-    const [commentCount, setCommentCount] = useState<number>();
-    const [upvotes, setUpvotes] = useState<number>();
-    const [startup, setStartup] = useState<Startup | null>();
 
     useEffect(() => {
         if (post)
@@ -41,21 +38,11 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
     }, [post]);
 
     useEffect(() => {
-        if (profile && commentCount !== undefined && upvotes !== undefined)
+        if (profile)
         {
-            if (post.startupId)
-            {
-                if (startup)
-                {
-                    setIsLoading(false);
-                }
-            }
-            else
-            {
-                setIsLoading(false);
-            }
+            setIsLoading(false);
         }
-    }, [profile, commentCount, upvotes, startup]);
+    }, [profile]);
 
     return <Link href={`/${post.id}`} className="w-[400px] h-[666px] group">
         {
@@ -82,7 +69,7 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
             </div>
         }
         {
-            !isLoading && profile && upvotes !== undefined && commentCount !== undefined &&
+            !isLoading && profile &&
             <>
             <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition relative">
                 {
@@ -102,24 +89,10 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     <section className="w-full flex flex-row items-center p-2 px-4">
                         <section className="flex-grow flex flex-row items-center gap-2">
                             <Suspense fallback={<Skeleton width={40} height={40} className="rounded-full w-[40px] h-[40px]" />}>
-                                {
-                                    !startup &&
-                                    <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
-                                }
-                                {
-                                    startup &&
-                                    <Image src={startup.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
-                                }
+                                <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
                             </Suspense>
                             <div className="flex flex-col gap-1">
-                                {
-                                    !startup &&
-                                    <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
-                                }
-                                {
-                                    startup &&
-                                    <span className="text-neutral-200 font-semibold group-hover:text-white">{startup.name}</span>
-                                }
+                                <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
                                 <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                             </div>
                         </section>
