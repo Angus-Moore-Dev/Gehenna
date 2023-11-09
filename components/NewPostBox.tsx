@@ -102,7 +102,7 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
 
     return <div className='w-full flex flex-col items-center scrollbar'>
         <div className='w-full flex flex-col items-center gap-4'>
-            <span className='text-2xl font-bold mr-auto'>Create A New Post { startup && `For ${startup.name}`}</span>
+            <span className='text-2xl font-bold mr-auto'>Create A New Post</span>
             <TextInput placeholder='Thread Title' className='w-full font-semibold' value={title} onChange={(e) => setTitle(e.target.value)} size='xl' maxLength={96} />
             <small className='-mt-2 text-gray-500 mr-auto'>{96 - title.length} characters left</small>
             <span className='-mb-2 mr-auto font-bold text-xl'>Cover Image</span>
@@ -221,7 +221,7 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
             <div className='flex flex-row gap-2 ml-auto items-center'>
                 {
                     isFilesTooLarge &&
-                    <span className='text-red-500'>Files are too large. Please keep your image count below 5mb :(</span>
+                    <span className='text-red-500'>Files are too large. Please keep your image count below 50MB :(</span>
                 }
                 {
                     !isCreating &&
@@ -375,12 +375,4 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
             </div>
         </div>
     </div>
-}
-
-
-// write a function to generate a colour for each enum type. It must be deterministc.
-function generateTagColour(tag: Tags)
-{
-    
-
 }
