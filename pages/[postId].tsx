@@ -1,7 +1,7 @@
 import { Post } from "@/models/Post";
 import { serverDb } from "@/lib/db";
 import { Profile } from "@/models/Profile";
-import { GetServerSidePropsContext } from "next";
+import { GetServerSidePropsContext, GetStaticPaths, GetStaticPropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { TypographyStylesProvider, Chip, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
@@ -12,6 +12,8 @@ import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
 import { IconClock, IconLink } from "@tabler/icons-react";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@supabase/supabase-js";
 
 interface PostIdPageProps
 {
@@ -134,26 +136,64 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 }
 
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => 
-{
-	const db = serverDb(context);
-	const user = (await db.auth.getUser()).data.user;
-
-	// Get the profile.
-    const profile = user ? (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile : null;
+export const getStaticPaths = (async () => {
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
     // Now get the post
-    const { postId } = context.query as { postId: string };
-    const post = (await db.from('post').select('*').eq('id', postId).single()).data as Post;
+    const posts = (await supabase.from('post').select('id')).data?.map(x => x.id) as string[];
 
-    // Now get the poster
-    const poster = (await db.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
+    const paths = posts.map((postId) => ({
+        params: {
+            postId
+        }
+    }));
+
+    return {
+        paths,
+        fallback: true
+    }
+}) satisfies GetStaticPaths;
+
+
+
+export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
+{
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+    const postId = params?.postId as string;
+
+    const post = (await supabase.from('post').select('*').eq('id', postId).single()).data as Post;
+    const poster = (await supabase.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
 
     return {
         props: {
             post: post,
-            me: profile,
+            me: null,
             poster: poster,
         }
-    }
-}
+    };
+};
+
+
+// export const getServerSideProps = async (context: GetServerSidePropsContext) => 
+// {
+// 	const db = serverDb(context);
+// 	const user = (await db.auth.getUser()).data.user;
+
+// 	// Get the profile.
+//     const profile = user ? (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile : null;
+
+//     // Now get the post
+//     const { postId } = context.query as { postId: string };
+//     const post = (await db.from('post').select('*').eq('id', postId).single()).data as Post;
+
+//     // Now get the poster
+//     const poster = (await db.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
+
+//     return {
+//         props: {
+//             post: post,
+//             me: profile,
+//             poster: poster,
+//         }
+//     }
+// }
