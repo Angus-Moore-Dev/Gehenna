@@ -21,7 +21,7 @@ interface PostIdPageProps
 export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 {
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
-        <Head>
+        {/* <Head>
             <title>Gehenna - {post.title}</title>
             <meta property="og:title" content={`Gehenna | ${post.title}`} />
             <meta property="og:description" content='Click to read this post on Gehenna now!' />
@@ -33,7 +33,7 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
             <meta name="twitter:description" content={"Click here to read this article on Gehenna"} />
             <meta name="twitter:image" content={post.postImageURL.url} />
             <meta name="twitter:url" content={`https://www.gehenna.dev/${post.id}`} />
-        </Head>
+        </Head> */}
         {
             me && !me.emailVerified &&
             <div className='w-full h-full flex items-center justify-center flex-col gap-4 -mt-16 mb-4 bg-primary-light'>
@@ -131,9 +131,7 @@ export const getStaticPaths = (async () =>
     console.log('fetched', posts.length, 'posts to prerender');
 
     const paths = posts.filter(x => x !== undefined).map((postId) => ({
-        params: {
-            postId
-        }
+        params: { postId }
     }));
 
     return {
@@ -152,7 +150,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
     const post = (await supabase.from('post').select('*').eq('id', postId).single()).data as Post;
     const poster = (await supabase.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
 
-    console.log('generating static page for post', post.id, post.title);
+    console.log('generating static page for post', post.title);
 
     return {
         props: {
@@ -163,28 +161,3 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
         revalidate: 600, // ISR every 10 minutes
     };
 };
-
-
-// export const getServerSideProps = async (context: GetServerSidePropsContext) => 
-// {
-// 	const db = serverDb(context);
-// 	const user = (await db.auth.getUser()).data.user;
-
-// 	// Get the profile.
-//     const profile = user ? (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile : null;
-
-//     // Now get the post
-//     const { postId } = context.query as { postId: string };
-//     const post = (await db.from('post').select('*').eq('id', postId).single()).data as Post;
-
-//     // Now get the poster
-//     const poster = (await db.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
-
-//     return {
-//         props: {
-//             post: post,
-//             me: profile,
-//             poster: poster,
-//         }
-//     }
-// }
