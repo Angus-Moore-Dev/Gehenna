@@ -130,7 +130,7 @@ export const getStaticPaths = (async () =>
 
     console.log('fetched', posts.length, 'posts to prerender');
 
-    const paths = posts.map((postId) => ({
+    const paths = posts.filter(x => x !== undefined).map((postId) => ({
         params: {
             postId
         }
