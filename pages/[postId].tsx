@@ -37,17 +37,17 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
         <Head>
-            <title>Gehenna - {postData.title}</title>
-            <meta property="og:title" content={`Gehenna | ${postData.title}`} />
+            <title>Gehenna - {post.title}</title>
+            <meta property="og:title" content={`Gehenna | ${post.title}`} />
             <meta property="og:description" content='Click to read this post on Gehenna now!' />
-            <meta property="og:image" content={postData.postImageURL.url} />
-            <meta property="og:url" content={`https://www.gehenna.dev/${postData.id}`} />
+            <meta property="og:image" content={post.postImageURL.url} />
+            <meta property="og:url" content={`https://www.gehenna.dev/${post.id}`} />
             <meta property="og:type" content="website" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content={postData.title} />
+            <meta name="twitter:title" content={post.title} />
             <meta name="twitter:description" content={"Click here to read this article on Gehenna"} />
-            <meta name="twitter:image" content={postData.postImageURL.url} />
-            <meta name="twitter:url" content={`https://www.gehenna.dev/${postData.id}`} />
+            <meta name="twitter:image" content={post.postImageURL.url} />
+            <meta name="twitter:url" content={`https://www.gehenna.dev/${post.id}`} />
         </Head>
         {
             me && !me.emailVerified &&
@@ -136,7 +136,8 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 }
 
 
-export const getStaticPaths = (async () => {
+export const getStaticPaths = (async () => 
+{
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
     // Now get the post
