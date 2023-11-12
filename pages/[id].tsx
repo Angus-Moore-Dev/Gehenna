@@ -128,7 +128,7 @@ export const getStaticPaths = (async () =>
     // Now get the post
     const posts = (await supabase.from('post').select('id')).data?.map(x => x.id) ?? [] as string[];
 
-    console.log('fetched', posts.length, 'posts to prerender');
+    console.log('fetched', posts.length, 'posts to prerender', posts);
 
     const paths = posts.filter(x => x !== undefined).map((postId) => ({
         params: { id: postId }
