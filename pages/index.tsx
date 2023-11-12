@@ -4,7 +4,7 @@ import { Post } from '@/models/Post';
 import { Profile } from '@/models/Profile';
 import { Autocomplete, Chip, Loader } from '@mantine/core';
 import { User } from '@supabase/auth-helpers-nextjs';
-import { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext, GetStaticProps, GetStaticPropsContext } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,45 +16,39 @@ import NewPostModal from '@/components/NewPostModal';
 import { Gehenna } from '@/components/Gehenna';
 import SignInModal from '@/components/SignInModal';
 import DraftPosts from '@/components/DraftPosts';
+import { useUser } from '@supabase/auth-helpers-react';
+import { createClient } from '@supabase/supabase-js';
 
 interface HomePageProps
 {
-	user: User | null;
-	profile: Profile | null;
-	staticPosts: Post[];
+	posts: Post[]
 }
 
-export default function HomePage({ user, profile, staticPosts }: HomePageProps)
+export default function HomePage({ posts }: HomePageProps)
 {
-	const router = useRouter();
-	const [postCount, setPostCount] = useState(50);
-	const [posts, setPosts] = useState<Post[]>();
+	const user = useUser();
 	const ref = useRef<HTMLDivElement>(null);
+
+	const [profile, setProfile] = useState<Profile>();
 
 	const [autocompletePosts, setAutocompletePosts] = useState<{ id: string, title: string, tags: string[], userId: string, username: string, avatar: string }[]>([]);
 	const [globalSearchkeywords, setGlobalSearchkeywords] = useState('');
 
 	useEffect(() => {
-		// We do client side fetching to improve first time load and also to make sure that the user is logged in.
-
-		// generate two timestamptz, one right now and one from a week ago.
-		// then we can use the week ago timestamp to get the posts from the last week.
-
-		const weekAgo = new Date();
-		weekAgo.setDate(weekAgo.getDate() - 7);
-
-		clientDb.from('post').select('*').limit(postCount).order('createdAt', { ascending: false }).then(async res => {
-			if (!res.error && res.data)
-			{
-				setPosts(res.data as Post[]);
-			}
-			else if (res.error)
-			{
-				toast.error(res.error.message);
-			}
-		});
-
-	}, []);
+		if (user)
+		{
+			clientDb.from('profiles').select('*').eq('id', user.id).single().then(res => {
+				if (!res.error && res.data)
+				{
+					setProfile(res.data as Profile);
+				}
+				else
+				{
+					toast.error('Failed to get your profile. Please try again later.');
+				}
+			});
+		}
+	}, [user]);
 
 	useEffect(() => {
 		if (globalSearchkeywords)
@@ -192,53 +186,11 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 				}
 				{/* The user can see their posts here. */}
 				<div className='w-full h-full mt-10'>
-					{
-						posts &&
-						posts.length === 0 &&
-						<div className='w-full h-full flex flex-col items-center gap-4'>
-							<h1 className='text-2xl font-bold'>There are no recent posts...</h1>
-						</div>
-					}
-					{
-						posts && posts.length > 0 &&
-						<>
-						<InfiniteScroll 
-						dataLength={posts.length} 
-						next={async () => {
-							clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
-								if (!res.error && res.data)
-								{
-									setPosts(res.data as Post[]);
-									setPostCount(postCount + 2);
-								}
-								else
-								{
-									toast.error(res.error.message);
-								}
-							})
-						}} 
-						hasMore={true} 
-						loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
-						style={{
-							width: '100%',
-							overflow: 'hidden',
-						}}
-						endMessage={
-							<p style={{ textAlign: 'center' }}>
-								<b>Yay! You have seen it all</b>
-							</p>
-						}>
-							{
-								posts && posts.length > 0 &&
-								<div className=' flex flex-row flex-wrap justify-center gap-10'>
-									{
-										posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
-									}
-								</div>
-							}
-						</InfiniteScroll>
-						</>
-					}
+					<div className=' flex flex-row flex-wrap justify-center gap-10'>
+						{
+							posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+						}
+					</div>
 				</div>
 			</div>
 			{
@@ -249,17 +201,14 @@ export default function HomePage({ user, profile, staticPosts }: HomePageProps)
 	)
 }
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => 
+export const getStaticProps = async (context: GetStaticPropsContext) => 
 {
-	const db = serverDb(context);
-	const user = (await db.auth.getUser()).data.user;
-
-	// Get the profile.
-	const profile = user ? (await db.from('profiles').select('*').eq('id', user.id).single()).data as Profile : null;
+	const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+	const posts = (await supabase.from('post').select('*')).data as Post[];
 	return {
 		props: {
-			user: user,
-			profile: profile
-		}
+			posts
+		},
+		revalidate: 630
 	}
 }

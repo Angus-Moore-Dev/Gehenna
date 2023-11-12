@@ -160,6 +160,7 @@ export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
             me: null,
             poster: poster,
         },
+        revalidate: 600
     };
 
 });
