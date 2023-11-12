@@ -9,10 +9,9 @@ import { Dispatch, SetStateAction } from "react";
 interface PostSettingsModalProps
 {
     post: Post;
-    setPost: Dispatch<SetStateAction<Post>>;
 }
 
-export default function PostSettingsModal({ post, setPost }: PostSettingsModalProps)
+export default function PostSettingsModal({ post }: PostSettingsModalProps)
 {
 
     const [ opened, { open, close } ] = useDisclosure(false);
@@ -20,7 +19,7 @@ export default function PostSettingsModal({ post, setPost }: PostSettingsModalPr
     return <>
     <Modal opened={opened} onClose={close} title='Post Settings' centered size='lg'>
         <div className="w-full flex flex-col gap-4">
-            <EditPostModal post={post} setPostData={setPost} parentOnClose={() => close()} />
+            <EditPostModal post={post} parentOnClose={() => close()} />
             <DeletePostModal postId={post.id} />
         </div>
     </Modal>

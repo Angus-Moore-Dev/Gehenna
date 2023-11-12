@@ -1,18 +1,14 @@
 import { Post } from "@/models/Post";
-import { serverDb } from "@/lib/db";
 import { Profile } from "@/models/Profile";
-import { GetServerSidePropsContext, GetStaticPaths, GetStaticPropsContext } from "next";
+import { GetStaticPaths, GetStaticPropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { TypographyStylesProvider, Chip, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
 import { v4 } from "uuid";
-import { useRef, useState } from "react";
-import { useClickAway } from "ahooks";
 import Head from "next/head";
 import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
 import { IconClock, IconLink } from "@tabler/icons-react";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { createClient } from "@supabase/supabase-js";
 
 interface PostIdPageProps
@@ -24,16 +20,6 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 {
-    const commentRef = useRef<HTMLDivElement>(null);
-    const [comment, setComment] = useState('');
-    const [postData, setPostData] = useState(post);
-    const [showCard, setShowCard] = useState(false);
-
-    // setup a useClickAway hook
-    const ref = useRef(null);
-    useClickAway(() => {
-        setShowCard(false);
-    }, ref);
 
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
         <Head>
@@ -60,22 +46,22 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
         </Link>
         <div className="w-full">
             <div className="flex flex-row gap-4 items-center mb-4 relative">
-                <Image ref={ref} src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
+                <Image src={poster.avatar} alt='me' width={50} height={50} className="object-cover rounded-md w-[50px] h-[50px]" />
                 <span className="font-semibold text-xl">
                     <span>{poster.username} <i>wrote:</i></span>
                     <br />
                     <div className="flex flex-row gap-4 items-center mt-2">
-                        <span className="text-sm font-normal text-gray-500">Posted on {new Date(postData.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
+                        <span className="text-sm font-normal text-gray-500">Posted on {new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                         <div className="flex flex-row items-center gap-2">
                             <IconClock size={16} className='text-neutral-400' />
                             <small className="text-neutral-400 font-extralight text-xs">
-                                {Math.ceil(postData.content.split(' ').length / 250)} min read
+                                {Math.ceil(post.content.split(' ').length / 250)} min read
                             </small>
                         </div>
                     </div>
                 </span>
                 <div className="flex-grow flex flex-row justify-end gap-4">
-                    <CopyButton value={`https://www.gehenna.dev/${postData.id}`} timeout={25000}>
+                    <CopyButton value={`https://www.gehenna.dev/${post.id}`} timeout={25000}>
                         {({ copied, copy }) => (
                             <>
                             <Tooltip label={copied ? 'Copied!' : 'Copy link to clipboard'} position="bottom">
@@ -93,33 +79,33 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
                     </CopyButton>
                     {
                         me && me.id === poster.id &&
-                        <PostSettingsModal post={postData} setPost={setPostData} />
+                        <PostSettingsModal post={post} />
                     }
                 </div>
             </div>
             <section className="flex flex-row flex-wrap gap-1.5 mb-4">
             {
-                postData.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
+                post.tags.map((tag, index) => <Chip checked={false} key={index} color="yellow">{tag}</Chip>)
             }
             </section>
             <h1 className="text-5xl font-bold border-b-2 pb-2 mb-4 border-b-primary-light text-white">
-                {postData.title}
+                {post.title}
             </h1>
-            <Image src={postData.postImageURL.url} alt='' quality={100} priority={true} width={1000} height={450} className="w-full h-[450px] object-cover mx-auto rounded-md" />
+            <Image src={post.postImageURL.url} alt='' quality={100} priority={true} width={1000} height={450} className="w-full h-[450px] object-cover mx-auto rounded-md" />
         </div>
         <TypographyStylesProvider>
-            <div dangerouslySetInnerHTML={{ __html: postData.content }} />
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </TypographyStylesProvider>
         <section className="flex flex-col flex-wrap gap-2 border-t-2 border-t-secondary pt-2">
             {
-                postData.attachedFileURLs.length > 0 &&
+                post.attachedFileURLs.length > 0 &&
                 <span className="text-lg font-semibold">Attached Files</span>
             }
             <section className="w-full flex flex-row flex-wrap gap-2 items-start">
             {
-                postData.attachedFileURLs.map(file => {
+                post.attachedFileURLs.map(file => {
                     if (file.mimeType.includes('image'))
-                        return <Image src={file.url} alt={v4()} quality={100} width='1000' height='1000' className={`object-cover min-w-[45%] flex-1 rounded-md ${postData.attachedFileURLs.length > 1 && 'h-[350px]'}`} />
+                        return <Image src={file.url} alt={v4()} quality={100} width='1000' height='1000' className={`object-cover min-w-[45%] flex-1 rounded-md ${post.attachedFileURLs.length > 1 && 'h-[350px]'}`} />
                     else if (file.mimeType.includes('audio'))
                         return <audio className="min-w-[45%] flex-1" controls>
                             <source src={file.url} type={file.mimeType} />
@@ -172,7 +158,8 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
             post: post,
             me: null,
             poster: poster,
-        }
+        },
+        revalidate: 600, // ISR every 10 minutes
     };
 };
 

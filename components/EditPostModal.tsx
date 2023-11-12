@@ -1,7 +1,7 @@
 import { useDisclosure } from "@mantine/hooks";
 import CommonButton from "./CommonButton";
 import { Button, Chip, Loader, Modal, TextInput } from "@mantine/core";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Post, Tags } from "@/models/Post";
 import { RichTextEditor, Link } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
@@ -14,9 +14,11 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Highlight from "@tiptap/extension-highlight";
 import { clientDb } from "@/lib/db";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
-export default function EditPostModal({ post, setPostData, parentOnClose }: { post: Post, setPostData: Dispatch<SetStateAction<Post>>, parentOnClose: () => void })
+export default function EditPostModal({ post, parentOnClose }: { post: Post, parentOnClose: () => void })
 {
+    const router = useRouter();
     const [tags, setTags] = useState(post.tags);
     const [content, setContent] = useState(post.content);
     const [title, setTitle] = useState(post.title);
@@ -145,8 +147,7 @@ export default function EditPostModal({ post, setPostData, parentOnClose }: { po
                     else
                     {
                         toast.success('Post updated!');
-                        const newPost = {...post, title, content, tags};
-                        setPostData(newPost);
+                        router.reload();
                         close();
                         parentOnClose();
                     }
