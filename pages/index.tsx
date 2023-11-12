@@ -21,10 +21,11 @@ import { createClient } from '@supabase/supabase-js';
 
 interface HomePageProps
 {
-	posts: Post[]
+	posts: Post[];
+	profiles: Profile[];
 }
 
-export default function HomePage({ posts }: HomePageProps)
+export default function HomePage({ posts, profiles }: HomePageProps)
 {
 	const user = useUser();
 	const ref = useRef<HTMLDivElement>(null);
@@ -188,7 +189,7 @@ export default function HomePage({ posts }: HomePageProps)
 				<div className='w-full h-full mt-10'>
 					<div className=' flex flex-row flex-wrap justify-center gap-10'>
 						{
-							posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
+							posts.map((post, index) => <PostPreviewBox key={index} post={post} profile={profiles.find(x => x.id === post.userId)!} />)
 						}
 					</div>
 				</div>
@@ -206,9 +207,11 @@ export const getStaticProps = async (context: GetStaticPropsContext) =>
 	console.log('context::', context);
 	const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 	const posts = (await supabase.from('post').select('*')).data as Post[];
+	const profiles = (await supabase.from('profiles').select('*').in('id', posts.map(x => x.userId))).data as Profile[];
 	return {
 		props: {
-			posts: posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+			posts: posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+			profiles
 		},
 		revalidate: 65
 	}

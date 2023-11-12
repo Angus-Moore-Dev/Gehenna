@@ -14,38 +14,14 @@ import { Startup } from "@/models/Startup";
 interface PostPreviewBoxProps
 {
     post: Post;
+    profile: Profile;
 }
 
-export default function PostPreviewBox({ post }: PostPreviewBoxProps)
+export default function PostPreviewBox({ post, profile }: PostPreviewBoxProps)
 {
-    const [isLoading, setIsLoading] = useState(true);
-    const [profile, setProfile] = useState<Profile>();
-
-    useEffect(() => {
-        if (post)
-        {
-            clientDb.from('profiles').select('*').eq('id', post.userId).single().then(async res => {
-                if (!res.error && res.data)
-                {
-                    setProfile(res.data as Profile);
-                }
-                else if (res.error)
-                {
-                    toast.error(res.error.message);
-                }
-            });
-        }
-    }, [post]);
-
-    useEffect(() => {
-        if (profile)
-        {
-            setIsLoading(false);
-        }
-    }, [profile]);
 
     return <Link href={`post/${post.id}`} className="w-[400px] h-[666px] group">
-        {
+        {/* {
             isLoading &&
             <div className="w-full h-full flex flex-col bg-tertiary">
                 <Skeleton width='400px' height='450px' className="w-[400px] h-[450px] object-cover" />
@@ -67,47 +43,42 @@ export default function PostPreviewBox({ post }: PostPreviewBoxProps)
                     <Skeleton width='125px' height='25px' className="mt-2 rounded-xl" />
                 </div>
             </div>
-        }
-        {
-            !isLoading && profile &&
-            <>
-            <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition relative">
-                {
-                    post.postImageURL.url &&
-                    <Suspense fallback={<Skeleton width={400} height={666} className="w-[400px] h-[666px] absolute z-0" />}>
-                        <Image src={post.postImageURL?.url} alt='' width={400} height={666} className="w-[400px] h-[666px] object-cover absolute z-0" />
-                    </Suspense>
-                }
-                {
-                    !post.postImageURL.url &&
-                    <IconPhoto className="w-[400px] h-[450px] object-cover transition bg-quaternary" color="#272727" />
-                }
-                <section className="w-full h-full flex flex-col gap-1 transition bg-secondary bg-opacity-50 backdrop-blur-md group-hover:bg-tertiary group-hover:bg-opacity-40 z-10 mt-auto absolute top-[450px]">
-                    <section className="flex flex-row gap-4 h-16 transition p-2 px-4 rounded">
-                        <span className="text-xl font-bold text-white">{post.title.length > 64 ? `${post.title.slice(0, 64)}...` : post.title}</span>
-                    </section>
-                    <section className="w-full flex flex-row items-center p-2 px-4">
-                        <section className="flex-grow flex flex-row items-center gap-2">
-                            <Suspense fallback={<Skeleton width={40} height={40} className="rounded-full w-[40px] h-[40px]" />}>
-                                <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
-                            </Suspense>
-                            <div className="flex flex-col gap-1">
-                                <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
-                                <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
-                            </div>
-                        </section>
-                    </section>
-                    <section className="flex flex-row flex-wrap items-center gap-1.5 px-4">
-                        {
-                            post.tags.slice(undefined, 3).map(tag => <Chip key={tag} checked={false} className="text-white">{tag}</Chip>)
-                        }
-                        {
-                            post.tags.length > 3 && <small className="text-neutral-500 group-hover:text-white">+{post.tags.length - 3} more</small>
-                        }
+        } */}
+        <div className="w-full h-full bg-tertiary rounded-md overflow-hidden transition relative">
+            {
+                post.postImageURL.url &&
+                <Suspense fallback={<Skeleton width={400} height={666} className="w-[400px] h-[666px] absolute z-0" />}>
+                    <Image src={post.postImageURL?.url} alt='' width={400} height={666} className="w-[400px] h-[666px] object-cover absolute z-0" />
+                </Suspense>
+            }
+            {
+                !post.postImageURL.url &&
+                <IconPhoto className="w-[400px] h-[450px] object-cover transition bg-quaternary" color="#272727" />
+            }
+            <section className="w-full h-full flex flex-col gap-1 transition bg-secondary bg-opacity-50 backdrop-blur-md group-hover:bg-tertiary group-hover:bg-opacity-40 z-10 mt-auto absolute top-[450px]">
+                <section className="flex flex-row gap-4 h-16 transition p-2 px-4 rounded">
+                    <span className="text-xl font-bold text-white">{post.title.length > 64 ? `${post.title.slice(0, 64)}...` : post.title}</span>
+                </section>
+                <section className="w-full flex flex-row items-center p-2 px-4">
+                    <section className="flex-grow flex flex-row items-center gap-2">
+                        <Suspense fallback={<Skeleton width={40} height={40} className="rounded-full w-[40px] h-[40px]" />}>
+                            <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
+                        </Suspense>
+                        <div className="flex flex-col gap-1">
+                            <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
+                            <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
+                        </div>
                     </section>
                 </section>
-            </div>
-            </>
-        }
+                <section className="flex flex-row flex-wrap items-center gap-1.5 px-4">
+                    {
+                        post.tags.slice(undefined, 3).map(tag => <Chip key={tag} checked={false} className="text-white">{tag}</Chip>)
+                    }
+                    {
+                        post.tags.length > 3 && <small className="text-neutral-500 group-hover:text-white">+{post.tags.length - 3} more</small>
+                    }
+                </section>
+            </section>
+        </div>
     </Link>
 }
