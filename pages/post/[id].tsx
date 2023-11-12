@@ -172,7 +172,7 @@ export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
             post: post,
             poster: poster,
         },
-        revalidate: 600
+        revalidate: 60
     };
 
 });

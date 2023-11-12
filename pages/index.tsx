@@ -210,6 +210,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) =>
 		props: {
 			posts: posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 		},
-		revalidate: 630
+		revalidate: 65
 	}
 }
