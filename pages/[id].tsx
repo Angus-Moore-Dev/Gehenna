@@ -152,7 +152,6 @@ export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
     const postId = params?.id as string;
-
     const post = (await supabase.from('post').select('*').eq('id', postId).single()).data as Post;
     const poster = (await supabase.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
 
