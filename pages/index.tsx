@@ -92,7 +92,7 @@ export default function HomePage({ posts, profiles }: HomePageProps)
 	return (
 		<div ref={ref} className="flex-grow flex flex-col gap-4 mx-auto py-8">
 			<Head>
-				<title>Gehenna - Learn, Grow.</title>
+				<title>Gehenna</title>
 				<link href='/favicon.png' rel='icon' />
 				<meta name='viewport' content='initial-scale=1.0, width=device-width' />
 				<meta name="description" content="A place of thoughts and ideas." />
