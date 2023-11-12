@@ -187,7 +187,7 @@ export default function HomePage({ posts, profiles }: HomePageProps)
 				}
 				{/* The user can see their posts here. */}
 				<div className='w-full h-full mt-10'>
-					<div className=' flex flex-row flex-wrap justify-center gap-10'>
+					<div className='flex flex-row flex-wrap justify-center gap-10'>
 						{
 							posts.map((post, index) => <PostPreviewBox key={index} post={post} profile={profiles.find(x => x.id === post.userId)!} />)
 						}

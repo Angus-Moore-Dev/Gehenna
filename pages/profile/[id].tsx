@@ -1,4 +1,3 @@
-import CommonButton from "@/components/CommonButton";
 import { Gehenna } from "@/components/Gehenna";
 import { clientDb, serverDb } from "@/lib/db";
 import { Profile } from "@/models/Profile";
@@ -6,16 +5,12 @@ import { User } from "@supabase/supabase-js";
 import { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
-import { IconSettings, IconUser } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { IconSettings } from "@tabler/icons-react";
 import { toast } from "react-toastify";
-import { ScrollArea, Skeleton } from "@mantine/core";
+import { ScrollArea } from "@mantine/core";
 import { Post } from "@/models/Post";
-import PostPreviewBox from "@/components/PostPreviewBox";
-import InfiniteScroll from "react-infinite-scroll-component";
 import Head from "next/head";
-import { Startup } from "@/models/Startup";
 
 export default function ProfilePage({ me, profile }: { me: User | null, profile: Profile })
 {
@@ -88,56 +83,6 @@ export default function ProfilePage({ me, profile }: { me: User | null, profile:
                     </ScrollArea>
                 </div>
             </section>
-        </div>
-        <div className='w-full h-full mt-10'>
-            <p className="text-xl font-semibold mb-4 text-left">Posts From {profile.username}</p>
-            {
-                posts &&
-                posts.length === 0 &&
-                <div className='w-full h-full flex flex-col items-center gap-4'>
-                    <h1 className='text-2xl font-bold'>There are no recent posts...</h1>
-                </div>
-            }
-            {
-                posts && posts.length > 0 &&
-                <>
-                <InfiniteScroll 
-                dataLength={posts.length} 
-                next={async () => {
-                    clientDb.from('post').select('*').limit(postCount + 2).order('createdAt', { ascending: false }).then(async res => {
-                        if (!res.error && res.data)
-                        {
-                            setPosts(res.data as Post[]);
-                            setPostCount(postCount + 2);
-                        }
-                        else
-                        {
-                            toast.error(res.error.message);
-                        }
-                    })
-                }} 
-                hasMore={true} 
-                loader={<div className='w-full h-full flex items-center justify-center flex-col gap-2' />} 
-                style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                }}
-                endMessage={
-                    <p style={{ textAlign: 'center' }}>
-                        <b>Yay! You have seen it all</b>
-                    </p>
-                }>
-                    {
-                        posts && posts.length > 0 &&
-                        <div className='w-full flex flex-row flex-wrap justify-center gap-10'>
-                            {
-                                posts.map((post, index) => <PostPreviewBox key={index} post={post} />)
-                            }
-                        </div>
-                    }
-                </InfiniteScroll>
-                </>
-            }
         </div>
     </div>
 }
