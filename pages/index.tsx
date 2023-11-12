@@ -203,6 +203,7 @@ export default function HomePage({ posts }: HomePageProps)
 
 export const getStaticProps = async (context: GetStaticPropsContext) => 
 {
+	console.log('context::', context);
 	const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 	const posts = (await supabase.from('post').select('*')).data as Post[];
 	return {

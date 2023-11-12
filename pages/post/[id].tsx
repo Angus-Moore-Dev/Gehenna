@@ -11,17 +11,21 @@ import PostSettingsModal from "@/components/PostSettingsModal";
 import { IconClock, IconLink } from "@tabler/icons-react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { clientDb } from "@/lib/db";
+import { useUser } from "@supabase/auth-helpers-react";
 
 interface PostIdPageProps
 {
     post: Post;
     poster: Profile;
-    me: Profile | null;
 }
 
-export default function PostIdPage({ post, poster, me }: PostIdPageProps)
+export default function PostIdPage({ post, poster }: PostIdPageProps)
 {
     const router = useRouter();
+    const user = useUser();
+    const [me, setMe] = useState<Profile>();
 
     if (router.isFallback)
     {
@@ -31,6 +35,15 @@ export default function PostIdPage({ post, poster, me }: PostIdPageProps)
             </video>
         </div>
     }
+
+    useEffect(() => {
+        if (user)
+        {
+            clientDb.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => {
+                setMe(data);
+            });
+        }
+    }, [user]);
 
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
         <Head>
@@ -157,7 +170,6 @@ export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
     return {
         props: {
             post: post,
-            me: null,
             poster: poster,
         },
         revalidate: 600
