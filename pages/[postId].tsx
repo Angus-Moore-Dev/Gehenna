@@ -1,6 +1,6 @@
 import { Post } from "@/models/Post";
 import { Profile } from "@/models/Profile";
-import { GetStaticPaths, GetStaticPropsContext } from "next";
+import { GetStaticPaths, GetStaticProps, GetStaticPropsContext, InferGetServerSidePropsType, InferGetStaticPropsType } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { TypographyStylesProvider, Chip, CopyButton, Tooltip, ActionIcon } from "@mantine/core";
@@ -142,12 +142,9 @@ export const getStaticPaths = (async () =>
 
 
 
-export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
-{
+export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
     const postId = params?.postId as string;
-
-    console.log('postId::', postId);
 
     const post = (await supabase.from('post').select('*').eq('id', postId).single()).data as Post;
     const poster = (await supabase.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
@@ -161,6 +158,6 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
             me: null,
             poster: poster,
         },
-        revalidate: 600, // ISR every 10 minutes
     };
-};
+
+}) satisfies GetStaticProps<PostIdPageProps>;
