@@ -143,6 +143,13 @@ export const getStaticPaths = (async () =>
 
 
 export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
+
+    if (!params)
+    {
+        console.error('No params provided to getStaticProps!');
+        return;
+    }
+
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
     const postId = params?.postId as string;
 
@@ -160,4 +167,4 @@ export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
         },
     };
 
-}) satisfies GetStaticProps<PostIdPageProps>;
+});
