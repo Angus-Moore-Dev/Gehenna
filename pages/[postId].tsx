@@ -126,7 +126,7 @@ export const getStaticPaths = (async () =>
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
     // Now get the post
-    const posts = (await supabase.from('post').select('id')).data?.map(x => x.id) as string[];
+    const posts = (await supabase.from('post').select('id')).data?.map(x => x.id) ?? [] as string[];
 
     console.log('fetched', posts.length, 'posts to prerender');
 
