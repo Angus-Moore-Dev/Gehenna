@@ -154,6 +154,7 @@ export const getStaticProps = (async ({ params }: GetStaticPropsContext) => {
     const postId = params?.id as string;
     const post = (await supabase.from('post').select('*').eq('id', postId).single()).data as Post;
     const poster = (await supabase.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
+    
     console.log('generating static page for post', post.title);
     console.log('poster::', poster);
 
