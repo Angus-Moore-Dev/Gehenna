@@ -10,6 +10,7 @@ import { Gehenna } from "@/components/Gehenna";
 import PostSettingsModal from "@/components/PostSettingsModal";
 import { IconClock, IconLink } from "@tabler/icons-react";
 import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/router";
 
 interface PostIdPageProps
 {
@@ -20,6 +21,17 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 {
+    const router = useRouter();
+
+    if (router.isFallback)
+    {
+        return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
+            <video className="w-full" autoPlay loop controls>
+                <source src="/trump.mp4" type="video/mp4" />
+            </video>
+        </div>
+    }
+
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
         <Head>
             <title>Gehenna - {post.title}</title>
