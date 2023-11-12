@@ -207,7 +207,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) =>
 	const posts = (await supabase.from('post').select('*')).data as Post[];
 	return {
 		props: {
-			posts
+			posts: posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 		},
 		revalidate: 630
 	}
