@@ -20,7 +20,6 @@ interface PostIdPageProps
 
 export default function PostIdPage({ post, poster, me }: PostIdPageProps)
 {
-
     return <div className="w-full flex-grow flex flex-col gap-4 max-w-3xl mx-auto py-8">
         <Head>
             <title>Gehenna - {post.title}</title>
@@ -152,6 +151,8 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) =>
 
     const post = (await supabase.from('post').select('*').eq('id', postId).single()).data as Post;
     const poster = (await supabase.from('profiles').select('*').eq('id', post.userId).single()).data as Profile;
+
+    console.log('generating static page for post', post.id, post.title);
 
     return {
         props: {
