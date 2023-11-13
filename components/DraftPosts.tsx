@@ -1,4 +1,4 @@
-import { Loader, Modal } from "@mantine/core";
+import { Button, Loader, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import CommonButton from "./CommonButton";
 import { User } from "@supabase/supabase-js";
@@ -51,6 +51,8 @@ export default function DraftPosts({ user }: { user: User })
             }
         </div>
     </Modal>
-    <CommonButton onClick={open} className='w-full max-w-[550px] text-white bg-blue-700 hover:bg-blue-500 -mb-2' text='Open Draft Posts' />
+    <Button color="blue" onClick={open}>
+        Open Draft Posts
+    </Button>
     </>
 }

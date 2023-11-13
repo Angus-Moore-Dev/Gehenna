@@ -116,23 +116,35 @@ export default function HomePage({ posts, profiles }: HomePageProps)
 				</div>
 			}
 			<div className='w-full h-full flex flex-col items-center gap-6'>
-				{
-					profile &&
-					<Gehenna />
-				}
-				{
-					!profile &&
-					<SignInModal />
-				}
-				{
-					profile && 
-					<>
-					<Link href={`/profile/${profile.handle}`} className='flex flex-col mx-auto gap-2 items-center transition p-2 hover:bg-primary-light text-white rounded-md'>
-						<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[100px] h-[100px] object-cover rounded-md' />
-						<span className='font-semibold'>{profile.username}</span>
-					</Link>
-					</>
-				}
+				<div className='w-full flex flex-row items-center gap-4 justify-center'>
+					{
+						profile &&
+						<Gehenna />
+					}
+					{
+						!profile &&
+						<SignInModal />
+					}
+					{
+						profile &&
+						<div className='flex flex-row items-center gap-4'>
+							<Link href={`/profile/${profile.handle}`} className='min-w-[100px] flex flex-col mx-auto gap-2 items-center transition p-2 hover:bg-primary-light text-white rounded-md'>
+								<Image src={profile.avatar} alt='me' width={100} height={100} className='w-[60px] h-[60px] object-cover rounded-md' />
+								<span className='font-semibold'>{profile.username}</span>
+							</Link>
+							<div className='flex flex-col gap-5'>
+								{
+									profile && user && profile.emailVerified &&
+									<DraftPosts user={user} />
+								}
+								{
+									profile && user && profile.emailVerified &&
+									<NewPostModal user={user} />
+								}
+							</div>
+						</div>
+					}
+				</div>
 				<section className='w-full flex flex-row justify-center items-center'>
 					<Autocomplete 
 						icon={<svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -177,14 +189,6 @@ export default function HomePage({ posts, profiles }: HomePageProps)
 					}} className='rounded-r-md rounded-l-none text-xs font-normal' /> */}
 				</section>
 				{/* The user can make new posts here. */}
-				{
-					profile && user && profile.emailVerified &&
-					<DraftPosts user={user} />
-				}
-				{
-					profile && user && profile.emailVerified &&
-					<NewPostModal user={user} />
-				}
 				{/* The user can see their posts here. */}
 				<div className='w-full h-full mt-10'>
 					<div className='flex flex-row flex-wrap justify-center gap-10'>

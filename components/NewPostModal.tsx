@@ -51,6 +51,6 @@ export default function NewPostModal({ user, startup }: NewPostModalProps)
             </Button>
         </div>
     </Modal>
-    <CommonButton onClick={open} className='w-full max-w-[550px] py-2 text-lg font-bold text-white' text='Create New Post' />
+    <CommonButton onClick={open} className='w-48 text-white' text='Create New Post' />
     </>
 }
