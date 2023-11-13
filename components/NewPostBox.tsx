@@ -232,7 +232,6 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
                             // Update call here with the existing ID, no need to create a new one
                             const id = draftPost.id;
                             const res = await clientDb.from('draftPost').update({
-                                id,
                                 title,
                                 content,
                                 userId: user.id,
@@ -242,7 +241,8 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
                                 startupId: startup ? startup.id : null,
                             }).eq('id', id);
 
-                            res.error && toast.error('Failed to save draft');
+                            res.error && toast.error('Failed to save draft!');
+                            res.error && console.error(res.error);
                             if (!res.error)
                             {
                                 toast.success('Saved draft');
@@ -267,7 +267,6 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
                                 setTags([]);
                                 setTitle('');
                                 setContent('');
-                                handleClose();
                             }
                         }
                         else
@@ -286,7 +285,7 @@ export default function NewPostBox({ user, startup, handleClose, draftPost, setD
         
                             if (res.error)
                             {
-                                toast.error('Failed to save draft');
+                                toast.error('Failed to insert new draft post!');
                             }
                             else
                             {
