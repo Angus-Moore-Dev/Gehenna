@@ -1,19 +1,15 @@
-import { clientDb } from "@/lib/db";
-import { Post } from "@/models/Post";
-import { Profile } from "@/models/Profile";
-import { Chip, Loader, Skeleton } from "@mantine/core";
-import { RichTextEditor } from "@mantine/tiptap";
-import { useEditor } from "@tiptap/react";
+'use client';
+
+import { Chip, Skeleton } from "@mantine/core";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { Suspense } from "react";
 import Image from "next/image";
 import { IconPhoto } from "@tabler/icons-react";
-import { Startup } from "@/models/Startup";
+import { MediaInfo, Post, Profile } from "@/utils/global.types";
 
 interface PostPreviewBoxProps
 {
-    post: Post;
+    post: { id: string, title: string, postImageURL: MediaInfo, tags: string[], createdAt: string };
     profile: Profile;
 }
 
@@ -48,7 +44,7 @@ export default function PostPreviewBox({ post, profile }: PostPreviewBoxProps)
             {
                 post.postImageURL.url &&
                 <Suspense fallback={<Skeleton width={400} height={666} className="w-[400px] h-[666px] absolute z-0" />}>
-                    <Image src={post.postImageURL?.url} alt='' width={400} height={666} className="w-[400px] h-[666px] object-cover absolute z-0" />
+                    <Image src={post.postImageURL.url} alt='' width={400} height={666} className="w-[400px] h-[666px] object-cover absolute z-0" />
                 </Suspense>
             }
             {
