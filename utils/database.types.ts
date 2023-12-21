@@ -63,8 +63,8 @@ export interface Database {
           postImageURL: Json
           postTopic: string | null
           public: boolean
-          tags: string[]
           title: string
+          topicId: string | null
           userId: string
         }
         Insert: {
@@ -76,8 +76,8 @@ export interface Database {
           postImageURL?: Json
           postTopic?: string | null
           public?: boolean
-          tags?: string[]
           title?: string
+          topicId?: string | null
           userId: string
         }
         Update: {
@@ -89,14 +89,21 @@ export interface Database {
           postImageURL?: Json
           postTopic?: string | null
           public?: boolean
-          tags?: string[]
           title?: string
+          topicId?: string | null
           userId?: string
         }
         Relationships: [
           {
             foreignKeyName: "post_postTopic_fkey"
             columns: ["postTopic"]
+            isOneToOne: false
+            referencedRelation: "postTopics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_topicId_fkey"
+            columns: ["topicId"]
             isOneToOne: false
             referencedRelation: "postTopics"
             referencedColumns: ["id"]

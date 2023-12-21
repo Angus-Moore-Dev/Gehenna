@@ -8,7 +8,7 @@ import Image from "next/image";
 export default async function HandleNavbar({ profile }: { profile: Profile })
 {
 
-    return <div className="w-full grid grid-rows-2 md:grid-rows-1 gap-4 md:gap-0 md:grid-cols-3 bg-secondary border-b-[1px] border-neutral-600 py-5">
+    return <div className="fixed w-full grid grid-rows-2 md:grid-rows-1 gap-4 md:gap-0 md:grid-cols-3 bg-secondary border-b-[1px] border-neutral-600 py-5">
         <div className="hidden md:flex md:pl-8 items-center">
             {
                 profile.avatar &&

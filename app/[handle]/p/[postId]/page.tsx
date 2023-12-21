@@ -93,7 +93,7 @@ export default async function PostPage({ params }: { params: { postId: string, h
     }
     return <div className="w-full min-h-screen flex flex-col gap-10 items-center">
         <HandleNavbar profile={profile} />
-        <div className="w-full max-w-3xl flex flex-col gap-5">
+        <div className="w-full max-w-3xl flex flex-col gap-5 mt-32">
             <span className="text-5xl font-bold mb-4">
                 {post.title}
             </span>
@@ -129,15 +129,6 @@ export default async function PostPage({ params }: { params: { postId: string, h
                     </div>
                 </div>
                 <div className="w-full border-t-[1px] border-t-neutral-600" />
-                <div className="w-full flex flex-wrap gap-2">
-                    {
-                        post.tags.map(tag => <Chip checked={false} key={tag}>{tag}</Chip>)
-                    }
-                </div>
-                {
-                    post.tags.length >= 1 &&
-                    <div className="w-full border-t-[1px] border-t-neutral-600" />
-                }
             </section>
             <PostImage src={(post.postImageURL as MediaInfo).url} />
             <TypographyStylesProvider className="-ml-6">
