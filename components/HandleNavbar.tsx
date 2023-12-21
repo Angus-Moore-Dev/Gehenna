@@ -1,15 +1,17 @@
 import { Button } from "@mantine/core";
-import { Gehenna } from "./Navbar";
-import { LogIn, RssIcon, ShareIcon } from 'lucide-react';
+import { LogIn, PlusIcon, RssIcon, ShareIcon } from 'lucide-react';
 import Link from "next/link";
 import { Profile } from "@/utils/global.types";
 import Image from "next/image";
+import { createServerClient } from "@/utils/supabase/server";
 
 export default async function HandleNavbar({ profile }: { profile: Profile })
 {
+    const supabase = createServerClient();
+    const user = (await supabase.auth.getUser()).data.user;
 
     return <div className="fixed w-full grid grid-rows-2 md:grid-rows-1 gap-4 md:gap-0 md:grid-cols-3 bg-secondary border-b-[1px] border-neutral-600 py-5">
-        <div className="hidden md:flex md:pl-8 items-center">
+        <div className="hidden md:flex md:pl-8 items-center gap-4">
             {
                 profile.avatar &&
                 <Link href='/' className="w-fit">
@@ -21,6 +23,15 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             <Link href='/' className="w-fit transition hover:drop-shadow-lg">
                 <span className="text-3xl font-bold">{profile.username}</span>
             </Link>
+            {
+                user && user.id === profile.id &&
+                <Link href='/publish' className="w-fit">
+                    <Button>
+                        <PlusIcon className="mr-2" />
+                        Write New Post
+                    </Button>
+                </Link>
+            }
         </div>
         <div className="min-w-fit flex flex-col md:flex-row items-center md:justify-end md:pr-8 gap-2">
             <Button color="dark">

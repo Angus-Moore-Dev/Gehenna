@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createClient } from '@/utils/supabase/middleware';
+import { createServerClient } from './utils/supabase/server';
 
 export const config = {
 	matcher: [
@@ -17,7 +17,7 @@ export const config = {
 const PUBLIC_FILE = /\.(.*)$/; // Files
 
 export async function middleware(request: NextRequest) {
-    const { supabase, response } = createClient(request);
+    const supabase = createServerClient();
 
 	await supabase.auth.getSession();
 

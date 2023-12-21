@@ -2,7 +2,7 @@ import HandleFooter from "@/components/HandleFooter";
 import HandleNavbar from "@/components/HandleNavbar";
 import PostPreviewBox from "@/components/OldPostPreviewBox";
 import { MediaInfo } from "@/utils/global.types";
-import { createServerSupabase } from "@/utils/supabase/server";
+import { createServerClient } from "@/utils/supabase/server";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import { Metadata, ResolvingMetadata } from "next";
 import { Tabs } from '@mantine/core';
@@ -16,7 +16,7 @@ let favicon = '/favicon.ico';
 export async function generateMetadata({ params }: { params: { handle: string }}, parent: ResolvingMetadata): Promise<Metadata>
 {
     const handle = params.handle;
-    const supabase = createServerSupabase();
+    const supabase = createServerClient();
 
     const { data: profile, error } = await supabase
     .from('profiles')
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: { handle: string }}
 
 export default async function AuthorHomePage({ params }: { params: { handle: string }})
 {
-    const supabase = createServerSupabase();
+    const supabase = createServerClient();
     const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
@@ -77,8 +77,8 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
 
     return <div className="w-full flex flex-col items-center gap-10">
         <HandleNavbar profile={profile} />
-        <Link href={`p/${posts[0].id}`} className="w-full max-w-4xl flex flex-row border-[1px] border-neutral-600 mt-32">
-            <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={225} className="object-cover rounded-l-md border-r-[1px] border-neutral-600" />
+        <Link href={`p/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
+            <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={225} className="object-cover rounded-l-md " />
             <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
                 <span className="text-2xl font-bold text-center">
                     {posts[0].title}
@@ -99,15 +99,6 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
             byline: string;
             topicId: string | null;
         }[]} />
-        {/* <div className="w-full flex flex-row justify-center flex-wrap gap-10 px-8">
-            {
-                posts.map(post => <PostPreviewBox
-                    key={post.id}
-                    post={post as { id: string, title: string, postImageURL: MediaInfo, tags: string[], createdAt: string }}
-                    profile={profile} />
-                )
-            }
-        </div> */}
         <HandleFooter profile={profile} />
     </div>
 }

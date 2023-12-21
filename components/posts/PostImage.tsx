@@ -4,8 +4,14 @@ import { Skeleton } from "@mantine/core";
 import Image from "next/image";
 import { useState } from "react";
 
+interface PostImageProps
+{
+    src: string;
+    width?: number;
+    height?: number;
+}
 
-export default function PostImage({ src }: { src: string })
+export default function PostImage({ src, width, height }: PostImageProps)
 {
     const [reveal, setReveal] = useState(false);
 
@@ -15,12 +21,12 @@ export default function PostImage({ src }: { src: string })
     alt=''
     quality={100}
     priority={true}
-    width={1000}
-    height={450}
+    width={width ?? 1000}
+    height={height ?? 450}
     onLoad={() => setReveal(true)}
     style={{ visibility: reveal ? 'visible' : 'hidden', display: reveal ? 'block' : 'none' }}
-    className="w-full h-[450px] object-cover mx-auto rounded-md"
+    className={`w-[${width ?? 1000}] h-[${height}px] object-cover mx-auto rounded-md`}
     />
-    <Skeleton hidden={reveal} height={450} className="w-full rounded-md" />
+    <Skeleton hidden={reveal} height={height} className="w-full rounded-md" />
     </>
 }

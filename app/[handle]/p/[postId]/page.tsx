@@ -5,7 +5,7 @@ import PostImage from "@/components/posts/PostImage";
 import SharePost from "@/components/posts/SharePost";
 import { appDomain, appHttp } from "@/utils/appURL";
 import { MediaInfo } from "@/utils/global.types";
-import { createServerSupabase } from "@/utils/supabase/server";
+import { createServerClient } from "@/utils/supabase/server";
 import { Button, Chip, TypographyStylesProvider } from "@mantine/core";
 import { ClockIcon, HeartIcon, MessageCircleIcon, SeparatorHorizontal, ShareIcon } from "lucide-react";
 import { Metadata, ResolvingMetadata } from "next";
@@ -17,7 +17,7 @@ let favicon = '/favicon.ico';
 export async function generateMetadata({ params }: { params: { postId: string }}, parent: ResolvingMetadata): Promise<Metadata>
 {
     const postId = params.postId;
-    const supabase = createServerSupabase();
+    const supabase = createServerClient();
 
     const { data: post, error: postError } = await supabase
     .from('post')
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: { params: { postId: string }}
 
 export default async function PostPage({ params }: { params: { postId: string, handle: string } })
 {
-    const supabase = createServerSupabase();
+    const supabase = createServerClient();
 
     const { data: post, error: postError } = await supabase
     .from('post')

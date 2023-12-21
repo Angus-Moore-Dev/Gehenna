@@ -5,7 +5,7 @@ import { Notifications } from '@mantine/notifications';
 import './globals.css';
 import '@mantine/core/styles.css';
 // import '@mantine/tiptap/styles.css';
-// import '@mantine/notifications/styles.css';
+import '@mantine/notifications/styles.css';
 
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 const inter = Open_Sans({ subsets: ['latin'] });
@@ -32,8 +32,8 @@ export default function RootLayout({
 			</head>
 			<body className={`${inter.className} min-h-screen flex flex-col items-center break-words`}>
 				<MantineProvider defaultColorScheme='dark' theme={{ primaryColor: 'green' }} >
-					<Notifications />
 					{children}
+					<Notifications />
 				</MantineProvider>
 			</body>
 		</html>
