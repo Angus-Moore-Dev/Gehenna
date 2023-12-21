@@ -55,8 +55,9 @@ export const getValidSubdomain = (pathname: string, host?: string | null) =>
 
 	if (host && host.includes('.'))
 	{
+		console.log('host::', host);
 		const candidate = host.split('.')[0];
-		if (candidate && !candidate.includes('localhost'))
+		if (candidate && !candidate.includes('localhost') && candidate !== 'www')
 		{
 			// Valid candidate
 			subdomain = candidate;
