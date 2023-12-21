@@ -1,10 +1,10 @@
 'use client';
 import { Gehenna } from "@/components/Navbar";
-import PostImage from "@/components/posts/PostImage";
 import { appDomain, appHttp } from "@/utils/appURL";
 import { createBrowserClient } from "@/utils/supabase/client";
 import { Button, Checkbox, Input } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { Session } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -20,41 +20,74 @@ export default function AuthenticationPage()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [code, setCode] = useState('');
-    const [mode, setMode] = useState<'signIn' | 'signUp' | 'forgotPassword' | 'code'>('signIn');
+    const [mode, setMode] = useState<'signIn' | 'signUp' | 'forgotPassword' | 'code' | 'confirmEmail'>('signIn');
+
+    const [handle, setHandle] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
 
     const signIn = async () =>
     {
         if (isLoading) return;
         setIsLoading(true);
 
-        const { error } = mode === 'signIn' ? 
-        await supabase
-        .auth
-        .signInWithPassword({ email, password })
-        :
-        await supabase
-        .auth
-        .verifyOtp({
-            type: 'email',
-            email,
-            token: code
+        const session = await fetch('/auth/sign-in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                password: mode === 'signIn' ? password : code,
+                mode
+            })
         });
 
-        if (error)
+        if (session.ok)
         {
-            console.error(error);
+            const newSession = await session.json() as Session;
+            await supabase.auth.setSession(newSession);
+            router.push(`${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`);
+        }
+        else
+        {
             notifications.show({
                 title: 'Error Signing In',
-                message: error.message,
+                message: 'Invalid email or password.',
                 color: 'red',
                 variant: 'filled'
             });
             setIsLoading(false);
         }
-        else
-        {
-            router.push(`${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`);
-        }
+
+        // const { error } = mode === 'signIn' ? 
+        // await supabase
+        // .auth
+        // .signInWithPassword({ email, password })
+        // :
+        // await supabase
+        // .auth
+        // .verifyOtp({
+        //     type: 'email',
+        //     email,
+        //     token: code
+        // });
+
+        // if (error)
+        // {
+        //     console.error(error);
+        //     notifications.show({
+        //         title: 'Error Signing In',
+        //         message: error.message,
+        //         color: 'red',
+        //         variant: 'filled'
+        //     });
+        //     setIsLoading(false);
+        // }
+        // else
+        // {
+        //     router.push(`${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`);
+        // }
     }
 
     const forgotPassword = async () =>
@@ -67,7 +100,8 @@ export default function AuthenticationPage()
         .signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`
+                emailRedirectTo: `http://adamjensen.localhost:3000/`
+                // emailRedirectTo: `${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`
             }
         });
 
@@ -100,15 +134,28 @@ export default function AuthenticationPage()
             <Image src='/servers.png' alt="Servers" width={1000} height={1000} className="rounded-l-md" quality={100} priority />
             <div className="w-full bg-tertiary rounded-r-md p-8 flex flex-col gap-4 items-center">
                 <Gehenna />
-                <p>
-                    Voices of the Damned.
-                </p>
                 <section className="w-full md:w-80 flex flex-col gap-2">
                     <Input.Wrapper label="Email" className="w-full">
                         <Input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
                     </Input.Wrapper>
                     {
-                        mode === 'signIn' &&
+                        mode === 'signUp' &&
+                        <>
+                        <Input.Wrapper label="Handle" description={`Only a-z allowed. This will show as your subdomain. heisenberg.gehenna.ink`} className="w-full">
+                            <Input placeholder="Handle" type="text" value={handle} onChange={e => setHandle(e.target.value)} />
+                        </Input.Wrapper>
+                        <div className="flex flex-row gap-2">
+                            <Input.Wrapper label="First Name" description="" className="w-full">
+                                <Input placeholder="Walter" type="text" value={firstName} onChange={e => setFirstName(e.target.value)} />
+                            </Input.Wrapper>
+                            <Input.Wrapper label="Last Name" description="" className="w-full">
+                                <Input placeholder="White" type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
+                            </Input.Wrapper>
+                        </div>
+                        </>
+                    }
+                    {
+                        (mode === 'signIn' || mode === 'signUp') &&
                         <Input.Wrapper label="Password" className="w-full">
                             <Input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)}  />
                         </Input.Wrapper>
@@ -139,6 +186,12 @@ export default function AuthenticationPage()
                         mode === 'forgotPassword' &&
                         <Button className="w-full mt-2" onClick={forgotPassword} loading={isLoading}>
                             Send Reset Email
+                        </Button>
+                    }
+                    {
+                        mode === 'signUp' &&
+                        <Button className="w-full mt-2" onClick={() => setMode('confirmEmail')}>
+                            Sign Up to Gehenna
                         </Button>
                     }
                     {

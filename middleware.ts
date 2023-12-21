@@ -16,10 +16,12 @@ export const config = {
 
 const PUBLIC_FILE = /\.(.*)$/; // Files
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest)
+{
+	// const response = NextResponse.next();
     const supabase = createServerClient();
 
-	await supabase.auth.getSession();
+	const { data: { session }} = await supabase.auth.getSession();
 
 	// Clone the URL
 	const url = request.nextUrl.clone();

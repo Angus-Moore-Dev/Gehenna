@@ -1,7 +1,6 @@
 import HandleFooter from "@/components/HandleFooter";
 import HandleNavbar from "@/components/HandleNavbar";
 import AdditionalMedia from "@/components/posts/AdditionalMedia";
-import PostImage from "@/components/posts/PostImage";
 import SharePost from "@/components/posts/SharePost";
 import { appDomain, appHttp } from "@/utils/appURL";
 import { MediaInfo } from "@/utils/global.types";
@@ -130,7 +129,17 @@ export default async function PostPage({ params }: { params: { postId: string, h
                 </div>
                 <div className="w-full border-t-[1px] border-t-neutral-600" />
             </section>
-            <PostImage src={(post.postImageURL as MediaInfo).url} />
+            <Image
+            src={(post.postImageURL as MediaInfo).url}
+            alt=""
+            width={1000} height={450}
+            className="object-cover rounded-md"
+            style={{
+                width: 1000,
+                height: 450,
+                objectFit: 'cover'
+            }}
+            />
             <TypographyStylesProvider className="-ml-6">
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
             </TypographyStylesProvider>

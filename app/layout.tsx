@@ -8,6 +8,7 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import HandleFooter from '@/components/HandleFooter';
 const inter = Open_Sans({ subsets: ['latin'] });
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,7 @@ export default function RootLayout({
 				<MantineProvider defaultColorScheme='dark' theme={{ primaryColor: 'green' }} >
 					{children}
 					<Notifications />
+					<HandleFooter />
 				</MantineProvider>
 			</body>
 		</html>

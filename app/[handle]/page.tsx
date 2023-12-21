@@ -35,14 +35,13 @@ export async function generateMetadata({ params }: { params: { handle: string }}
     }
 
     return {
-        title: `${profile.username} | Gehenna`,
-        description: `Welcome to ${profile.username}'s platform.`,
+        title: `${profile.name} | Gehenna`,
+        description: `Welcome to ${profile.name}'s platform.`,
         icons: {
             icon: profile.avatar || favicon
         },
         openGraph: { images: [profile.avatar || favicon] }
     }
-    
 }
 
 export default async function AuthorHomePage({ params }: { params: { handle: string }})
@@ -75,30 +74,48 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
     if (!postTopics && postTopicsError)
         redirect('/500');
 
-    return <div className="w-full flex flex-col items-center gap-10">
+    return <div className="w-full min-h-screen flex flex-col items-center gap-10">
         <HandleNavbar profile={profile} />
-        <Link href={`p/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
-            <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={225} className="object-cover rounded-l-md " />
-            <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
-                <span className="text-2xl font-bold text-center">
-                    {posts[0].title}
+        {
+            posts.length === 0 &&
+            <div className="h-full mt-32 flex flex-col items-center justify-center">
+                <span className="text-primary font-bold">
+                    This person hasn&apos;t posted anything yet!
                 </span>
-                <p className="text-neutral-400">
-                    {posts[0].byline}
-                </p>
-                <small>
-                    {new Date(posts[0].createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </small>
             </div>
-        </Link>
-        <HandlePosts postTopics={postTopics} profile={profile} posts={posts.slice(1) as {
-            id: string;
-            title: string;
-            postImageURL: MediaInfo;
-            createdAt: string;
-            byline: string;
-            topicId: string | null;
-        }[]} />
+        }
+        {
+            posts[0] &&
+            <Link href={`p/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
+                <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={225} className="object-cover rounded-l-md " />
+                <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
+                    <span className="text-2xl font-bold text-center">
+                        {posts[0].title}
+                    </span>
+                    <p className="text-neutral-400">
+                        {posts[0].byline}
+                    </p>
+                    <small>
+                        {
+                            postTopics.some(x => x.id === posts[0].topicId) ?
+                            <>{postTopics.find(x => x.id === posts[0].topicId)?.title}&nbsp;&middot;&nbsp;</> :
+                            ''
+                        }{new Date(posts[0].createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </small>
+                </div>
+            </Link>
+        }
+        {
+            posts.length > 0 &&
+            <HandlePosts postTopics={postTopics} profile={profile} posts={posts.slice(1) as {
+                id: string;
+                title: string;
+                postImageURL: MediaInfo;
+                createdAt: string;
+                byline: string;
+                topicId: string | null;
+            }[]} />
+        }
         <HandleFooter profile={profile} />
     </div>
 }

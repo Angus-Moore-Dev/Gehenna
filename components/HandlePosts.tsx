@@ -24,13 +24,13 @@ interface HandlePostsProps
 
 export default function HandlePosts({ posts, profile, postTopics }: HandlePostsProps)
 {
-    const [activeTab, setActiveTab] = useState('home');
+    const [activeTab, setActiveTab] = useState('all');
 
     return <>
     <div className="w-full max-w-4xl">
         <Tabs defaultValue="home" value={activeTab} onChange={e => setActiveTab(e ?? 'home')}>
             <Tabs.List grow justify="start">
-                <Tabs.Tab value='home'>Home</Tabs.Tab>
+                <Tabs.Tab value='all'>All</Tabs.Tab>
                 {
                     postTopics.map(topic => <Tabs.Tab key={topic.id} value={topic.id}>{topic.title}</Tabs.Tab>)
                 }
@@ -40,13 +40,13 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
     <div className="w-full max-w-4xl flex flex-col gap-4">
         {
             posts
-            .filter(post => activeTab === post.topicId || activeTab === 'home')
+            .filter(post => activeTab === post.topicId || activeTab === 'all')
             .map(post =>
             <Link
             href={`p/${post.id}`}
             key={post.id}
             className="bg-secondary transition hover:bg-tertiary border-[1px] border-neutral-600 rounded-md flex flex-row gap-2">
-                <Image src={(post.postImageURL as MediaInfo).url} alt="" width={250} height={150} className="object-cover bg-tertiary min-w-[250px] min-h-[150px] max-h-[150px] h-full rounded-l-md" />
+                <Image src={(post.postImageURL as MediaInfo).url} alt="" width={250} height={150} style={{ objectFit: 'cover' }} className="object-cover bg-tertiary min-w-[250px] min-h-[150px] max-h-[150px] h-full rounded-l-md" />
                 <div className="flex-grow flex flex-col gap-2 p-4">
                     <span className="text-2xl font-bold">
                         {post.title}

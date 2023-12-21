@@ -10,7 +10,8 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
     const supabase = createServerClient();
     const user = (await supabase.auth.getUser()).data.user;
 
-    return <div className="fixed w-full grid grid-rows-2 md:grid-rows-1 gap-4 md:gap-0 md:grid-cols-3 bg-secondary border-b-[1px] border-neutral-600 py-5">
+    return <div className="fixed z-50 w-full grid grid-rows-2 md:grid-rows-1 gap-4 
+    md:gap-0 md:grid-cols-3 bg-secondary bg-opacity-70 backdrop-blur-md border-b-[1px] border-neutral-600 py-5">
         <div className="hidden md:flex md:pl-8 items-center gap-4">
             {
                 profile.avatar &&
@@ -21,8 +22,11 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
         </div>
         <div className="flex items-center justify-center gap-4">
             <Link href='/' className="w-fit transition hover:drop-shadow-lg">
-                <span className="text-3xl font-bold">{profile.username}</span>
+                <span className="text-3xl font-bold">{profile.name}</span>
             </Link>
+            {
+                user ? user.id : 'not signed in on this domain!'
+            }
             {
                 user && user.id === profile.id &&
                 <Link href='/publish' className="w-fit">

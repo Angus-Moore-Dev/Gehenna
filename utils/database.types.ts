@@ -158,7 +158,6 @@ export interface Database {
           id: string
           name: string
           profileBannerURL: Json
-          username: string
         }
         Insert: {
           avatar?: string
@@ -168,7 +167,6 @@ export interface Database {
           id: string
           name: string
           profileBannerURL?: Json
-          username: string
         }
         Update: {
           avatar?: string
@@ -178,7 +176,6 @@ export interface Database {
           id?: string
           name?: string
           profileBannerURL?: Json
-          username?: string
         }
         Relationships: [
           {
