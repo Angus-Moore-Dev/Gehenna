@@ -41,6 +41,22 @@ export async function middleware(request: NextRequest)
 		url.pathname = `/${subdomain}${url.pathname}`;
 	}
 
+	// Grab the cookie out and set the domain to be .domain name. If it's localhost, just set it to localhost
+	let cookie = request.headers.get('cookie') as string;
+	// Modify the domain to be .domain name. If it's localhost, just set it to localhost
+	const domain = host?.includes('localhost') ? 'localhost' : host?.split(':')[0];
+	// Now we make the change
+	cookie = cookie?.replace(/Domain=localhost/i, `Domain=.${domain}`);
+
+
+
+	// Set the cookie
+	if (cookie)
+	{
+		request.headers.set('cookie', cookie);
+	}
+
+
 	return NextResponse.rewrite(url);
 }
 
