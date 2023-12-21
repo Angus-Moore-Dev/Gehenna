@@ -48,16 +48,10 @@ export async function middleware(request: NextRequest)
 	// Now we make the change
 	cookie = cookie?.replace(/Domain=localhost/i, `Domain=.${domain}`);
 
+	const response = NextResponse.rewrite(url);
+	response.headers.set('cookie', cookie);
 
-
-	// Set the cookie
-	if (cookie)
-	{
-		request.headers.set('cookie', cookie);
-	}
-
-
-	return NextResponse.rewrite(url);
+	return response;
 }
 
 export const getValidSubdomain = (pathname: string, host?: string | null) => 
