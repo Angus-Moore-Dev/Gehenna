@@ -35,7 +35,6 @@ export default function RootLayout({
 				<MantineProvider defaultColorScheme='dark' theme={{ primaryColor: 'green' }} >
 					{children}
 					<Notifications />
-					<HandleFooter />
 				</MantineProvider>
 			</body>
 		</html>
