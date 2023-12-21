@@ -61,7 +61,7 @@ export default function PostPreviewBox({ post, profile }: PostPreviewBoxProps)
                             <Image src={profile.avatar} width={40} height={40} className="rounded-md w-[40px] h-[40px] object-cover" alt='profile' />
                         </Suspense>
                         <div className="flex flex-col gap-1">
-                            <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.username}</span>
+                            <span className="text-neutral-200 font-semibold group-hover:text-white">{profile.name}</span>
                             <span className="text-neutral-300 text-sm group-hover:text-white">{new Date(post.createdAt).toLocaleDateString('en-au', { dateStyle: 'full' })}</span>
                         </div>
                     </section>
