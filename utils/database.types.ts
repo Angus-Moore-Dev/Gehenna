@@ -45,13 +45,6 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "draftPost_startupId_fkey"
-            columns: ["startupId"]
-            isOneToOne: false
-            referencedRelation: "startups"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "draftPost_userId_fkey"
             columns: ["userId"]
             isOneToOne: false
@@ -63,46 +56,49 @@ export interface Database {
       post: {
         Row: {
           attachedFileURLs: Json[]
+          byline: string
           content: string
           createdAt: string
           id: string
           postImageURL: Json
+          postTopic: string | null
           public: boolean
-          startupId: string | null
           tags: string[]
           title: string
           userId: string
         }
         Insert: {
           attachedFileURLs?: Json[]
+          byline?: string
           content?: string
           createdAt?: string
           id: string
           postImageURL?: Json
+          postTopic?: string | null
           public?: boolean
-          startupId?: string | null
           tags?: string[]
           title?: string
           userId: string
         }
         Update: {
           attachedFileURLs?: Json[]
+          byline?: string
           content?: string
           createdAt?: string
           id?: string
           postImageURL?: Json
+          postTopic?: string | null
           public?: boolean
-          startupId?: string | null
           tags?: string[]
           title?: string
           userId?: string
         }
         Relationships: [
           {
-            foreignKeyName: "post_startupId_fkey"
-            columns: ["startupId"]
+            foreignKeyName: "post_postTopic_fkey"
+            columns: ["postTopic"]
             isOneToOne: false
-            referencedRelation: "startups"
+            referencedRelation: "postTopics"
             referencedColumns: ["id"]
           },
           {
@@ -114,38 +110,67 @@ export interface Database {
           }
         ]
       }
+      postTopics: {
+        Row: {
+          createdAt: string
+          description: string
+          id: string
+          title: string
+          userId: string
+        }
+        Insert: {
+          createdAt?: string
+          description?: string
+          id?: string
+          title: string
+          userId: string
+        }
+        Update: {
+          createdAt?: string
+          description?: string
+          id?: string
+          title?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postTopics_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           avatar: string
           bio: string
           createdAt: string
-          email: string
           handle: string
           id: string
+          name: string
           profileBannerURL: Json
-          startups: string[]
           username: string
         }
         Insert: {
           avatar?: string
           bio?: string
           createdAt?: string
-          email?: string
           handle?: string
           id: string
+          name: string
           profileBannerURL?: Json
-          startups?: string[]
-          username?: string
+          username: string
         }
         Update: {
           avatar?: string
           bio?: string
           createdAt?: string
-          email?: string
           handle?: string
           id?: string
+          name?: string
           profileBannerURL?: Json
-          startups?: string[]
           username?: string
         }
         Relationships: [
@@ -157,51 +182,6 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
-      }
-      startups: {
-        Row: {
-          avatar: string
-          bannerURL: string
-          bio: string
-          country: string
-          createdAt: string | null
-          domain: string
-          id: string
-          industry: string
-          mission: string
-          name: string
-          team: Database["public"]["CompositeTypes"]["teamRole"][]
-          theme: string
-        }
-        Insert: {
-          avatar?: string
-          bannerURL?: string
-          bio?: string
-          country?: string
-          createdAt?: string | null
-          domain?: string
-          id?: string
-          industry?: string
-          mission?: string
-          name?: string
-          team?: Database["public"]["CompositeTypes"]["teamRole"][]
-          theme?: string
-        }
-        Update: {
-          avatar?: string
-          bannerURL?: string
-          bio?: string
-          country?: string
-          createdAt?: string | null
-          domain?: string
-          id?: string
-          industry?: string
-          mission?: string
-          name?: string
-          team?: Database["public"]["CompositeTypes"]["teamRole"][]
-          theme?: string
-        }
-        Relationships: []
       }
     }
     Views: {
