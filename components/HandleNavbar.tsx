@@ -20,11 +20,6 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                     <Image src={profile.avatar} alt="profile picture" width={40} height={40} className="object-cover rounded-lg" />
                 </Link>
             }
-        </div>
-        <div className="flex items-center justify-center gap-4">
-            <Link href='/' className="w-fit transition hover:drop-shadow-lg">
-                <span className="text-3xl font-bold">{profile.name}</span>
-            </Link>
             {
                 user && user.id === profile.id &&
                 <Link href='/publish' className="w-fit">
@@ -34,6 +29,11 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                     </Button>
                 </Link>
             }
+        </div>
+        <div className="flex items-center justify-center gap-4">
+            <Link href='/' className="w-fit transition hover:drop-shadow-lg">
+                <span className="text-3xl font-bold">{profile.name}</span>
+            </Link>
         </div>
         <div className="min-w-fit flex flex-col md:flex-row items-center md:justify-end md:pr-8 gap-2">
             <Button color="dark">

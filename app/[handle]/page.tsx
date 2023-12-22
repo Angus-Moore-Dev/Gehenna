@@ -86,7 +86,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
         }
         {
             posts[0] &&
-            <Link href={`p/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
+            <Link href={`/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
                 <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={225} className="object-cover rounded-l-md " />
                 <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
                     <span className="text-2xl font-bold text-center">

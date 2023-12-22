@@ -43,7 +43,7 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
             .filter(post => activeTab === post.topicId || activeTab === 'all')
             .map(post =>
             <Link
-            href={`p/${post.id}`}
+            href={`/${post.id}`}
             key={post.id}
             className="bg-secondary transition hover:bg-tertiary border-[1px] border-neutral-600 rounded-md flex flex-row gap-2">
                 <Image

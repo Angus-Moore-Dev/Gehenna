@@ -16,7 +16,7 @@ interface PostPreviewBoxProps
 export default function PostPreviewBox({ post, profile }: PostPreviewBoxProps)
 {
 
-    return <Link href={`p/${post.id}`} className="w-[400px] h-[666px] group">
+    return <Link href={`/${post.id}`} className="w-[400px] h-[666px] group">
         {/* {
             isLoading &&
             <div className="w-full h-full flex flex-col bg-tertiary">

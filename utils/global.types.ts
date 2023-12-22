@@ -5,3 +5,11 @@ export type PostTopic = Database['public']['Tables']['postTopics']['Row'];
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export type MediaInfo = Database['public']['CompositeTypes']['mediaInfo'];
+
+
+export type NewPostContent = {
+    index: number;
+    content: string | File;
+    type: 'text' | 'image' | 'video' | 'audio';
+    mediaTempURL: string;
+};

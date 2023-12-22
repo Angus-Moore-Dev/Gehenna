@@ -61,7 +61,6 @@ export interface Database {
           createdAt: string
           id: string
           postImageURL: Json
-          postTopic: string | null
           public: boolean
           title: string
           topicId: string | null
@@ -74,7 +73,6 @@ export interface Database {
           createdAt?: string
           id: string
           postImageURL?: Json
-          postTopic?: string | null
           public?: boolean
           title?: string
           topicId?: string | null
@@ -87,20 +85,12 @@ export interface Database {
           createdAt?: string
           id?: string
           postImageURL?: Json
-          postTopic?: string | null
           public?: boolean
           title?: string
           topicId?: string | null
           userId?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "post_postTopic_fkey"
-            columns: ["postTopic"]
-            isOneToOne: false
-            referencedRelation: "postTopics"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "post_topicId_fkey"
             columns: ["topicId"]
@@ -120,21 +110,18 @@ export interface Database {
       postTopics: {
         Row: {
           createdAt: string
-          description: string
           id: string
           title: string
           userId: string
         }
         Insert: {
           createdAt?: string
-          description?: string
           id?: string
           title: string
           userId: string
         }
         Update: {
           createdAt?: string
-          description?: string
           id?: string
           title?: string
           userId?: string
