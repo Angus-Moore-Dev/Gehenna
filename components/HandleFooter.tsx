@@ -1,5 +1,5 @@
 import { Profile } from "@/utils/global.types";
-import { Gehenna } from "./Navbar";
+import Gehenna from "./Gehenna";
 import Link from "next/link";
 import { appURL } from "@/utils/appURL";
 

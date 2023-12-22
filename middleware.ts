@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createApiClient, createServerClient } from './utils/supabase/server';
 import { cookies } from 'next/headers';
-import { createMiddlewareClient, createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 
 export const config = {
 	matcher: [
@@ -12,7 +11,7 @@ export const config = {
 		 * - favicon.ico (favicon file)
 		 * Feel free to modify this pattern to include more paths.
 		 */
-		'/((?!_next/static|_next/image|favicon.ico|faq|auth|tos|privacy| ).*)',
+		'/((?!_next/static|_next/image|favicon.ico|faq|auth|tos|privacy|404| ).*)',
 	],
 };
 
@@ -20,6 +19,7 @@ const PUBLIC_FILE = /\.(.*)$/; // Files
 
 export async function middleware(request: NextRequest)
 {
+	console.log('middleware firing');
     const cookieName = 'sb-fdiavyxctdwgbvoawijj-auth-token'; // Hardcoded for now
 	const url = request.nextUrl.clone();
 

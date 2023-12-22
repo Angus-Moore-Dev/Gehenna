@@ -1,5 +1,5 @@
 'use client';
-import { Gehenna } from "@/components/Navbar";
+import Gehenna from "@/components/Gehenna";
 import { appDomain, appHttp } from "@/utils/appURL";
 import { createBrowserClient } from "@/utils/supabase/client";
 import { Button, Checkbox, Input } from "@mantine/core";

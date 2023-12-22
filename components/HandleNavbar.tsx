@@ -12,7 +12,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
     const user = (await supabase.auth.getUser()).data.user;
 
     return <div className="fixed z-50 w-full grid grid-rows-2 md:grid-rows-1 gap-4 
-    md:gap-0 md:grid-cols-3 bg-secondary bg-opacity-70 backdrop-blur-md border-b-[1px] border-neutral-600 py-5">
+    md:gap-0 md:grid-cols-3 bg-secondary bg-opacity-70 backdrop-blur-md border-b-[1px] border-neutral-600 py-2.5">
         <div className="hidden md:flex md:pl-8 items-center gap-4">
             {
                 profile.avatar &&
@@ -21,7 +21,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                 </Link>
             }
             {
-                user && user.id === profile.id &&
+                user && user.id ===     profile.id &&
                 <Link href='/publish' className="w-fit">
                     <Button>
                         <PlusIcon className="mr-2" />
@@ -46,7 +46,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             </Button>
             {
                 !user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/auth' : 'https://gehenna.dev/auth'} className="w-fit">
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.dev/auth'} className="w-fit">
                     <Button>
                         <LogIn className="mr-2" />
                         Sign In
@@ -55,7 +55,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             }
             {
                 user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/profile' : 'https://gehenna.dev/profile'} className="w-fit">
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/profile' : 'https://gehenna.dev/profile'} className="w-fit">
                     <Button>
                         <PersonIcon className="mr-2" />
                         My Account

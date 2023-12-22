@@ -26,6 +26,5 @@ export default async function HomePage()
 			cookieSTore.getAll().find(x => x.name.startsWith('sb-'))?.name
 		}
 	</div>
-	<HandleFooter />
 	</>
 }

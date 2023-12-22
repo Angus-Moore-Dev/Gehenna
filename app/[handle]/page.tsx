@@ -47,6 +47,8 @@ export async function generateMetadata({ params }: { params: { handle: string }}
 export default async function AuthorHomePage({ params }: { params: { handle: string }})
 {
     const supabase = createServerClient();
+    const user = (await supabase.auth.getUser()).data.user;
+
     const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
@@ -59,7 +61,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
     const { data: posts, error: postError } = await supabase
     .from('post')
     .select('id, title, postImageURL, createdAt, byline, topicId')
-    .eq('public', true)
+    .eq('public', user && user.id === profile.id ? true : false)
     .eq('userId', profile.id)
     .order('createdAt', { ascending: false });
 
@@ -87,7 +89,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
         {
             posts[0] &&
             <Link href={`/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
-                <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={225} className="object-cover rounded-l-md " />
+                <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md " />
                 <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
                     <span className="text-2xl font-bold text-center">
                         {posts[0].title}
@@ -95,7 +97,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
                     <p className="text-neutral-400">
                         {posts[0].byline}
                     </p>
-                    <small>
+                    <small className="mt-auto">
                         {
                             postTopics.some(x => x.id === posts[0].topicId) ?
                             <>{postTopics.find(x => x.id === posts[0].topicId)?.title}&nbsp;&middot;&nbsp;</> :
@@ -116,6 +118,6 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
                 topicId: string | null;
             }[]} />
         }
-        <HandleFooter profile={profile} />
+        {/* <HandleFooter profile={profile} /> */}
     </div>
 }

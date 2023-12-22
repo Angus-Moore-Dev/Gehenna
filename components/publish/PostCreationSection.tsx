@@ -1,13 +1,16 @@
 'use client';
 
 import { NewPostContent, PostTopic } from "@/utils/global.types";
-import { Select, Button, FileButton, Input } from "@mantine/core";
+import { Select, Button, FileButton, Input, Textarea, Checkbox } from "@mantine/core";
 import { PlusIcon } from "lucide-react";
 import PostTextEditor from "./TextEditor";
 import Image from "next/image";
 
 interface PostCreationSectionProps
 {
+    isPublic: boolean;
+    setIsPublic: (isPublic: boolean) => void;
+
     title: string;
     setTitle: (title: string) => void;
 
@@ -38,8 +41,10 @@ export default function PostCreationSection({
     byline,
     setTitle,
     setByline,
+    isPublic,
     postImage,
     postTopics,
+    setIsPublic,
     setPostImage,
     postStructure,
     setPostTopics,
@@ -55,6 +60,9 @@ export default function PostCreationSection({
     return <>
     <Input.Wrapper label="Title" withAsterisk>
         <Input type="text" required placeholder="Story Example Name" size="xl" className="font-bold" value={title} onChange={e => setTitle(e.target.value)} />
+    </Input.Wrapper>
+    <Input.Wrapper label="Byline" withAsterisk description="Summarise your post in 150 characters or less.">
+        <Input type='text' required placeholder="Daft Punk are the greatest producers to ever exist and here's why." maxLength={150} value={byline} onChange={e => setByline(e.target.value)} />
     </Input.Wrapper>
     <div className="w-full flex flex-row gap-5">
         <Select
@@ -73,21 +81,26 @@ export default function PostCreationSection({
             </Input.Wrapper>
         }
     </div>
-    <FileButton accept="image/png,image/jpeg,image/webp,image/gif,image/tiff,image/avif/image/svg+xml" onChange={e => {
-        if (!e) return;
-
-        if (postImageTempURL)
-            URL.revokeObjectURL(postImageTempURL);
-        setPostImage(e);
-        setPostImageTempURL(URL.createObjectURL(e));
-    }}>
-        {(props) => <Button {...props} style={{ width: 256 }}>
-            {!postImage ? 'Select' : 'Change'} Post Cover Image <span className="text-red-500">&nbsp;*</span>
-        </Button>}
-    </FileButton>
-    <span className="text-sm -mt-4">
-        This is required before you can preview your post.
-    </span>
+    <Checkbox checked={isPublic} onChange={e => setIsPublic(e.currentTarget.checked)} label="Is This A Public Post?" />
+    <div className="w-full flex flex-col gap-1">
+        <span className="text-sm">
+            Post Cover Image<span className="text-red-500">*</span>
+        </span>
+        <FileButton accept="image/png,image/jpeg,image/webp,image/gif,image/tiff,image/avif/image/svg+xml" onChange={e => {
+            if (!e) return;
+            if (postImageTempURL)
+                URL.revokeObjectURL(postImageTempURL);
+            setPostImage(e);
+            setPostImageTempURL(URL.createObjectURL(e));
+        }}>
+            {(props) => <Button {...props} style={{ width: 256 }}>
+                {!postImage ? 'Select' : 'Change'} Post Cover Image <span className="text-red-500">&nbsp;*</span>
+            </Button>}
+        </FileButton>
+        <span className="text-sm">
+            This is required before you can preview your post.
+        </span>
+    </div>
     {
         postImageTempURL &&
         <Image src={postImageTempURL} alt="image" width={500} height={500} className="rounded-md" />

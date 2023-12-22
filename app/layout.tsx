@@ -31,10 +31,13 @@ export default function RootLayout({
 			<head>
 				<ColorSchemeScript color='green' forceColorScheme='dark' defaultColorScheme='dark' />
 			</head>
-			<body className={`${inter.className} min-h-screen flex flex-col items-center break-words`}>
+			<body className={`${inter.className} min-h-screen flex flex-col`}>
 				<MantineProvider defaultColorScheme='dark' theme={{ primaryColor: 'green' }} >
-					{children}
+					<div className='flex flex-col items-center break-words mb-32'>
+						{children}
+					</div>
 					<Notifications />
+					<HandleFooter />
 				</MantineProvider>
 			</body>
 		</html>

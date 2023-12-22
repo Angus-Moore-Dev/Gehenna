@@ -102,6 +102,6 @@ export default async function PostPage({ params }: { params: { postId: string, h
     return <div className="w-full min-h-screen flex flex-col gap-10 items-center">
         <HandleNavbar profile={profile} />
         <PostContent post={post} postTopicTitle={post.postTopics?.title ?? ''} profile={profile} />
-        <HandleFooter profile={profile} />
+        {/* <HandleFooter profile={profile} /> */}
     </div>
 }

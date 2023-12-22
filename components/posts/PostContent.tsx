@@ -68,7 +68,7 @@ export default function PostContent({ post, profile, postTopicTitle }: PostConte
             objectFit: 'cover'
         }}
         />
-        <TypographyStylesProvider className="">
+        <TypographyStylesProvider className="-ml-8">
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </TypographyStylesProvider>
         <AdditionalMedia files={post.attachedFileURLs as MediaInfo[]} />
