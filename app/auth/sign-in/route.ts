@@ -1,43 +1,7 @@
-import { Database } from "@/utils/database.types";
 import { createApiClient } from "@/utils/supabase/server";
-import { CookieOptions, createServerClient } from "@supabase/ssr";
-// import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
-
-// const createServerSupabase = () => {
-// 	const cookieStore = cookies();
-// 	return createServerClient<Database>(
-// 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-// 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-// 		{
-// 			cookies: {
-// 				get(name: string) {
-// 					return cookieStore.get(name)?.value
-// 				},
-// 				set(name: string, value: string, options: CookieOptions) {
-// 					try {
-// 						cookieStore.set({ name, value, ...options })
-// 					} catch (error) {
-// 						// The `set` method was called from a Server Component.
-// 						// This can be ignored if you have middleware refreshing
-// 						// user sessions.
-// 					}
-// 				},
-// 				remove(name: string, options: CookieOptions) {
-// 					try {
-// 						cookieStore.set({ name, value: '', ...options })
-// 					} catch (error) {
-// 						// The `delete` method was called from a Server Component.
-// 						// This can be ignored if you have middleware refreshing
-// 						// user sessions.
-// 					}
-// 				},
-// 			},
-// 		}
-// 	)
-// }
 
 export async function POST(request: NextRequest)
 {
@@ -46,7 +10,6 @@ export async function POST(request: NextRequest)
     if (!email || !password || !mode)
         return NextResponse.json({ error: 'Missing fields.' }, { status: 400 });
 
-    // const supabase = createApiClient();
     const supabase = createApiClient();
     
     const { data: { session }} = await supabase.auth.getSession();
@@ -59,10 +22,11 @@ export async function POST(request: NextRequest)
 
     console.log('Result of sign in for user::', email, newSession, error);
 
-    if (newSession)
-        return NextResponse.json(newSession);
-    else
+    if (!newSession)
         return NextResponse.json({ error: error?.message }, { status: 400 });
+
+    const response = NextResponse.json(newSession);
+    return response;
 }
 
 

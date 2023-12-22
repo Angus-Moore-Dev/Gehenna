@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from './utils/supabase/server';
+import { createApiClient, createServerClient } from './utils/supabase/server';
+import { cookies } from 'next/headers';
+import { createMiddlewareClient, createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 
 export const config = {
 	matcher: [
@@ -10,7 +12,7 @@ export const config = {
 		 * - favicon.ico (favicon file)
 		 * Feel free to modify this pattern to include more paths.
 		 */
-		'/((?!_next/static|_next/image|favicon.ico|auth|faq|tos|privacy| ).*)',
+		'/((?!_next/static|_next/image|favicon.ico|faq|auth|tos|privacy| ).*)',
 	],
 };
 
@@ -18,30 +20,34 @@ const PUBLIC_FILE = /\.(.*)$/; // Files
 
 export async function middleware(request: NextRequest)
 {
-	// const response = NextResponse.next();
-    const supabase = createServerClient();
-
-	const { data: { session }} = await supabase.auth.getSession();
-
-	// Clone the URL
+    const cookieName = 'sb-fdiavyxctdwgbvoawijj-auth-token'; // Hardcoded for now
 	const url = request.nextUrl.clone();
 
 	// Skip public files
-	if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next')) return;
-
-	console.log(request.nextUrl.pathname);
+	if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next'))
+		return;
 
 	const host = request.headers.get('host');
 	const subdomain = getValidSubdomain(request.nextUrl.pathname, host);
 
 	if (subdomain)
-	{
-		// Subdomain available, rewriting
-		console.log(`>>> Rewriting: ${url.pathname} to /${subdomain}${url.pathname}`);
 		url.pathname = `/${subdomain}${url.pathname}`;
-	}
 
-	const response = NextResponse.rewrite(url);
+	const response = subdomain ? NextResponse.rewrite(url) : NextResponse.next();
+
+	const supabase = createApiClient();
+
+	const { data: { user }} = await supabase.auth.getUser();
+
+	const cookieStore = cookies();
+	const supabaseCookie = cookieStore.get(cookieName);
+
+	response.cookies.set(cookieName, supabaseCookie?.value || '', {
+		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.dev',
+		path: '/',
+		sameSite: 'lax',
+		secure: false,
+	});
 
 	return response;
 }
@@ -59,7 +65,7 @@ export const getValidSubdomain = (pathname: string, host?: string | null) =>
 	{
 		console.log('host::', host);
 		const candidate = host.split('.')[0];
-		if (candidate && !candidate.includes('localhost') && candidate !== 'www')
+		if (candidate && !candidate.includes('localhost') && candidate !== 'www' && candidate !== 'dev')
 		{
 			// Valid candidate
 			subdomain = candidate;

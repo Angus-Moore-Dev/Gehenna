@@ -46,7 +46,8 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
             href={`p/${post.id}`}
             key={post.id}
             className="bg-secondary transition hover:bg-tertiary border-[1px] border-neutral-600 rounded-md flex flex-row gap-2">
-                <Image src={(post.postImageURL as MediaInfo).url} alt="" width={250} height={150} style={{ objectFit: 'cover' }} className="object-cover bg-tertiary min-w-[250px] min-h-[150px] max-h-[150px] h-full rounded-l-md" />
+                <Image
+                src={(post.postImageURL as MediaInfo).url} alt="" width={250} height={150} style={{ objectFit: 'cover', width: 250, height: 175 }} className="object-cover bg-tertiary min-w-[250px] max-h-[175px] h-full rounded-l-md" />
                 <div className="flex-grow flex flex-col gap-2 p-4">
                     <span className="text-2xl font-bold">
                         {post.title}

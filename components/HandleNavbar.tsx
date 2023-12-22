@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Profile } from "@/utils/global.types";
 import Image from "next/image";
 import { createServerClient } from "@/utils/supabase/server";
+import { PersonIcon } from "@radix-ui/react-icons";
 
 export default async function HandleNavbar({ profile }: { profile: Profile })
 {
@@ -25,9 +26,6 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                 <span className="text-3xl font-bold">{profile.name}</span>
             </Link>
             {
-                user ? user.id : 'not signed in on this domain!'
-            }
-            {
                 user && user.id === profile.id &&
                 <Link href='/publish' className="w-fit">
                     <Button>
@@ -46,12 +44,24 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                 <RssIcon className="mr-2" />
                 Subscribe
             </Button>
-            <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/auth' : 'https://gehenna.dev/auth'} className="w-fit">
-                <Button>
-                    <LogIn className="mr-2" />
-                    Sign In
-                </Button>
-            </Link>
+            {
+                !user &&
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/auth' : 'https://gehenna.dev/auth'} className="w-fit">
+                    <Button>
+                        <LogIn className="mr-2" />
+                        Sign In
+                    </Button>
+                </Link>
+            }
+            {
+                user &&
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/profile' : 'https://gehenna.dev/profile'} className="w-fit">
+                    <Button>
+                        <PersonIcon className="mr-2" />
+                        My Account
+                    </Button>
+                </Link>
+            }
         </div>
     </div>
 }

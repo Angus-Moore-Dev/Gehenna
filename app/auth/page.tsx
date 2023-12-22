@@ -59,35 +59,6 @@ export default function AuthenticationPage()
             });
             setIsLoading(false);
         }
-
-        // const { error } = mode === 'signIn' ? 
-        // await supabase
-        // .auth
-        // .signInWithPassword({ email, password })
-        // :
-        // await supabase
-        // .auth
-        // .verifyOtp({
-        //     type: 'email',
-        //     email,
-        //     token: code
-        // });
-
-        // if (error)
-        // {
-        //     console.error(error);
-        //     notifications.show({
-        //         title: 'Error Signing In',
-        //         message: error.message,
-        //         color: 'red',
-        //         variant: 'filled'
-        //     });
-        //     setIsLoading(false);
-        // }
-        // else
-        // {
-        //     router.push(`${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`);
-        // }
     }
 
     const forgotPassword = async () =>
@@ -97,13 +68,7 @@ export default function AuthenticationPage()
 
         const { error } = await supabase
         .auth
-        .signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: `http://adamjensen.localhost:3000/`
-                // emailRedirectTo: `${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`
-            }
-        });
+        .signInWithOtp({ email });
 
         if (error)
         {
@@ -130,8 +95,8 @@ export default function AuthenticationPage()
     };
 
     return <div className="w-full min-h-screen flex flex-col items-center justify-center">
-        <div className="w-full min-h-[500px] md:max-w-6xl grid grid-rows-2 md:grid-rows-1 grid-cols-1 md:grid-cols-2 rounded-md border-[1px] border-neutral-600">
-            <Image src='/servers.png' alt="Servers" width={1000} height={1000} className="rounded-l-md" quality={100} priority />
+        <div className="w-full min-h-[500px] lg:max-w-6xl grid grid-rows-2 lg:grid-rows-1 grid-cols-1 lg:grid-cols-2 rounded-md border-[1px] border-neutral-600">
+            <Image src='/servers.png' alt="Servers" width={1000} height={1000} style={{ objectFit: 'cover' }} className="w-full h-full object-cover rounded-l-md" quality={100} priority />
             <div className="w-full bg-tertiary rounded-r-md p-8 flex flex-col gap-4 items-center">
                 <Gehenna />
                 <section className="w-full md:w-80 flex flex-col gap-2">
