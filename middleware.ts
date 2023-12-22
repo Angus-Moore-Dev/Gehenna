@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest)
 	const supabaseCookie = cookieStore.get(cookieName);
 
 	response.cookies.set(cookieName, supabaseCookie?.value || '', {
-		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.dev',
+		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
 		path: '/',
 		sameSite: 'lax',
 		secure: false,

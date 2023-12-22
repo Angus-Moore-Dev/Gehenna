@@ -20,7 +20,7 @@ export default async function Navbar()
         <div className="flex flex-row items-center gap-2 justify-end">
             {
                 !user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.dev/auth'} className="w-fit">
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.app/auth'} className="w-fit">
                     <Button>
                         <LogIn className="mr-2" />
                         Sign In
@@ -29,7 +29,7 @@ export default async function Navbar()
             }
             {
                 user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/profile' : 'https://gehenna.dev/profile'} className="w-fit">
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/profile' : 'https://gehenna.app/profile'} className="w-fit">
                     <Button>
                         <PersonIcon className="mr-2" />
                         My Account
