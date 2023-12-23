@@ -17,11 +17,11 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             {
                 profile.avatar &&
                 <Link href='/' className="w-fit">
-                    <Image src={profile.avatar} alt="profile picture" width={40} height={40} className="object-cover rounded-lg" />
+                    <Image src={profile.avatar} alt="profile picture" width={250} height={250} style={{ width: 40, height: 40, objectFit: 'cover' }} className="object-cover rounded-full" />
                 </Link>
             }
             {
-                user && user.id ===     profile.id &&
+                user && user.id === profile.id &&
                 <Link href='/publish' className="w-fit">
                     <Button>
                         <PlusIcon className="mr-2" />
@@ -46,7 +46,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             </Button>
             {
                 !user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.app/auth'} className="w-fit">
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.app/auth'} className="w-fit" target="_blank">
                     <Button>
                         <LogIn className="mr-2" />
                         Sign In
@@ -55,7 +55,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             }
             {
                 user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/profile' : 'https://gehenna.app/profile'} className="w-fit">
+                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/profile' : 'https://gehenna.app/profile'} className="w-fit" target="_blank">
                     <Button>
                         <PersonIcon className="mr-2" />
                         My Account

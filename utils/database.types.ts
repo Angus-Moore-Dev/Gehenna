@@ -9,53 +9,9 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      draftPost: {
-        Row: {
-          attachedFileURLs: Json[]
-          content: string
-          createdAt: string
-          id: string
-          postImageURL: Json
-          startupId: string | null
-          tags: string[]
-          title: string
-          userId: string
-        }
-        Insert: {
-          attachedFileURLs?: Json[]
-          content?: string
-          createdAt?: string
-          id: string
-          postImageURL?: Json
-          startupId?: string | null
-          tags?: string[]
-          title?: string
-          userId: string
-        }
-        Update: {
-          attachedFileURLs?: Json[]
-          content?: string
-          createdAt?: string
-          id?: string
-          postImageURL?: Json
-          startupId?: string | null
-          tags?: string[]
-          title?: string
-          userId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "draftPost_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       post: {
         Row: {
-          attachedFileURLs: Json[]
+          attachedFileURLs: Database["public"]["CompositeTypes"]["mediaInfo"][]
           byline: string
           content: string
           createdAt: string
@@ -67,7 +23,7 @@ export interface Database {
           userId: string
         }
         Insert: {
-          attachedFileURLs?: Json[]
+          attachedFileURLs?: Database["public"]["CompositeTypes"]["mediaInfo"][]
           byline?: string
           content?: string
           createdAt?: string
@@ -79,7 +35,7 @@ export interface Database {
           userId: string
         }
         Update: {
-          attachedFileURLs?: Json[]
+          attachedFileURLs?: Database["public"]["CompositeTypes"]["mediaInfo"][]
           byline?: string
           content?: string
           createdAt?: string
@@ -103,6 +59,52 @@ export interface Database {
             columns: ["userId"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      postLikes: {
+        Row: {
+          authorId: string
+          createdAt: string
+          id: string
+          postId: string
+          userId: string
+        }
+        Insert: {
+          authorId: string
+          createdAt?: string
+          id?: string
+          postId: string
+          userId: string
+        }
+        Update: {
+          authorId?: string
+          createdAt?: string
+          id?: string
+          postId?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postLikes_authorId_fkey"
+            columns: ["authorId"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postLikes_postId_fkey"
+            columns: ["postId"]
+            isOneToOne: false
+            referencedRelation: "post"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postLikes_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]

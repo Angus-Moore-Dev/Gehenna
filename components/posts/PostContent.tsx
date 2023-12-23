@@ -4,6 +4,7 @@ import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import Image from "next/image";
 import AdditionalMedia from "./AdditionalMedia";
 import SharePost from "./SharePost";
+import PostComments from "./PostComments";
 
 interface PostContentProps
 {
@@ -26,7 +27,7 @@ export default function PostContent({ post, profile, postTopicTitle }: PostConte
         }
         <section className="flex flex-col gap-5">
             <div className="flex flex-row gap-5 items-start">
-                <Image src={profile.avatar} alt="Profile Picture" width={50} height={50} className="rounded-full" />
+                <Image src={profile.avatar} alt="Profile Picture" width={250} height={250} style={{ width: 50, height: 50, objectFit: 'cover' }} className="rounded-full" />
                 <div className="w-full flex flex-row justify-between gap-2">
                     <div className="flex flex-col">
                         <span className="font-semibold">
@@ -72,5 +73,9 @@ export default function PostContent({ post, profile, postTopicTitle }: PostConte
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </TypographyStylesProvider>
         <AdditionalMedia files={post.attachedFileURLs as MediaInfo[]} />
+        <div className="w-full pb-2 border-b-[1px] border-b-neutral-600">
+            Comments
+        </div>
+        {/* <PostComments post={post} /> */}
     </div>
 }

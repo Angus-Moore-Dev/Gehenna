@@ -1,3 +1,4 @@
+import { getSupabaseCookie } from "@/utils/subdomainCookie";
 import { createApiClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -26,6 +27,14 @@ export async function POST(request: NextRequest)
         return NextResponse.json({ error: error?.message }, { status: 400 });
 
     const response = NextResponse.json(newSession);
+    const supabaseCookie = await getSupabaseCookie();
+	response.cookies.set(supabaseCookie?.name || '', supabaseCookie?.value || '', {
+		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
+		path: '/',
+		sameSite: 'lax',
+		secure: false,
+	});
+
     return response;
 }
 

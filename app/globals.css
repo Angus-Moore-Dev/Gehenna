@@ -3,3 +3,11 @@
 @layer tailwind {
     @tailwind base;
 }
+
+ol > li {
+    list-style-type: decimal;
+}
+
+ul > li {
+    list-style-type: square;
+}

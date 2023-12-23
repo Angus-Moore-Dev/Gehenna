@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "types": "supabase gen types typescript --project-id fdiavyxctdwgbvoawijj > utils/database.types.ts"
   },
   "dependencies": {
     "@mantine/core": "^7.3.2",

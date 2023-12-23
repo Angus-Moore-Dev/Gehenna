@@ -59,7 +59,6 @@ export async function generateMetadata({ params }: { params: { postId: string }}
         },
         openGraph: { images: [profile.avatar || favicon] }
     }
-    
 }
 
 export default async function PostPage({ params }: { params: { postId: string, handle: string } })

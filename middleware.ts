@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createApiClient, createServerClient } from './utils/supabase/server';
-import { cookies } from 'next/headers';
+import { createApiClient } from './utils/supabase/server';
+// import { getSupabaseCookie } from './utils/subdomainCookie';
 
 export const config = {
 	matcher: [
@@ -39,15 +39,13 @@ export async function middleware(request: NextRequest)
 
 	const { data: { user }} = await supabase.auth.getUser();
 
-	const cookieStore = cookies();
-	const supabaseCookie = cookieStore.get(cookieName);
-
-	response.cookies.set(cookieName, supabaseCookie?.value || '', {
-		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
-		path: '/',
-		sameSite: 'lax',
-		secure: false,
-	});
+	// const supabaseCookie = getSupabaseCookie();
+	// response.cookies.set(cookieName, supabaseCookie?.value || '', {
+	// 	domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
+	// 	path: '/',
+	// 	sameSite: 'lax',
+	// 	secure: false,
+	// });
 
 	return response;
 }
