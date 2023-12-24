@@ -58,8 +58,8 @@ export default function PostCreationSection({
 }: PostCreationSectionProps)
 {
     return <>
-    <Input.Wrapper label="Title" withAsterisk>
-        <Input type="text" required placeholder="Story Example Name" size="xl" className="font-bold" value={title} onChange={e => setTitle(e.target.value)} />
+    <Input.Wrapper label="Title" description='Title your post in 96 characters or less.' withAsterisk>
+        <Input type="text" maxLength={96} required placeholder="Story Example Name" size="xl" className="font-bold" value={title} onChange={e => setTitle(e.target.value)} />
     </Input.Wrapper>
     <Input.Wrapper label="Byline" withAsterisk description="Summarise your post in 150 characters or less.">
         <Input type='text' required placeholder="Daft Punk are the greatest producers to ever exist and here's why." maxLength={150} value={byline} onChange={e => setByline(e.target.value)} />
