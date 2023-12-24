@@ -61,7 +61,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
     const { data: posts, error: postError } = await supabase
     .from('post')
     .select('id, title, postImageURL, createdAt, byline, topicId')
-    .eq('public', user && user.id === profile.id ? true : false)
+    .eq('public', true)
     .eq('userId', profile.id)
     .order('createdAt', { ascending: false });
 
