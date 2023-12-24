@@ -76,6 +76,6 @@ export default function PostContent({ post, profile, postTopicTitle }: PostConte
         <div className="w-full pb-2 border-b-[1px] border-b-neutral-600">
             Comments
         </div>
-        {/* <PostComments post={post} /> */}
+        <PostComments post={post} />
     </div>
 }

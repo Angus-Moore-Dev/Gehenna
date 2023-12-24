@@ -7,7 +7,7 @@ import { appURL } from "@/utils/appURL";
 export default async function HandleFooter({ profile }: { profile?: Profile })
 {
     return <footer className="w-full p-4 md:p-8 flex flex-col items-center gap-4 bg-secondary border-t-[1px] border-t-neutral-600">
-        <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://gehenna.app'} className="w-fit" target="_blank">
+        <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local' : 'https://gehenna.app'} className="w-fit" target="_blank">
             <Gehenna />
         </Link>
         <p>

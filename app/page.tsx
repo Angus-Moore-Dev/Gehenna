@@ -1,5 +1,6 @@
 import HandleFooter from "@/components/HandleFooter";
 import Navbar from "@/components/Navbar";
+import TotalUsersCount from "@/components/TotalUsersCount";
 import { appHttp } from "@/utils/appURL";
 import { MediaInfo, Profile } from "@/utils/global.types";
 import { createServerClient } from "@/utils/supabase/server";
@@ -7,7 +8,6 @@ import { Button } from "@mantine/core";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function HomePage()
 {
@@ -37,7 +37,7 @@ export default async function HomePage()
 	return <>
 	<div className="w-full min-h-screen flex flex-col items-center gap-10">
 		<Navbar />
-		<div className="w-full max-w-4xl flex flex-col items-center gap-2 mb-32">
+		<div className="w-full max-w-4xl flex flex-col items-center gap-2">
 			<p className="text-4xl font-light">
 				Voices of the Damned.
 			</p>
@@ -46,7 +46,9 @@ export default async function HomePage()
 				premium subscription waving, ads, monetisation and all that shit.
 				<br />
 				<br />
-				Sign up now and start writing.
+				{
+					!user && 'Sign up now and start writing.'
+				}
 			</p>
 			{
 				!user &&
@@ -58,10 +60,16 @@ export default async function HomePage()
 			}
 			{
 				user && profile &&
-				<span className="text-neutral-500 font-bold">
-					Thanks for coming back {profile.name}
+				<span className="text-neutral-500 font-bold mb-5">
+					Welcome back {profile.name}!
 				</span>
 			}
+			<Link href='/explore' className="w-fit">
+				<Button>
+					Explore Authors
+				</Button>
+			</Link>
+			<TotalUsersCount />
 		</div>
 		{
 			latestPost &&
@@ -88,6 +96,11 @@ export default async function HomePage()
 								latestPost.profiles &&
 								<div className="flex flex-row items-center gap-2">
 									{
+										!latestPost.profiles.avatar &&
+										<Image src='/gehenna_logo_transparent.png' alt="" width={250} height={250} style={{ width: 32, height: 32, objectFit: 'cover' }} className="object-cover rounded-full" />
+									}
+									{
+										latestPost.profiles.avatar &&
 										<Image src={latestPost.profiles.avatar} alt="" width={250} height={250} style={{ width: 32, height: 32, objectFit: 'cover' }} className="object-cover rounded-full" />
 									}
 									<small>

@@ -1,7 +1,9 @@
 'use client';
 
-import { Post, Profile } from "@/utils/global.types";
+import { Comment, Post } from "@/utils/global.types";
 import { createBrowserClient } from "@/utils/supabase/client";
+import { Loader } from "@mantine/core";
+import { useEffect, useState } from "react";
 
 interface PostCommentsProps
 {
@@ -11,14 +13,42 @@ interface PostCommentsProps
 export default function PostComments({ post }: PostCommentsProps)
 {
     const supabase = createBrowserClient();
-    /*
-        Here is my general thinking for how comments should load.
-        The user should scroll down, loading about 20 comments at a time.
-        We should track how many comments there are by fetching the total number of comments for this post
-        alongside the data. We should also fetch the total number of likes for each comment.
-    */
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorLoading, setErrorLoading] = useState(false);
 
-    return <>
-    
-    </>
+    useEffect(() => {
+        const fetchComments = async () =>
+        {
+            const { data, error } = await supabase
+            .from('postComments')
+            .select('*')
+            .eq('postId', post.id);
+
+            if (error)
+            {
+                setErrorLoading(true);
+                setIsLoading(false);
+            }
+            else
+            {
+                setComments(data);
+                setIsLoading(false);
+            }
+        };
+        fetchComments();
+    }, [supabase]);
+
+    return <div className="w-full flex flex-col gap-4">
+    {
+        isLoading &&
+        <Loader className="mx-auto my-4" />
+    }
+    {
+        errorLoading &&
+        <span className="my-4 text-center text-red-500 font-bold">
+            Error loading comments.
+        </span>
+    }
+    </div>
 }

@@ -63,6 +63,48 @@ export interface Database {
           }
         ]
       }
+      postComments: {
+        Row: {
+          createdAt: string
+          id: number
+          isEdited: boolean
+          message: string
+          postId: string
+          userId: string
+        }
+        Insert: {
+          createdAt?: string
+          id?: number
+          isEdited: boolean
+          message: string
+          postId: string
+          userId: string
+        }
+        Update: {
+          createdAt?: string
+          id?: number
+          isEdited?: boolean
+          message?: string
+          postId?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postComments_postId_fkey"
+            columns: ["postId"]
+            isOneToOne: false
+            referencedRelation: "post"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postComments_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       postLikes: {
         Row: {
           authorId: string
