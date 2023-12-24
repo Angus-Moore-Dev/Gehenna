@@ -216,6 +216,8 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                 profile={profile}
                 postTopicTitle={selectedPostTopic === 'new' ? newPostTopicName : postTopics.find(x => x.id === selectedPostTopic)?.title ?? ''}
                 user={null}
+                postLikes={0}
+                isAlreadyLiked={false}
                 />
             </div>
         }

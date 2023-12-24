@@ -9,6 +9,7 @@ import PostComments from "./PostComments";
 import { User } from "@supabase/supabase-js";
 import PostCommentCount from "../PostCommentCount";
 import { useRef } from "react";
+import PostLikes from "./PostLikes";
 
 interface PostContentProps
 {
@@ -16,9 +17,11 @@ interface PostContentProps
     postTopicTitle: string;
     profile: Profile;
     user: User | null;
+    postLikes: number;
+    isAlreadyLiked: boolean;
 }
 
-export default function PostContent({ post, profile, postTopicTitle, user }: PostContentProps)
+export default function PostContent({ post, profile, postTopicTitle, user, postLikes, isAlreadyLiked }: PostContentProps)
 {
     const commentRef = useRef<HTMLDivElement>(null);
 
@@ -46,12 +49,7 @@ export default function PostContent({ post, profile, postTopicTitle, user }: Pos
                     </div>
                     <div className="flex flex-col gap-2">
                         <div className="flex flex-row justify-end gap-2">
-                            <button className="flex flex-row items-center px-4 py-2 rounded-full border-[1px] border-neutral-600">
-                                <HeartIcon size={20} className="mr-2" />
-                                <small>
-                                    0
-                                </small>
-                            </button>
+                            <PostLikes post={post} userId={user ? user.id : ''} postLikes={postLikes} isAlreadyLiked={isAlreadyLiked} />
                             <button className="flex flex-row items-center px-4 py-2 rounded-full border-[1px] border-neutral-600"
                             onClick={() => commentRef.current?.scrollIntoView({ behavior: 'smooth' })}>
                                 <MessageCircleIcon size={20} className="mr-2" />

@@ -1,6 +1,7 @@
 'use client';
 
 import { createBrowserClient } from "@/utils/supabase/client";
+import { Loader } from "@mantine/core";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -26,7 +27,7 @@ export default function PostCommentCount({ postId }: { postId: string })
     return <>
     {
         commentCount === undefined &&
-        <Loader2 size={20} className=" text-primary animate-spin" />
+        <Loader size={14} className="my-[2px]" />
     }
     {
         commentCount !== undefined &&

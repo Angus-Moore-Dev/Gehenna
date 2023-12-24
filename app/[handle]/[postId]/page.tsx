@@ -92,6 +92,11 @@ export default async function PostPage({ params }: { params: { postId: string, h
     if (error && !profile)
         redirect('/404');
 
+    const { data, count } = await supabase
+    .from('postLikes')
+    .select('*', { count: 'exact', head: false })
+    .eq('postId', post.id);
+
     if (profile.handle !== params.handle)
     {
         // It means the user is on another handle looking at a post from another person.
@@ -101,7 +106,14 @@ export default async function PostPage({ params }: { params: { postId: string, h
     }
     return <div className="w-full min-h-screen flex flex-col gap-10 items-center">
         <HandleNavbar profile={profile} />
-        <PostContent post={post} postTopicTitle={post.postTopics?.title ?? ''} profile={profile} user={user} />
+        <PostContent
+        post={post}
+        postTopicTitle={post.postTopics?.title ?? ''}
+        profile={profile}
+        user={user}
+        postLikes={count !== null ? count : 0}
+        isAlreadyLiked={data ? data.some(x => x.userId === user?.id) : false}
+        />
         {/* <HandleFooter profile={profile} /> */}
     </div>
 }

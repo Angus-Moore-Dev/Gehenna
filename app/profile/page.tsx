@@ -55,7 +55,7 @@ export default async function ProfileManagement()
 
     const { count: totalLikesCount, error: totalLikesCountError } = await supabase
     .from('postLikes')
-    .select('*', { count: 'exact', head: true })
+    .select('*, profiles!inner(id)', { count: 'exact', head: true })
     .eq('profiles.id', profile.id);
 
     return <div className="w-full min-h-screen flex flex-col gap-10 items-center">
