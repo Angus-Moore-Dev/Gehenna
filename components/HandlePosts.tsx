@@ -1,11 +1,13 @@
 'use client';
 
 import { MediaInfo, Post, PostTopic, Profile } from "@/utils/global.types";
-import { Tabs } from "@mantine/core";
-import { HeartIcon, MessageCircleIcon } from "lucide-react";
+import { createBrowserClient } from "@/utils/supabase/client";
+import { Loader, Tabs } from "@mantine/core";
+import { HeartIcon, Loader2, MessageCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PostCommentCount from "./PostCommentCount";
 
 
 interface HandlePostsProps
@@ -72,9 +74,7 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
                         </button>
                         <button className="flex flex-row items-center px-3 py-1 rounded-full border-[1px] border-neutral-600">
                             <MessageCircleIcon size={12} className="mr-2" />
-                            <small>
-                                0
-                            </small>
+                            <PostCommentCount postId={post.id} />
                         </button>
                     </div>
                 </div>
@@ -83,3 +83,4 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
     </div>
     </>
 }
+

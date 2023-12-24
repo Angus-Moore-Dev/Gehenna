@@ -6,6 +6,7 @@ import AdditionalMedia from "./AdditionalMedia";
 import SharePost from "./SharePost";
 import PostComments from "./PostComments";
 import { User } from "@supabase/supabase-js";
+import PostCommentCount from "../PostCommentCount";
 
 interface PostContentProps
 {
@@ -49,9 +50,16 @@ export default function PostContent({ post, profile, postTopicTitle, user }: Pos
                             </button>
                             <button className="flex flex-row items-center px-4 py-2 rounded-full border-[1px] border-neutral-600">
                                 <MessageCircleIcon size={20} className="mr-2" />
-                                <small>
-                                    0
-                                </small>
+                                {
+                                    post.id &&
+                                    <PostCommentCount postId={post.id} />
+                                }
+                                {
+                                    !post.id &&
+                                    <small>
+                                        0
+                                    </small>
+                                }
                             </button>
                             <SharePost />
                         </div>

@@ -204,6 +204,11 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
         }
         else
         {
+            notifications.show({
+                title: 'Comment Deleted!',
+                message: 'Your comment has been deleted.',
+                color: 'green',
+            });
             onDelete();
         }
     };

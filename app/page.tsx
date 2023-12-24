@@ -16,14 +16,15 @@ export default async function HomePage()
 
 	const { data: latestPost } = await supabase
 	.from('post')
-	.select('id, title, byline, topicId, postImageURL, createdAt, profiles!inner(id, name, handle, avatar), postTopics!inner(title)')
+	.select('id, title, byline, topicId, postImageURL, createdAt, profiles!inner(id, name, handle, avatar), postTopics(title)')
+	.eq('public', true)
 	.order('createdAt', { ascending: false })
 	.limit(5);
 
 	let profile: Profile | null = null;
 	if (user)
 	{
-		const { data, error } = await supabase
+		const { data } = await supabase
 		.from('profiles')
 		.select('*')
 		.eq('id', user.id)
@@ -110,6 +111,7 @@ export default async function HomePage()
 							}
 							<small className="">
 								{
+									latestPost.postTopics &&
 									<>{latestPost.postTopics?.title}&nbsp;&middot;&nbsp;</>
 								}{new Date(latestPost.createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' })}
 							</small>
