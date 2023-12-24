@@ -40,10 +40,10 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                 <ShareIcon className="mr-2" />
                 Share
             </Button>
-            <Button>
+            {/* <Button>
                 <RssIcon className="mr-2" />
                 Subscribe
-            </Button>
+            </Button> */}
             {
                 !user &&
                 <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.app/auth'} className="w-fit" target="_blank">

@@ -5,15 +5,17 @@ import Image from "next/image";
 import AdditionalMedia from "./AdditionalMedia";
 import SharePost from "./SharePost";
 import PostComments from "./PostComments";
+import { User } from "@supabase/supabase-js";
 
 interface PostContentProps
 {
     post: Post;
     postTopicTitle: string;
     profile: Profile;
+    user: User | null;
 }
 
-export default function PostContent({ post, profile, postTopicTitle }: PostContentProps)
+export default function PostContent({ post, profile, postTopicTitle, user }: PostContentProps)
 {
     return <div className="w-full max-w-3xl flex flex-col gap-5 mt-32">
         <span className="text-5xl font-bold mb-4">
@@ -73,9 +75,14 @@ export default function PostContent({ post, profile, postTopicTitle }: PostConte
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </TypographyStylesProvider>
         <AdditionalMedia files={post.attachedFileURLs as MediaInfo[]} />
-        <div className="w-full pb-2 border-b-[1px] border-b-neutral-600">
-            Comments
-        </div>
-        <PostComments post={post} />
+        {
+            post.id &&
+            <>
+            <div className="w-full pb-2 border-b-[1px] border-b-neutral-600">
+                Comments
+            </div>
+            <PostComments post={post} user={user} />
+            </>
+        }
     </div>
 }

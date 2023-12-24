@@ -64,6 +64,7 @@ export async function generateMetadata({ params }: { params: { postId: string }}
 export default async function PostPage({ params }: { params: { postId: string, handle: string } })
 {
     const supabase = createServerClient();
+    const user = (await supabase.auth.getUser()).data.user;
 
     const { data: post, error: postError } = await supabase
     .from('post')
@@ -100,7 +101,7 @@ export default async function PostPage({ params }: { params: { postId: string, h
     }
     return <div className="w-full min-h-screen flex flex-col gap-10 items-center">
         <HandleNavbar profile={profile} />
-        <PostContent post={post} postTopicTitle={post.postTopics?.title ?? ''} profile={profile} />
+        <PostContent post={post} postTopicTitle={post.postTopics?.title ?? ''} profile={profile} user={user} />
         {/* <HandleFooter profile={profile} /> */}
     </div>
 }

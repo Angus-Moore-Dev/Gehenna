@@ -9,6 +9,7 @@ import { createBrowserClient } from "@/utils/supabase/client";
 import PostFinaliseSection from "./PostFinaliseSection";
 import { UploadIcon } from "lucide-react";
 import { v4 } from "uuid";
+import { User } from "@supabase/supabase-js";
 
 
 export default function CreateNewPost({ profile, topics }: { profile: Profile, topics: PostTopic[] })
@@ -191,6 +192,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                 }}
                 profile={profile}
                 postTopicTitle={selectedPostTopic === 'new' ? newPostTopicName : postTopics.find(x => x.id === selectedPostTopic)?.title ?? ''}
+                user={null}
                 />
             </div>
         }
