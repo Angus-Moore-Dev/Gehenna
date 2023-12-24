@@ -1,3 +1,4 @@
+'use client';
 import { MediaInfo, Post, Profile } from "@/utils/global.types"
 import { TypographyStylesProvider } from "@mantine/core";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
@@ -7,6 +8,7 @@ import SharePost from "./SharePost";
 import PostComments from "./PostComments";
 import { User } from "@supabase/supabase-js";
 import PostCommentCount from "../PostCommentCount";
+import { useRef } from "react";
 
 interface PostContentProps
 {
@@ -18,6 +20,8 @@ interface PostContentProps
 
 export default function PostContent({ post, profile, postTopicTitle, user }: PostContentProps)
 {
+    const commentRef = useRef<HTMLDivElement>(null);
+
     return <div className="w-full max-w-3xl flex flex-col gap-5 mt-32">
         <span className="text-5xl font-bold mb-4">
             {post.title}
@@ -48,7 +52,8 @@ export default function PostContent({ post, profile, postTopicTitle, user }: Pos
                                     0
                                 </small>
                             </button>
-                            <button className="flex flex-row items-center px-4 py-2 rounded-full border-[1px] border-neutral-600">
+                            <button className="flex flex-row items-center px-4 py-2 rounded-full border-[1px] border-neutral-600"
+                            onClick={() => commentRef.current?.scrollIntoView({ behavior: 'smooth' })}>
                                 <MessageCircleIcon size={20} className="mr-2" />
                                 {
                                     post.id &&
@@ -86,7 +91,7 @@ export default function PostContent({ post, profile, postTopicTitle, user }: Pos
         {
             post.id &&
             <>
-            <div className="w-full pb-2 border-b-[1px] border-b-neutral-600">
+            <div ref={commentRef} className="w-full pb-2 border-b-[1px] border-b-neutral-600">
                 Comments
             </div>
             <PostComments post={post} user={user} />
