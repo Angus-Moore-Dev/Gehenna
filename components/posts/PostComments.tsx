@@ -263,7 +263,7 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
                         <OptionsMenu />
                     }
                 </div>
-                <section className="w-full whitespace-pre text-sm mt-1">
+                <section className="w-full whitespace-pre-wrap text-sm mt-1">
                     {comment.message}
                 </section>
             </div>
