@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { postId: string }}
 
     const { data: post, error: postError } = await supabase
     .from('post')
-    .select('id, title, byline, userId')
+    .select('id, title, byline, userId, postImageURL')
     .eq('id', postId)
     .single();
 
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: { params: { postId: string }}
         icons: {
             icon: profile.avatar || favicon
         },
-        openGraph: { images: [profile.avatar || favicon] }
+        openGraph: { images: [(post.postImageURL as MediaInfo).url || favicon] }
     }
 }
 

@@ -10,6 +10,7 @@ import PostFinaliseSection from "./PostFinaliseSection";
 import { UploadIcon } from "lucide-react";
 import { v4 } from "uuid";
 import { User } from "@supabase/supabase-js";
+import { notifications } from "@mantine/notifications";
 
 
 export default function CreateNewPost({ profile, topics }: { profile: Profile, topics: PostTopic[] })
@@ -60,7 +61,14 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
             .single();
 
             if (error && !newTopic)
+            {
+                notifications.show({
+                    title: 'Error Creating Topic!',
+                    message: error.message,
+                    color: 'red',
+                });
                 return console.error(error);
+            }
 
             topicId = newTopic.id;
         }
@@ -76,6 +84,11 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
 
             if (error)
             {
+                notifications.show({
+                    title: 'Error Uploading Files!',
+                    message: error.message,
+                    color: 'red',
+                });
                 console.error(error);
                 return console.error(error);
             }
@@ -94,6 +107,11 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
         if (coverImageError)
         {
             console.error(coverImageError);
+            notifications.show({
+                title: 'Error Uploading Cover Image!',
+                message: coverImageError.message,
+                color: 'red',
+            });
             return console.error(coverImageError);
         }
 
@@ -103,10 +121,10 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
         const { error } = await supabase
         .from('post')
         .insert({
-            id,
+            id: id,
             title,
             byline,
-            topicId,
+            topicId: topicId ? topicId : null,
             userId: profile.id,
             content: generatePostContentPreview(postStructureData),
             attachedFileURLs: [],
@@ -119,6 +137,11 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
 
         if (error)
         {
+            notifications.show({
+                title: 'Error Creating Post!',
+                message: error.message,
+                color: 'red',
+            });
             console.error(error);
             return console.error(error);
         }
