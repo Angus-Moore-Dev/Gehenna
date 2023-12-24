@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createApiClient } from './utils/supabase/server';
+import { createServerClient } from './utils/supabase/server';
 // import { getSupabaseCookie } from './utils/subdomainCookie';
 
 export const config = {
@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest)
 
 	const response = subdomain ? NextResponse.rewrite(url) : NextResponse.next();
 
-	const supabase = createApiClient();
+	const supabase = createServerClient();
 
 	const { data: { user }} = await supabase.auth.getUser();
 

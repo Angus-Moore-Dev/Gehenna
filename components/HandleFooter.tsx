@@ -36,7 +36,7 @@ export default async function HandleFooter({ profile }: { profile?: Profile })
             <b>Free speech is a human right.</b>
         </small>
         <small className="text-neutral-400 max-w-lg text-center">
-            contact@gehenna.app
+            admin@gehenna.app
         </small>
     </footer>
 }

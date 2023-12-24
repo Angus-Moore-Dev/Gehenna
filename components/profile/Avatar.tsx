@@ -16,8 +16,8 @@ export default function Avatar({ profile }: { profile: Profile })
     const ref = useRef<HTMLInputElement>(null);
     const supabase = createBrowserClient();
 
-    const [oldProfilePicture, setOldProfilePicture] = useState(profile.avatar);
-    const [profilePicture, setProfilePicture] = useState(profile.avatar);
+    const [oldProfilePicture, setOldProfilePicture] = useState(profile.avatar || '');
+    const [profilePicture, setProfilePicture] = useState(profile.avatar || '/gehenna_logo_transparent.png');
     const [newProfilePicture, setNewProfilePicture] = useState<File>();
     const [tmp, setTmp] = useState('');
 
@@ -124,7 +124,7 @@ export default function Avatar({ profile }: { profile: Profile })
     }, [newProfilePicture]);
 
 
-    return <div className="min-w-[128px] max-w-[128px] min-h-[128px] max-h-[128px] rounded-full relative"
+    return <div className="min-w-[128px] max-w-[128px] min-h-[128px] max-h-[128px] rounded-full relative border-[1px] border-neutral-600"
     onMouseOver={() => setShowEditButton(true)}
     onMouseLeave={() => !isUploading && setShowEditButton(false)}>
         <Image src={profilePicture} quality={100} alt="Profile" width={1500} height={1500} style={{ width: 128, height: 128, objectFit: 'cover' }} className="object-cover max-w-[128px] max-h-[128px] rounded-full" />

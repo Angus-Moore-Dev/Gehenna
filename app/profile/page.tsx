@@ -53,15 +53,10 @@ export default async function ProfileManagement()
         redirect('/500');
     }
 
-    const { data, count: totalLikesCount, error: totalLikesCountError } = await supabase
+    const { count: totalLikesCount, error: totalLikesCountError } = await supabase
     .from('postLikes')
-    .select('*, profiles!inner(id)', { count: 'exact', head: false })
+    .select('*', { count: 'exact', head: true })
     .eq('profiles.id', profile.id);
-
-    if (totalLikesCountError)
-        console.error('Failed to fetch total post count::', totalLikesCountError);
-    else
-        console.log(data)
 
     return <div className="w-full min-h-screen flex flex-col gap-10 items-center">
         <Navbar />
@@ -79,7 +74,7 @@ export default async function ProfileManagement()
                         {profile.handle}.gehenna.app
                     </small>
                     <blockquote className="p-2 text-sm bg-tertiary rounded-sm font-light w-full">
-                        {profile.bio}
+                        {profile.bio || 'No bio provided.'}
                     </blockquote>
                 </div>
             </section>

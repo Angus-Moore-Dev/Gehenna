@@ -10,5 +10,5 @@ const cookieOptions: CookieOptions = {
     secure: false,
 };
 
-export const createServerClient = () => createServerComponentClient<Database>({ cookies }, { cookieOptions });
+export const createServerClient = () => createServerComponentClient<Database>({ cookies });
 export const createApiClient = () => createRouteHandlerClient<Database>({ cookies }, { cookieOptions });
