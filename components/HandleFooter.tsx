@@ -20,12 +20,9 @@ export default async function HandleFooter({ profile }: { profile?: Profile })
             <Link href={`${appURL}/tos`} className="w-fit underline text-blue-400 hover:text-blue-300">
                 TOS
             </Link>
-            <Link href={`${appURL}/faq`} className="w-fit underline text-blue-400 hover:text-blue-300">
-                FAQ
-            </Link>
-            <Link href={`${appURL}/about`} className="w-fit underline text-blue-400 hover:text-blue-300">
+            {/* <Link href={`${appURL}/about`} className="w-fit underline text-blue-400 hover:text-blue-300">
                 About
-            </Link>
+            </Link> */}
         </div>
         <small className="text-neutral-600 max-w-lg text-center">
             {profile && <>{profile.name}&apos;s content is their own.&nbsp;</>}
