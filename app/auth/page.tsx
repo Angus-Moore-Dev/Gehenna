@@ -40,7 +40,7 @@ export default function AuthenticationPage()
             email,
             password,
             options: {
-                emailRedirectTo: `${process.env.NODE_ENV === 'development' ? 'http://dev.local' : 'https://www.gehenna.app'}`
+                emailRedirectTo: `${process.env.NODE_ENV === 'development' ? 'http://dev.local/auth/callback' : 'https://www.gehenna.app/auth/callback'}`
             }
         });
 
