@@ -2,7 +2,24 @@ import HandleFooter from "@/components/HandleFooter";
 import HandleNavbar from "@/components/HandleNavbar";
 import CreateNewPost from "@/components/publish/CreateNewPost";
 import { createServerClient } from "@/utils/supabase/server";
+import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
+
+export async function generateMetadata(parent: ResolvingMetadata): Promise<Metadata>
+{
+    return {
+        title: 'Create New Post | Gehenna',
+        description: 'Write a new post on Gehenna.',
+        icons: {
+            icon: '/favicon.ico'
+        },
+        openGraph: {
+            images: ['/favicon.ico'],
+            description: 'Write a new post on Gehenna.',
+            title: 'Create New Post | Gehenna',
+        }
+    }
+}
 
 
 export default async function PublishNewPost({ params }: { params: { handle: string }})
