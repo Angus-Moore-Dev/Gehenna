@@ -5,7 +5,7 @@ import { createServerClient } from "@/utils/supabase/server";
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 
-export async function generateMetadata(parent: ResolvingMetadata): Promise<Metadata>
+export async function generateMetadata(): Promise<Metadata>
 {
     return {
         title: 'Create New Post | Gehenna',
