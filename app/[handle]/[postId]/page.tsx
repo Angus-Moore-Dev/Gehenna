@@ -1,15 +1,9 @@
-import HandleFooter from "@/components/HandleFooter";
 import HandleNavbar from "@/components/HandleNavbar";
-import AdditionalMedia from "@/components/posts/AdditionalMedia";
 import PostContent from "@/components/posts/PostContent";
-import SharePost from "@/components/posts/SharePost";
 import { appDomain, appHttp } from "@/utils/appURL";
 import { MediaInfo } from "@/utils/global.types";
 import { createServerClient } from "@/utils/supabase/server";
-import { Button, Chip, TypographyStylesProvider } from "@mantine/core";
-import { ClockIcon, HeartIcon, MessageCircleIcon, SeparatorHorizontal, ShareIcon } from "lucide-react";
 import { Metadata, ResolvingMetadata } from "next";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 
 let favicon = '/favicon.ico';

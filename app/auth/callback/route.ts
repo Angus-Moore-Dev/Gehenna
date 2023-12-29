@@ -40,6 +40,7 @@ export async function GET(request: Request)
 		sameSite: 'lax',
 		secure: false,
 	});
+
 	// URL to redirect to after sign in process completes
 	return response;
 }

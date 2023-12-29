@@ -14,6 +14,7 @@ export interface Database {
           attachedFileURLs: Database["public"]["CompositeTypes"]["mediaInfo"][]
           byline: string
           content: string
+          contentSections: Database["public"]["CompositeTypes"]["contentSection"][]
           createdAt: string
           id: string
           postImageURL: Json
@@ -26,6 +27,7 @@ export interface Database {
           attachedFileURLs?: Database["public"]["CompositeTypes"]["mediaInfo"][]
           byline?: string
           content?: string
+          contentSections?: Database["public"]["CompositeTypes"]["contentSection"][]
           createdAt?: string
           id: string
           postImageURL?: Json
@@ -38,6 +40,7 @@ export interface Database {
           attachedFileURLs?: Database["public"]["CompositeTypes"]["mediaInfo"][]
           byline?: string
           content?: string
+          contentSections?: Database["public"]["CompositeTypes"]["contentSection"][]
           createdAt?: string
           id?: string
           postImageURL?: Json
@@ -226,9 +229,15 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      contentType: "text" | "video" | "audio" | "image" | "file"
     }
     CompositeTypes: {
+      contentSection: {
+        content: string
+        contentType: Database["public"]["Enums"]["contentType"]
+        mimeType: string
+        byteSize: number
+      }
       mediaInfo: {
         url: string
         byteSize: number

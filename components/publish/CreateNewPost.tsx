@@ -11,6 +11,7 @@ import { UploadIcon } from "lucide-react";
 import { v4 } from "uuid";
 import { User } from "@supabase/supabase-js";
 import { notifications } from "@mantine/notifications";
+import generatePostContentSections from "@/utils/generatePostContentSections";
 
 
 export default function CreateNewPost({ profile, topics }: { profile: Profile, topics: PostTopic[] })
@@ -27,7 +28,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
 
     const [selectedPostTopic, setSelectedPostTopic] = useState('');
     const [newPostTopicName, setNewPostTopicName] = useState('');
-    const [postStructure, setPostStructure] = useState<NewPostContent[]>([{ type: 'text', content: '', mediaTempURL: '', index: 0 }]);
+    const [postStructure, setPostStructure] = useState<NewPostContent[]>([{ type: 'text', content: '', mediaTempURL: '', index: 0, byteSize: 0, mimeType: '' }]);
 
     const [isPublic, setIsPublic] = useState(true);
 
@@ -98,6 +99,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                 const url = supabase.storage.from('post_files').getPublicUrl(`${id}/${(section.content as File).name}`);
                 postStructureData[postStructureData.indexOf(section)].content = url.data.publicUrl;
                 postStructureData[postStructureData.indexOf(section)].mediaTempURL = url.data.publicUrl;
+                postStructureData[postStructureData.indexOf(section)].byteSize = (section.content as File).size;
             }
         }
 
@@ -126,13 +128,15 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
             byline,
             topicId: topicId ? topicId : null,
             userId: profile.id,
-            content: generatePostContentPreview(postStructureData),
+            content: '',
+            // content: generatePostContentPreview(postStructureData),
             attachedFileURLs: [],
             postImageURL: {
                 url: supabase.storage.from('post_files').getPublicUrl(`${id}/${postImage.name}`).data.publicUrl, 
                 mimeType: postImage.type, 
-                byteSize: postImage.size 
+                byteSize: postImage.size
             },
+            contentSections: generatePostContentSections(postStructureData),
         });
 
         if (error)
@@ -204,7 +208,8 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                 post={{
                     id: '',
                     title,
-                    content: generatePostContentPreview(postStructure),
+                    content: '',
+                    // content: generatePostContentPreview(postStructure),
                     postImageURL: { url: URL.createObjectURL(postImage), mimeType: 'image/png', byteSize: 1 },
                     attachedFileURLs: [],
                     userId: profile.id,
@@ -212,6 +217,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                     byline,
                     public: true,
                     topicId: selectedPostTopic === 'new' ? null : selectedPostTopic,
+                    contentSections: generatePostContentSections(postStructure),
                 }}
                 profile={profile}
                 postTopicTitle={selectedPostTopic === 'new' ? newPostTopicName : postTopics.find(x => x.id === selectedPostTopic)?.title ?? ''}
@@ -235,6 +241,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                 byline,
                 public: true,
                 topicId: selectedPostTopic === 'new' ? null : selectedPostTopic,
+                contentSections: [],
             }}
             profile={profile}
             postTopic={selectedPostTopic === 'new' ? newPostTopicName : postTopics.find(x => x.id === selectedPostTopic)?.title ?? ''}
@@ -260,11 +267,11 @@ function generatePostContentPreview(postStructure: NewPostContent[]): string
         if (section.type === 'text')
             totalPostHTML += section.content;
         else if (section.type === 'video')
-            totalPostHTML += `<br /><video src="${section.mediaTempURL}" controls style='margin-left:auto;margin-right:auto;'></video>`;
+            totalPostHTML += `<br /><video src="${section.mediaTempURL}" controls style='margin-left:auto;margin-right:auto;width:100%;'></video>`;
         else if (section.type === 'image')
-            totalPostHTML += `<br /><img src="${section.mediaTempURL}" style='margin-left:auto;margin-right:auto;' />`;
+            totalPostHTML += `<br /><img src="${section.mediaTempURL}" style='margin-left:auto;margin-right:auto;width:100%;' />`;
         else if (section.type === 'audio')
-            totalPostHTML += `<br /><audio src="${section.mediaTempURL}" controls style='margin-left:auto;margin-right:auto;'></audio>`;
+            totalPostHTML += `<br /><audio src="${section.mediaTempURL}" controls style='margin-left:auto;margin-right:auto;width:100%;'></audio>`;
     }
 
     return totalPostHTML;

@@ -5,6 +5,7 @@ import { Select, Button, FileButton, Input, Textarea, Checkbox } from "@mantine/
 import { PlusIcon } from "lucide-react";
 import PostTextEditor from "./TextEditor";
 import Image from "next/image";
+import FileBox from "../posts/FileBox";
 
 interface PostCreationSectionProps
 {
@@ -116,10 +117,12 @@ export default function PostCreationSection({
                 <h2 className="font-semibold text-lg">
                     Section {index + 1}
                 </h2>
-                <Select value={section.type} data={['text', 'image', 'video', 'audio']} onChange={e => {
+                <Select value={section.type} data={['text', 'image', 'video', 'audio', 'file']} onChange={e => {
                     const newPostStructure = [...postStructure];
-                    newPostStructure[index].type = (e as 'text' | 'audio' | 'video' | 'image');
+                    newPostStructure[index].type = (e as 'text' | 'audio' | 'video' | 'image' | 'file');
                     newPostStructure[index].content = '';
+                    if (e === 'text')
+                        newPostStructure[index].mimeType = 'text/html';
                     setPostStructure(newPostStructure);
                 }} className="ml-auto" />
                 <Button color='red' onClick={() => {
@@ -135,6 +138,7 @@ export default function PostCreationSection({
                 <PostTextEditor content={section.content as string} setContent={content => {
                     const newPostStructure = [...postStructure];
                     newPostStructure[index].content = content;
+                    newPostStructure[index].byteSize = content.length;
                     setPostStructure(newPostStructure);
                 }} />
             }
@@ -148,6 +152,7 @@ export default function PostCreationSection({
                     if (newPostStructure[index].mediaTempURL)
                         URL.revokeObjectURL(newPostStructure[index].mediaTempURL);
                     newPostStructure[index].mediaTempURL = URL.createObjectURL(e);
+                    newPostStructure[index].mimeType = e.type;
                     setPostStructure(newPostStructure);    
                 }}>
                     {(props) => 
@@ -183,6 +188,7 @@ export default function PostCreationSection({
                     if (newPostStructure[index].mediaTempURL)
                         URL.revokeObjectURL(newPostStructure[index].mediaTempURL);
                     newPostStructure[index].mediaTempURL = URL.createObjectURL(e);
+                    newPostStructure[index].mimeType = e.type;
                     setPostStructure(newPostStructure);    
                 }}>
                     {(props) => 
@@ -219,6 +225,7 @@ export default function PostCreationSection({
                     if (newPostStructure[index].mediaTempURL)
                         URL.revokeObjectURL(newPostStructure[index].mediaTempURL);
                     newPostStructure[index].mediaTempURL = URL.createObjectURL(e);
+                    newPostStructure[index].mimeType = e.type;
                     setPostStructure(newPostStructure);    
                 }}>
                     {(props) => 
@@ -244,10 +251,61 @@ export default function PostCreationSection({
                 }
                 </>
             }
+            {
+                section.type === 'file' &&
+                <>
+                <FileButton accept="*" onChange={e => {
+                    if (!e) return;
+                    const newPostStructure = [...postStructure];
+                    newPostStructure[index].content = e;
+                    if (newPostStructure[index].mediaTempURL)
+                        URL.revokeObjectURL(newPostStructure[index].mediaTempURL);
+                    newPostStructure[index].mediaTempURL = URL.createObjectURL(e);
+                    newPostStructure[index].mimeType = e.name; // This is fucking stupid but I'm using the mimetype as the name of the file.
+                    newPostStructure[index].byteSize = e.size;
+                    setPostStructure(newPostStructure);    
+                }}>
+                    {(props) => 
+                    <Button {...props} style={{ width: 256 }}>
+                        <PlusIcon className="mr-2" />
+                        {
+                            postStructure[index].content ?
+                            'Change' :
+                            'Add'
+                        } File
+                    </Button>
+                    }
+                </FileButton>
+                {
+                    !section.mediaTempURL &&
+                    <span>
+                        No File Selected.
+                    </span>
+                }
+                {
+                    section.mediaTempURL &&
+                    <>
+                        <Input.Wrapper label="File Name" description="Give your file a name that's easy to read">
+                            <Input type='text' value={section.mimeType} onChange={e => {
+                                const newPostStructure = [...postStructure];
+                                newPostStructure[index].mimeType = e.currentTarget.value;
+                                setPostStructure(newPostStructure);
+                            }} placeholder="Example File Name" />
+                        </Input.Wrapper>
+                        <FileBox content={{
+                            content: section.mediaTempURL,
+                            mimeType: section.mimeType,
+                            byteSize: section.byteSize,
+                            contentType: 'file'
+                        }} />
+                    </>
+                }
+                </>
+            }
         </div>)
     }
     <Button onClick={() => {
-        setPostStructure([...postStructure, { type: 'text', content: '', index: postStructure.length, mediaTempURL: '' }]);
+        setPostStructure([...postStructure, { type: 'text', content: '', index: postStructure.length, mediaTempURL: '', byteSize: 0, mimeType: '' }]);
     }} className="mt-10">
         <PlusIcon className="mr-2" />
         Add New Section

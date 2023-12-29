@@ -10,5 +10,5 @@ export async function getSupabaseCookie(): Promise<RequestCookie | undefined>
     const cookieStore = cookies();
 	const supabaseCookie = cookieStore.get(cookieName);
 
-    return supabaseCookie
+    return supabaseCookie;
 }

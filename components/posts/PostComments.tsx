@@ -136,7 +136,7 @@ export default function PostComments({ post, user }: PostCommentsProps)
         {
             comments.length === 0 &&
             <span className="my-4 text-center text-neutral-500 font-light">
-                No comments yet.
+                No comments yet !
             </span>
         }
         {

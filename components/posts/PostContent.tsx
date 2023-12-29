@@ -10,6 +10,7 @@ import { User } from "@supabase/supabase-js";
 import PostCommentCount from "../PostCommentCount";
 import { useRef } from "react";
 import PostLikes from "./PostLikes";
+import FileBox from "./FileBox";
 
 interface PostContentProps
 {
@@ -82,9 +83,34 @@ export default function PostContent({ post, profile, postTopicTitle, user, postL
             objectFit: 'cover'
         }}
         />
-        <TypographyStylesProvider className="-ml-8">
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-        </TypographyStylesProvider>
+        {
+            // Preserves the legacy posts on the site.
+            post.content && post.contentSections.length === 0 &&
+            <TypographyStylesProvider className="-ml-8">
+                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            </TypographyStylesProvider>
+        }
+        {
+            // New form of rendering done server side. Allows for flexibility for different post types.
+            !post.content && post.contentSections.length > 0 &&
+            post.contentSections.map((section, index) => {
+                switch (section.contentType)
+                {
+                    case 'text':
+                        return <TypographyStylesProvider key={index} className="-ml-9">
+                            <div dangerouslySetInnerHTML={{ __html: section.content }} />
+                        </TypographyStylesProvider>
+                    case 'image':
+                        return <Image key={index} src={section.content} alt={section.content} width={1000} height={1000} className="w-full rounded-md mb-2" />
+                    case 'video':
+                        return <video key={index} src={section.content} controls className="w-full rounded-md mb-2" />
+                    case 'audio':
+                        return <audio key={index} src={section.content} controls className="w-full rounded-md mb-2" />
+                    case 'file':
+                        return <FileBox key={index} content={section} />
+                }
+            })
+        }
         <AdditionalMedia files={post.attachedFileURLs as MediaInfo[]} />
         {
             post.id &&

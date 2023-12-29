@@ -31,7 +31,10 @@ export async function middleware(request: NextRequest)
 	const subdomain = getValidSubdomain(request.nextUrl.pathname, host);
 
 	if (subdomain)
+	{
+		console.log('found a subdomain, routing to::', `/${subdomain}${url.pathname}`);
 		url.pathname = `/${subdomain}${url.pathname}`;
+	}
 
 	const response = subdomain ? NextResponse.rewrite(url) : NextResponse.next();
 
