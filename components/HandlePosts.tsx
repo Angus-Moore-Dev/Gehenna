@@ -67,11 +67,11 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
                             }
                             {new Date(post.createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </small>
-                        <PostLikesPreview post={{...post, content: '', attachedFileURLs: [], public: true, userId: '', contentSections: []}} />
+                        {/* <PostLikesPreview post={{...post, content: '', attachedFileURLs: [], public: true, userId: '', contentSections: []}} />
                         <button className="flex flex-row items-center px-3 py-1 rounded-full border-[1px] border-neutral-600">
                             <MessageCircleIcon size={12} className="mr-2" />
                             <PostCommentCount postId={post.id} />
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </Link>)
