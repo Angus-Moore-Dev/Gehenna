@@ -1,23 +1,22 @@
 import { Profile } from "@/utils/global.types";
 import Gehenna from "./Gehenna";
 import Link from "next/link";
-import { appURL } from "@/utils/appURL";
 
 
 export default async function HandleFooter({ profile }: { profile?: Profile })
 {
     return <footer className="w-full p-4 md:p-8 flex flex-col items-center gap-4 bg-secondary border-t-[1px] border-t-neutral-600">
-        <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local' : 'https://gehenna.app'} className="w-fit" target="_blank">
+        <Link href='/' className="w-fit" target="_blank">
             <Gehenna />
         </Link>
         <p>
             Voices of the damned.
         </p>
         <div className="flex flex-row gap-4">
-            <Link href={`${appURL}/privacy`} className="w-fit underline text-blue-400 hover:text-blue-300">
+            <Link href={`/privacy`} className="w-fit underline text-blue-400 hover:text-blue-300">
                 Privacy Policy
             </Link>
-            <Link href={`${appURL}/tos`} className="w-fit underline text-blue-400 hover:text-blue-300">
+            <Link href={`/tos`} className="w-fit underline text-blue-400 hover:text-blue-300">
                 TOS
             </Link>
             {/* <Link href={`${appURL}/about`} className="w-fit underline text-blue-400 hover:text-blue-300">
