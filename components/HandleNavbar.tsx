@@ -31,7 +31,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             }
         </div>
         <div className="flex items-center justify-center gap-4">
-            <Link href='/' className="w-fit transition hover:drop-shadow-lg">
+            <Link href={`/${profile.handle}`} className="w-fit transition hover:drop-shadow-lg">
                 <span className="text-3xl font-bold">{profile.name}</span>
             </Link>
         </div>
