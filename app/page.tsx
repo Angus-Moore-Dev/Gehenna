@@ -82,7 +82,7 @@ export default async function HomePage()
 				latestPost.map((latestPost, index) => 
 				<Link
 				key={index}
-				href={`${appHttp}://${latestPost?.profiles?.handle}${process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app'}/${latestPost.id}`} 
+				href={`/${latestPost.profiles?.handle}/${latestPost.id}`} 
 				className="w-full max-w-4xl grid grid-cols-2 grid-rows-1 -mt-5">
 					<Image src={(latestPost.postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
 					<div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">

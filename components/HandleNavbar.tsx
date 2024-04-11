@@ -16,7 +16,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
         <div className="hidden md:flex md:pl-8 items-center gap-4">
             {
                 profile.avatar &&
-                <Link href='/' className="w-fit">
+                <Link href={`/${profile.handle}`} className="w-fit">
                     <Image src={profile.avatar} alt="profile picture" width={250} height={250} style={{ width: 40, height: 40, objectFit: 'cover' }} className="object-cover rounded-full" />
                 </Link>
             }
@@ -46,7 +46,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             </Button> */}
             {
                 !user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/auth' : 'https://gehenna.app/auth'} className="w-fit" target="_blank">
+                <Link href='/auth' className="w-fit" target="_blank">
                     <Button>
                         <LogIn className="mr-2" />
                         Sign In
@@ -55,7 +55,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             }
             {
                 user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://dev.local/profile' : 'https://gehenna.app/profile'} className="w-fit" target="_blank">
+                <Link href={'/auth'} className="w-fit" target="_blank">
                     <Button>
                         <PersonIcon className="mr-2" />
                         My Account

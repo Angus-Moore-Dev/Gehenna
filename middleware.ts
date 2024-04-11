@@ -19,24 +19,6 @@ const PUBLIC_FILE = /\.(.*)$/; // Files
 
 export async function middleware(request: NextRequest)
 {
-	console.log('middleware firing');
-    const cookieName = 'sb-fdiavyxctdwgbvoawijj-auth-token'; // Hardcoded for now
-	const url = request.nextUrl.clone();
-
-	// Skip public files
-	if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next'))
-		return;
-
-	const host = request.headers.get('host');
-	const subdomain = getValidSubdomain(request.nextUrl.pathname, host);
-
-	if (subdomain)
-	{
-		console.log('found a subdomain, routing to::', `/${subdomain}${url.pathname}`);
-		url.pathname = `/${subdomain}${url.pathname}`;
-	}
-
-	const response = subdomain ? NextResponse.rewrite(url) : NextResponse.next();
 
 	const supabase = createServerClient();
 
@@ -50,7 +32,7 @@ export async function middleware(request: NextRequest)
 	// 	secure: false,
 	// });
 
-	return response;
+	return NextResponse.next();
 }
 
 export const getValidSubdomain = (pathname: string, host?: string | null) => 
