@@ -22,7 +22,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             }
             {
                 user && user.id === profile.id &&
-                <Link href='/publish' className="w-fit">
+                <Link href={`/${profile.handle}/publish`} className="w-fit">
                     <Button>
                         <PlusIcon className="mr-2" />
                         Write New Post

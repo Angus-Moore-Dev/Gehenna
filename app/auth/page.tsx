@@ -40,7 +40,7 @@ export default function AuthenticationPage()
             email,
             password,
             options: {
-                emailRedirectTo: `${process.env.NODE_ENV === 'development' ? 'http://dev.local/auth/callback' : 'https://www.gehenna.app/auth/callback'}`
+                emailRedirectTo: `${process.env.NODE_ENV === 'development' ? 'http://localhost:3000/auth/callback' : 'https://www.gehenna.app/auth/callback'}`
             }
         });
 
@@ -116,7 +116,7 @@ export default function AuthenticationPage()
         {
             const newSession = await session.json() as Session;
             await supabase.auth.setSession(newSession);
-            router.push(`${appHttp}://${redirectTo ?? ''}${redirectTo ? '.' : ''}${appDomain}/`);
+            router.push(`/`);
         }
         else
         {
@@ -196,7 +196,7 @@ export default function AuthenticationPage()
     }, [debouncedHandle]);
 
     return <div className="w-full min-h-screen flex flex-col items-center justify-center">
-        <div className="w-full min-h-[500px] lg:max-w-6xl grid grid-rows-2 lg:grid-rows-1 grid-cols-1 lg:grid-cols-2 rounded-md border-[1px] border-neutral-600">
+        <div className="w-full grid grid-rows-2 lg:grid-rows-1 grid-cols-1 lg:grid-cols-2">
             <Image src='/servers.png' alt="Servers" width={1000} height={1000} style={{ objectFit: 'cover' }} className="w-full h-full object-cover rounded-l-md" quality={100} priority />
             <div className="w-full bg-tertiary rounded-r-md p-8 flex flex-col gap-4 items-center">
                 <Gehenna />

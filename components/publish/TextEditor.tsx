@@ -9,6 +9,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import Placeholder from "@tiptap/extension-placeholder";
+import Image from '@tiptap/extension-image';
 
 
 export default function PostTextEditor({ content, setContent }: {
@@ -24,6 +25,7 @@ export default function PostTextEditor({ content, setContent }: {
             Superscript,
             SubScript,
             Highlight,
+            Image.configure({ inline: false, allowBase64: false }), // experimentation
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
             Placeholder.configure({ placeholder: 'Write the meat of the post here.' })
         ],
@@ -67,7 +69,7 @@ export default function PostTextEditor({ content, setContent }: {
             </RichTextEditor.ControlsGroup>
             <RichTextEditor.ControlsGroup>
                 <RichTextEditor.AlignLeft />
-                <RichTextEditor.AlignCenter />
+                <RichTextEditor.AlignCenter /> 
                 <RichTextEditor.AlignJustify />
                 <RichTextEditor.AlignRight />
             </RichTextEditor.ControlsGroup>
