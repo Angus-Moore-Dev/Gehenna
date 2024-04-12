@@ -84,8 +84,8 @@ export default async function HomePage()
 				key={index}
 				href={`/${latestPost.profiles?.handle}/${latestPost.id}`} 
 				className="w-full max-w-4xl grid grid-cols-2 grid-rows-1 -mt-5">
-					<Image src={(latestPost.postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
-					<div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
+					<Image src={(latestPost.postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
+					<div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center max-h-[300px]">
 						<span className="text-2xl font-bold text-center">
 							{latestPost.title}
 						</span>
