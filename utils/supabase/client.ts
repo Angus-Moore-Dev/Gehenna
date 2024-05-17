@@ -5,7 +5,7 @@ import { CookieOptions } from '@supabase/ssr';
 
 // const cookieOptions: CookieOptions = {
 //     path: '/',
-//     domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
+//     domain: process.env.NODE_ENV === 'development' ? '.localhost:3000' : '.gehenna.app',
 //     sameSite: 'none',
 //     secure: false,
 // };

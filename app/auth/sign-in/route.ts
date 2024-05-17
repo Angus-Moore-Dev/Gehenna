@@ -29,7 +29,7 @@ export async function POST(request: NextRequest)
     const response = NextResponse.json(newSession);
     const supabaseCookie = await getSupabaseCookie();
 	response.cookies.set(supabaseCookie?.name || '', supabaseCookie?.value || '', {
-		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
+		domain: process.env.NODE_ENV === 'development' ? '.localhost:3000' : '.gehenna.app',
 		path: '/',
 		sameSite: 'lax',
 		secure: false,

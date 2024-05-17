@@ -29,8 +29,8 @@ export default async function ExploreAuthors()
             </span>
             <section className="w-full max-w-[1920px] grid grid-cols-4 gap-5 flex-wrap justify-center">
                 {
-                    profiles.map((profile, index) => 
-                    <Link href={`${appHttp}://${profile.handle}.${appDomain}/`}
+                    profiles.map(profile => 
+                    <Link href={`/${profile.handle}`}
                     target="_blank"
                     className='bg-tertiary rounded-md p-4 flex flex-col gap-4'>
                         <div className="w-full flex flex-row gap-5">

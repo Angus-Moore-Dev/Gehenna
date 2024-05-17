@@ -35,7 +35,7 @@ export async function GET(request: Request)
 	const response = NextResponse.redirect(requestUrl.origin);
 	const supabaseCookie = await getSupabaseCookie();
 	response.cookies.set(supabaseCookie?.name || '', supabaseCookie?.value || '', {
-		domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
+		domain: process.env.NODE_ENV === 'development' ? '.localhost:3000' : '.gehenna.app',
 		path: '/',
 		sameSite: 'lax',
 		secure: false,

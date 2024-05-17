@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest)
 
 	// const supabaseCookie = getSupabaseCookie();
 	// response.cookies.set(cookieName, supabaseCookie?.value || '', {
-	// 	domain: process.env.NODE_ENV === 'development' ? '.dev.local' : '.gehenna.app',
+	// 	domain: process.env.NODE_ENV === 'development' ? '.localhost:3000' : '.gehenna.app',
 	// 	path: '/',
 	// 	sameSite: 'lax',
 	// 	secure: false,
