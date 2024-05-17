@@ -26,12 +26,7 @@ export async function generateMetadata({ params }: { params: { handle: string }}
 
     if (!profile && error)
     {
-        return {
-            title: 'Gehenna',
-            openGraph: {
-                images: ['/favicon.ico']
-            }
-        }
+        redirect('/404');
     }
 
     return {
@@ -56,7 +51,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
     .single();
 
     if (error && !profile)
-        redirect('/404');
+        redirect('/');
 
     const { data: posts, error: postError } = await supabase
     .from('post')
