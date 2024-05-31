@@ -12,16 +12,20 @@ export default async function Navbar()
     const profile = (await supabase.from('profiles').select().eq('id', user?.id ?? '').single()).data;
 
     return <nav className="w-full grid grid-cols-3 bg-secondary px-8 border-b-[1px] border-b-neutral-600">
-            {
-                user && profile && user.id === profile.id &&
-                <Link href={`/${profile.handle}/publish`} className="w-fit my-auto">
-                    <Button>
-                        <PlusIcon className="mr-2" />
-                        Write New Post
-                    </Button>
-                </Link>
-            }
-    <div className="w-full flex flex-col items-center">
+        {
+            !user &&
+            <div />
+        }
+        {
+            user && profile && user.id === profile.id &&
+            <Link href={`/${profile.handle}/publish`} className="w-fit my-auto">
+                <Button>
+                    <PlusIcon className="mr-2" />
+                    Write New Post
+                </Button>
+            </Link>
+        }
+        <div className="w-full flex flex-col items-center">
             <Link href='/' className="w-fit scale-50 transition duration-150 hover:drop-shadow-lg hover:text-primary">
                 <pre className='text-xs scale-100 lg:text-md leading-3'>
 
