@@ -10,7 +10,6 @@ import { ExternalLinkIcon, MoreHorizontal, PencilIcon, TrashIcon } from "lucide-
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import PostTextEditor from "../publish/TextEditor";
 
 interface PostCommentsProps
 {
@@ -171,6 +170,7 @@ export default function PostComments({ post, user }: PostCommentsProps)
                 className="-mt-2"
                 autosize
                 minRows={3}
+                resize="vertical"
                 />
                 <Button className="ml-auto -mt-2" onClick={submitComment} loading={isSubmitting}>
                     Post Comment
