@@ -11,7 +11,7 @@ export default async function Navbar()
     const user = (await supabase.auth.getUser()).data.user;
     const profile = (await supabase.from('profiles').select().eq('id', user?.id ?? '').single()).data;
 
-    return <nav className="w-full grid grid-cols-3 bg-secondary px-8 border-b-[1px] border-b-neutral-600">
+    return <nav className="w-full grid grid-cols-3 bg-tertiary px-8 border-b-[1px] border-b-neutral-600">
         {
             !user &&
             <div />
@@ -26,7 +26,7 @@ export default async function Navbar()
             </Link>
         }
         <div className="w-full flex flex-col items-center">
-            <Link href='/' className="w-fit scale-50 transition duration-150 hover:drop-shadow-lg hover:text-primary">
+            <Link href='/' className="w-fit scale-50 -my-5 transition duration-150 hover:drop-shadow-lg hover:text-primary">
                 <pre className='text-xs scale-100 lg:text-md leading-3'>
 
                 &nbsp;▄████ ▓█████  ██░ ██ ▓█████  ███▄    █  ███▄    █  ▄▄▄      <br />

@@ -45,7 +45,7 @@ export default function PostContent({ post, profile, postTopicTitle, user, postL
                             {profile.name}
                         </span>
                         <small>
-                            {new Date(post.createdAt).toLocaleDateString('en-AU', { dateStyle: 'full' })}
+                            {new Date(post.createdAt).toLocaleDateString('en-US', { dateStyle: 'full' })}
                         </small>
                     </div>
                     <div className="flex flex-col gap-2">

@@ -1,18 +1,20 @@
-import { Button } from "@mantine/core";
+import { ActionIcon, Button, CopyButton, Tooltip } from "@mantine/core";
 import { LogIn, PlusIcon, RssIcon, ShareIcon } from 'lucide-react';
 import Link from "next/link";
 import { Profile } from "@/utils/global.types";
 import Image from "next/image";
 import { createServerClient } from "@/utils/supabase/server";
 import { PersonIcon } from "@radix-ui/react-icons";
+import ShareButton from "./ShareButton";
 
 export default async function HandleNavbar({ profile }: { profile: Profile })
 {
     const supabase = createServerClient();
     const user = (await supabase.auth.getUser()).data.user;
+    const profileName = (await supabase.from('profiles').select('name').eq('id', user?.id ?? '').single()).data;
 
     return <div className="fixed z-50 w-full grid grid-rows-2 md:grid-rows-1 gap-4 
-    md:gap-0 md:grid-cols-3 bg-secondary bg-opacity-70 backdrop-blur-md border-b-[1px] border-neutral-600 py-2.5">
+    md:gap-0 md:grid-cols-3 bg-tertiary bg-opacity-70 backdrop-blur-md border-b-[1px] border-neutral-600 py-2.5">
         <div className="hidden md:flex md:pl-8 items-center gap-4">
             {
                 profile.avatar &&
@@ -36,29 +38,22 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             </Link>
         </div>
         <div className="min-w-fit flex flex-col md:flex-row items-center md:justify-end md:pr-8 gap-2">
-            <Button color="dark">
-                <ShareIcon className="mr-2" />
-                Share
-            </Button>
-            {/* <Button>
-                <RssIcon className="mr-2" />
-                Subscribe
-            </Button> */}
+            <ShareButton />
             {
                 !user &&
                 <Link href='/auth' className="w-fit" target="_blank">
-                    <Button>
+                    <Button variant="subtle">
                         <LogIn className="mr-2" />
                         Sign In
                     </Button>
                 </Link>
             }
             {
-                user &&
-                <Link href={'/auth'} className="w-fit" target="_blank">
-                    <Button>
+                user && profileName &&
+                <Link href={'/profile'} className="w-fit" target="_blank">
+                    <Button variant="subtle">
                         <PersonIcon className="mr-2" />
-                        My Account
+                        {profileName.name}
                     </Button>
                 </Link>
             }
