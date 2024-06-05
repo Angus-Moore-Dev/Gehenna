@@ -1,7 +1,7 @@
 'use client';
 
 import { createBrowserClient } from "@/utils/supabase/client";
-import { Loader } from "@mantine/core";
+import { Loader, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 
 
@@ -21,7 +21,7 @@ export default function TotalUsersCount()
         });
     }, [supabase]);
 
-    return <span className="text-sm text-neutral-500 font-light">
-        We currently have { totalUsers === undefined ? <Loader size={12} /> : totalUsers } author{totalUsers && totalUsers !== 1 ? 's' : ''}.
-    </span>
+    return <div className="text-sm text-neutral-300 flex flex-row items-center gap-1">
+        We currently have <Text c='green'>{ totalUsers === undefined ? <Loader size={12} /> : totalUsers }</Text> author{totalUsers && totalUsers !== 1 ? 's' : ''}.
+    </div>
 }
