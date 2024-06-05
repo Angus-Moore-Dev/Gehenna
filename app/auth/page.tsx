@@ -100,33 +100,64 @@ export default function AuthenticationPage()
         if (isLoading) return;
         setIsLoading(true);
 
-        const session = await fetch('/auth/sign-in', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+        if (mode === 'signIn')
+        {
+            const { error } = await supabase.auth.signInWithPassword({
                 email,
-                password: mode === 'signIn' ? password : code,
-                mode
-            })
-        });
-
-        if (session.ok)
-        {
-            const newSession = await session.json() as Session;
-            await supabase.auth.setSession(newSession);
-            router.push(`/`);
-        }
-        else
-        {
-            notifications.show({
-                title: 'Error Signing In',
-                message: 'Invalid email or password.',
-                color: 'red',
-                variant: 'filled'
+                password
             });
-            setIsLoading(false);
+
+            if (error)
+            {
+                notifications.show({
+                    title: 'Error Signing In',
+                    message: error.message,
+                    color: 'red',
+                    variant: 'filled'
+                });
+                setIsLoading(false);
+            }
+            else
+            {
+                notifications.show({
+                    title: 'Signed In',
+                    message: 'Welcome back to Gehenna.',
+                    color: 'green',
+                    variant: 'filled'
+                });
+                setIsLoading(false);
+                router.push(redirectTo ? redirectTo : '/');
+            }
+        }
+        else if (mode === 'code')
+        {
+            const { error } = await supabase.auth.verifyOtp({
+                email,
+                token: code,
+                type: 'email'
+            });
+
+            if (error)
+            {
+                notifications.show({
+                    title: 'Error Signing In',
+                    message: error.message,
+                    color: 'red',
+                    variant: 'filled'
+                });
+                setIsLoading(false);
+            }
+            else
+            {
+                notifications.show({
+                    title: 'Signed In',
+                    message: 'Welcome back to Gehenna.',
+                    color: 'green',
+                    variant: 'filled'
+                });
+                setIsLoading(false);
+                router.push(redirectTo ? redirectTo : '/');
+            }
         }
     };
 

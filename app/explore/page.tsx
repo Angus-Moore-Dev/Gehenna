@@ -5,6 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+export async function generateMetadata()
+{
+    return {
+        title: 'Explore | Gehenna',
+    }
+}
+
 
 export default async function ExploreAuthors()
 {

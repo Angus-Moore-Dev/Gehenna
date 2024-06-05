@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: { handle: string }}
     }
 
     return {
-        title: `${profile.name} | Gehenna`,
+        title: `${profile.name}'s Space`,
         description: `Welcome to ${profile.name}'s platform.`,
         icons: {
             icon: profile.avatar || favicon
