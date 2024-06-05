@@ -3,13 +3,14 @@
 import { appDomain, appHttp } from "@/utils/appURL";
 import { Comment, Post, Profile } from "@/utils/global.types";
 import { createBrowserClient } from "@/utils/supabase/client";
-import { Button, Loader, Menu, ScrollArea, Textarea } from "@mantine/core";
+import { Button, Loader, Menu, ScrollArea, Text, Textarea } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { User } from "@supabase/supabase-js";
 import { ExternalLinkIcon, MoreHorizontal, PencilIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import PostTextEditor from "../publish/TextEditor";
 
 interface PostCommentsProps
 {
@@ -186,6 +187,11 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
 {
     const supabase = createBrowserClient();
     const [showDeleteButton, setShowDeleteButton] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
+    const [message, setMessage] = useState(comment.message);
+    const [editingMessage, setEditingMessage] = useState(message);
+    const [isLoading, setIsLoading] = useState(false);
 
     const deleteComment = async () =>
     {
@@ -213,6 +219,7 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
         }
     };
 
+
     function OptionsMenu()
     {
         return <Menu width={200}>
@@ -225,9 +232,9 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
                 <Menu.Label>
                     Options
                 </Menu.Label>
-                <Menu.Item onClick={() => notifications.show({ title: 'Not Ready Yet!', message: 'Editing comments will be coming shortly.'})}>
+                <Menu.Item onClick={() => setIsEditing(true)}>
                     <div className="flex flex-row items-center">
-                        <PencilIcon className="mr-2 text-primary" />
+                        <Text c='green'><PencilIcon className="mr-2" /></Text>
                         Edit Comment
                     </div>
                 </Menu.Item>
@@ -241,6 +248,43 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
             </Menu.Dropdown>
         </Menu>
     }
+
+
+    async function updateComment()
+    {
+        if (isLoading) return;
+        setIsLoading(true);
+
+        const { error } = await supabase
+        .from('postComments')
+        .update({
+            message: editingMessage,
+            isEdited: true
+        })
+        .eq('id', comment.id);
+
+        if (error)
+        {
+            notifications.show({
+                title: 'Error Updating Comment!',
+                message: error.message,
+                color: 'red',
+            });
+        }
+        else
+        {
+            notifications.show({
+                title: 'Comment Updated!',
+                message: 'Your comment has been updated.',
+                color: 'green',
+            });
+            setIsEditing(false);
+            setMessage(editingMessage);
+        }
+
+        setIsLoading(false);
+    }
+
 
     return <div className="w-full flex flex-col gap-2 py-4 px-8 rounded-md bg-secondary"
     onMouseOver={() => setShowDeleteButton(user ? user.id === profile.id : false)}
@@ -259,13 +303,33 @@ function CommentBox({ comment, profile, user, onDelete }: { comment: Comment, pr
                         {new Date(comment.createdAt).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: '2-digit' })}
                     </small>
                     {
-                        showDeleteButton &&
+                        showDeleteButton && !isEditing &&
                         <OptionsMenu />
                     }
                 </div>
-                <section className="w-full whitespace-pre-wrap text-sm mt-1">
-                    {comment.message}
-                </section>
+                {
+                    !isEditing &&
+                    <section className="w-full whitespace-pre-wrap text-sm mt-1">
+                        {message}
+                    </section>
+                }
+                {
+                    isEditing &&
+                    <div className="w-full flex flex-col gap-2">
+                        <Textarea value={editingMessage} onChange={e => setEditingMessage(e.target.value)} autosize minRows={3} resize="vertical" placeholder="Edit your comment here." />
+                        <section className="w-full flex flex-row justify-end gap-2">
+                            <Button size="sm" color='dark' onClick={() => {
+                                setIsEditing(false);
+                                setEditingMessage(message);
+                            }} disabled={isLoading}>
+                                Cancel
+                            </Button>
+                            <Button size="sm" onClick={updateComment} loading={isLoading}>
+                                Save
+                            </Button>
+                        </section>
+                    </div>
+                }
             </div>
         </section>
     </div>

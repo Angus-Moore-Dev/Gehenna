@@ -10,6 +10,7 @@ import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import Placeholder from "@tiptap/extension-placeholder";
 import Image from '@tiptap/extension-image';
+import { useEffect } from 'react';
 
 
 export default function PostTextEditor({ content, setContent }: {
@@ -34,6 +35,12 @@ export default function PostTextEditor({ content, setContent }: {
             setContent(editor.getHTML());
         }
     });
+
+    useEffect(() => 
+    {
+        if (!content && editor)
+            editor.commands.setContent('');
+    }, [content]);
 
     return <RichTextEditor editor={editor}>
         <RichTextEditor.Toolbar sticky stickyOffset={60}>
