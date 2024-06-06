@@ -11,14 +11,13 @@ import { useState } from "react";
 export default function BioChange({ profile }: { profile: Profile })
 {
     const supabase = createBrowserClient();
-    const [newBio, setNewBio] = useState('');
+    const [newBio, setNewBio] = useState(profile.bio);
     const [isLoading, setIsLoading] = useState(false);
 
     return <div className="flex flex-col gap-2">
-        <Input.Wrapper label="Change Bio (Max 144 Characters)" description={`Your bio is a short summary about yourself. Use a quote or a description about who you are here.`}>
-            <Textarea resize="vertical" maxLength={144} placeholder="Short description about yourself." value={newBio} onChange={e => setNewBio(e.target.value)} className="mt-1" />
-        </Input.Wrapper>
-        <Button color="red" onClick={async () => {
+        <Textarea label='Change Bio (Max 144 Characters)' description={`Your bio is a short summary about yourself. Use a quote or a description about who you are here.`} resize="vertical" minRows={5} maxLength={144} placeholder="Short description about yourself." value={newBio} onChange={e => setNewBio(e.target.value)} />
+        <Button color="red" onClick={async () => 
+        {
             if (isLoading) return;
             setIsLoading(true);
 

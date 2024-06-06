@@ -1,10 +1,9 @@
-import { ActionIcon, Button, CopyButton, Tooltip } from "@mantine/core";
-import { LogIn, PlusIcon, RssIcon, ShareIcon } from 'lucide-react';
+import { Button } from "@mantine/core";
+import { LogIn, PlusIcon, User } from 'lucide-react';
 import Link from "next/link";
 import { Profile } from "@/utils/global.types";
 import Image from "next/image";
 import { createServerClient } from "@/utils/supabase/server";
-import { PersonIcon } from "@radix-ui/react-icons";
 import ShareButton from "./ShareButton";
 
 export default async function HandleNavbar({ profile }: { profile: Profile })
@@ -51,8 +50,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             {
                 user && profileName &&
                 <Link href={'/profile'} className="w-fit" target="_blank">
-                    <Button variant="subtle">
-                        <PersonIcon className="mr-2" />
+                    <Button variant="subtle" leftSection={<User />}>
                         {profileName.name}
                     </Button>
                 </Link>

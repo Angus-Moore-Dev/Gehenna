@@ -11,7 +11,7 @@ import { useState } from "react";
 export default function NameChange({ profile }: { profile: Profile })
 {
     const supabase = createBrowserClient();
-    const [name, setName] = useState('');
+    const [name, setName] = useState(profile.name);
     const [isLoading, setIsLoading] = useState(false);
 
     return <div className="flex flex-col gap-2">

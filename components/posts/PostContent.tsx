@@ -86,7 +86,7 @@ export default function PostContent({ post, profile, postTopicTitle, user, postL
         {
             // Preserves the legacy posts on the site.
             post.content && post.contentSections.length === 0 &&
-            <TypographyStylesProvider className="-ml-8">
+            <TypographyStylesProvider className="">
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
             </TypographyStylesProvider>
         }
@@ -97,7 +97,7 @@ export default function PostContent({ post, profile, postTopicTitle, user, postL
                 switch (section.contentType)
                 {
                     case 'text':
-                        return <TypographyStylesProvider key={index} className="-ml-9">
+                        return <TypographyStylesProvider key={index} className="">
                             <div dangerouslySetInnerHTML={{ __html: section.content }} />
                         </TypographyStylesProvider>
                     case 'image':

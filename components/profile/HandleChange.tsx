@@ -11,7 +11,7 @@ import { useState } from "react";
 export default function HandleChange({ profile }: { profile: Profile })
 {
     const supabase = createBrowserClient();
-    const [newHandle, setNewHandle] = useState('');
+    const [newHandle, setNewHandle] = useState(profile.handle);
     const [isLoading, setIsLoading] = useState(false);
 
     return <div className="flex flex-col gap-2">

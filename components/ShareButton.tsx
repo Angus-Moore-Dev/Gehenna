@@ -16,7 +16,7 @@ export default function ShareButton()
     return <CopyButton value={url} timeout={25000}>
     {({ copied, copy }) => (
         <>
-        <Tooltip label={copied ? 'Copied!' : 'Copy Post URL'} position="bottom">
+        <Tooltip label={copied ? 'Copied!' : 'Copy URL'} position="bottom">
             <ActionIcon onClick={copy} size={'36'} variant='subtle'>
                 <ShareIcon size={20} />
             </ActionIcon>
