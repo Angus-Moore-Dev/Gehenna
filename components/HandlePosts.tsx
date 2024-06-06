@@ -30,8 +30,8 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
     const [activeTab, setActiveTab] = useState('all');
 
     return <>
-    <div className="w-full max-w-4xl">
-        <Tabs defaultValue="home" value={activeTab} onChange={e => setActiveTab(e ?? 'home')}>
+    <div className="w-full max-w-4xl bg-tertiary">
+        <Tabs defaultValue="home" variant='default' value={activeTab} onChange={e => setActiveTab(e ?? 'home')}>
             <Tabs.List grow justify="start">
                 <Tabs.Tab value='all'>All</Tabs.Tab>
                 {
@@ -40,7 +40,7 @@ export default function HandlePosts({ posts, profile, postTopics }: HandlePostsP
             </Tabs.List>
         </Tabs>
     </div>
-    <div className="w-full max-w-4xl flex flex-col gap-4">
+    <div className="w-full max-w-4xl flex flex-col gap-4 -mt-5">
         {
             posts
             .filter(post => activeTab === post.topicId || activeTab === 'all')

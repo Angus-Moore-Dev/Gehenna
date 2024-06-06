@@ -48,7 +48,6 @@ export default async function PublishNewPost({ params }: { params: { handle: str
         redirect('/500');
     
     return <div className="w-full flex flex-col items-center gap-5">
-        <HandleNavbar profile={profile} />
         <div className="w-full max-w-4xl mt-32 flex-grow min-h-screen flex flex-col items-center gap-10">
             <CreateNewPost profile={profile} topics={topics} />
         </div>

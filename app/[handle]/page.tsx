@@ -5,7 +5,7 @@ import { MediaInfo } from "@/utils/global.types";
 import { createServerClient } from "@/utils/supabase/server";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import { Metadata, ResolvingMetadata } from "next";
-import { Tabs } from '@mantine/core';
+import { Divider, Tabs } from '@mantine/core';
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -72,7 +72,26 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
         redirect('/500');
 
     return <div className="w-full min-h-screen flex flex-col items-center gap-10">
-        <HandleNavbar profile={profile} />
+        <div className="w-full flex flex-row gap-5 max-w-4xl mx-auto mt-32 p-4 px-8 bg-tertiary rounded-md">
+            <Image src={profile.avatar} alt="profile picture" width={250} height={250} style={{ width: 125, height: 125 }} className="object-cover rounded-full" />
+            <div className="flex flex-col gap-2">
+                <h1 className="text-2xl font-bold">
+                    {profile.name}
+                </h1>
+                <h2>
+                    {profile.bio}
+                </h2>
+                <h3 className="text-sm ml-auto">
+                    Joined on {new Date(profile.createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    {/* calculate how many days it's been */}
+                    &nbsp;&middot;&nbsp;
+                    {
+                        Math.floor((new Date().getTime() - new Date(profile.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+                    }
+                    &nbsp;days ago
+                </h3>
+            </div>
+        </div>
         {
             posts.length === 0 &&
             <div className="h-full mt-32 flex flex-col items-center justify-center">
@@ -83,7 +102,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
         }
         {
             posts[0] &&
-            <Link href={`/${params.handle}/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2 mt-32">
+            <Link href={`/${params.handle}/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2">
                 <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
                 <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
                     <span className="text-2xl font-bold text-center">
