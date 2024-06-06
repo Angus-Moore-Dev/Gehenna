@@ -15,7 +15,6 @@ export default function PostCommentCount({ postId }: { postId: string })
         .from('postComments')
         .select('*', { head: true, count: 'exact' })
         .eq('postId', postId)
-        .single()
         .then(({ count }) => {
             if (count !== null)
                 setCommentCount(count);
@@ -32,7 +31,7 @@ export default function PostCommentCount({ postId }: { postId: string })
     {
         commentCount !== undefined &&
         <small>
-            {commentCount}
+            {commentCount.toLocaleString()}
         </small>
     }
     </>

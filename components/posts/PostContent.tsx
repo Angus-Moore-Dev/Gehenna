@@ -11,6 +11,7 @@ import PostCommentCount from "../PostCommentCount";
 import { useRef } from "react";
 import PostLikes from "./PostLikes";
 import FileBox from "./FileBox";
+import Link from "next/link";
 
 interface PostContentProps
 {
@@ -32,13 +33,15 @@ export default function PostContent({ post, profile, postTopicTitle, user, postL
         </span>
         {
             postTopicTitle &&
-            <small className="text-neutral-400 -mt-9">
+            <small className="text-neutral-400 -mt-6">
                 {postTopicTitle}
             </small>
         }
         <section className="flex flex-col gap-5">
             <div className="flex flex-row gap-5 items-start">
-                <Image src={profile.avatar} alt="Profile Picture" width={250} height={250} style={{ width: 50, height: 50, objectFit: 'cover' }} className="rounded-full" />
+                <Link href={`/${profile.handle}`} className="w-[50px] h-[50px] rounded-full">
+                    <Image src={profile.avatar} alt="Profile Picture" width={250} height={250} className="w-[50px] h-[50px] rounded-full object-cover" />
+                </Link>
                 <div className="w-full flex flex-row justify-between gap-2">
                     <div className="flex flex-col">
                         <span className="font-semibold">

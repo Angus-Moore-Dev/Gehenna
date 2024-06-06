@@ -1,7 +1,7 @@
 'use client';
 
 import { CopyButton, Tooltip, ActionIcon } from "@mantine/core";
-import { ShareIcon } from "lucide-react";
+import { CopyIcon, ShareIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 
@@ -18,7 +18,7 @@ export default function ShareButton()
         <>
         <Tooltip label={copied ? 'Copied!' : 'Copy URL'} position="bottom">
             <ActionIcon onClick={copy} size={'36'} variant='subtle'>
-                <ShareIcon size={20} />
+                <CopyIcon size={20} />
             </ActionIcon>
         </Tooltip>
         </>
