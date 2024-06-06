@@ -49,11 +49,10 @@ export default async function HomePage()
 				<br />
 				<br />
 				The app is currently being developed to support a bunch of new things, like <b>customising your own space, having your own domain and stuff like that.</b>
-				More will be written here as it gets created. 
+				&nbsp;More will be written here as it gets created. 
 				<br />
 				<br />
-				I am personally hosting all of this. If you have any issues starting your own space, email me at <b>admin@gehenna.app</b> or if it's really urgent (like your space is crashing)
-				email me directly at <b>angusmoore.dev@gmail.com</b>.
+				I am personally hosting all of this. It is a free service because I believe every man should have his own space to share.
 				<br />
 				<br />
 				Also, if you can&apos;t tell, this site is based on the Talos Principle: Road To Gehenna DLC. I love the game and the nature of how the community shares things, the overarching concept so I named the site after it.
