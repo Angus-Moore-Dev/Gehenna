@@ -1,7 +1,7 @@
 import { createServerClient } from "@/utils/supabase/server";
 import { Button } from "@mantine/core";
 import { PersonIcon } from "@radix-ui/react-icons";
-import { LogIn, PlusIcon } from "lucide-react";
+import { LogIn, PlusIcon, User } from "lucide-react";
 import Link from "next/link";
 import Gehenna from "./Gehenna";
 
@@ -53,11 +53,10 @@ export default async function Navbar()
                 </Link>
             }
             {
-                user &&
-                <Link href={process.env.NODE_ENV === 'development' ? 'http://localhost:3000/profile' : 'https://gehenna.app/profile'} className="w-fit">
-                    <Button>
-                        <PersonIcon className="mr-2" />
-                        My Account
+                user && profile?.name &&
+                <Link href={'/profile'} className="w-fit" target="_blank">
+                    <Button variant="subtle" leftSection={<User />}>
+                        {profile.name}
                     </Button>
                 </Link>
             }

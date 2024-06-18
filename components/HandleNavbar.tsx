@@ -5,6 +5,7 @@ import { Profile } from "@/utils/global.types";
 import Image from "next/image";
 import { createServerClient } from "@/utils/supabase/server";
 import ShareButton from "./ShareButton";
+import Gehenna from "./Gehenna";
 
 export default async function HandleNavbar({ profile }: { profile: Profile })
 {
@@ -21,6 +22,7 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
                     <Image src={profile.avatar} alt="profile picture" width={250} height={250} style={{ width: 40, height: 40, objectFit: 'cover' }} className="object-cover rounded-full" />
                 </Link>
             }
+            <span className="text-lg font-semibold">{profile.name}</span>
             {
                 user && user.id === profile.id &&
                 <Link href={`/${profile.handle}/publish`} className="w-fit">
@@ -32,8 +34,20 @@ export default async function HandleNavbar({ profile }: { profile: Profile })
             }
         </div>
         <div className="flex items-center justify-center gap-4">
-            <Link href={`/${profile.handle}`} className="w-fit transition hover:drop-shadow-lg">
-                <span className="text-3xl font-bold">{profile.name}</span>
+        <Link href='/' className="w-fit scale-50 -my-7 transition duration-150 hover:drop-shadow-lg hover:text-primary">
+                <pre className='text-xs scale-100 lg:text-md leading-3'>
+
+                &nbsp;▄████ ▓█████  ██░ ██ ▓█████  ███▄    █  ███▄    █  ▄▄▄      <br />
+                &nbsp;██▒ ▀█▒▓█   ▀ ▓██░ ██▒▓█   ▀  ██ ▀█   █  ██ ▀█   █ ▒████▄    <br />
+                ▒██░▄▄▄░▒███   ▒██▀▀██░▒███   ▓██  ▀█ ██▒▓██  ▀█ ██▒▒██  ▀█▄  <br />
+                ░▓█  ██▓▒▓█  ▄ ░▓█ ░██ ▒▓█  ▄ ▓██▒  ▐▌██▒▓██▒  ▐▌██▒░██▄▄▄▄██ <br />
+                ░▒▓███▀▒░▒████▒░▓█▒░██▓░▒████▒▒██░   ▓██░▒██░   ▓██░ ▓█   ▓██▒<br />
+                ░▒   ▒ ░░ ▒░ ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ▒ ▒ ░ ▒░   ▒ ▒  ▒▒   ▓▒█░<br />
+                ░   ░  ░ ░  ░ ▒ ░▒░ ░ ░ ░  ░░ ░░   ░ ▒░░ ░░   ░ ▒░  ▒   ▒▒ ░<br />
+                ░ ░   ░    ░    ░  ░░ ░   ░      ░   ░ ░    ░   ░ ░   ░   ▒   <br />
+                    ░    ░  ░ ░  ░  ░   ░  ░         ░          ░       ░  ░<br />
+
+                </pre>
             </Link>
         </div>
         <div className="min-w-fit flex flex-col md:flex-row items-center md:justify-end md:pr-8 gap-2">

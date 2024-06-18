@@ -41,7 +41,7 @@ export default async function ExploreAuthors()
                     target="_blank"
                     className='bg-tertiary rounded-md p-4 flex flex-col gap-4'>
                         <div className="w-full flex flex-row gap-5">
-                            <Image src={profile.avatar} alt="Profile Picture" width={250} height={250} style={{ width: 96, height: 96, borderRadius: '9999' }} className="rounded-full" />
+                            <Image src={profile.avatar} alt="Profile Picture" width={250} height={250} style={{ width: 96, height: 96, borderRadius: '9999' }} className="object-cover rounded-full" />
                             <div className="flex flex-col w-full">
                                 <span className="text-2xl font-bold">
                                     {profile.name}
