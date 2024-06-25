@@ -4,13 +4,12 @@ import { createServerClient } from "@/utils/supabase/server";
 import { Button } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
-import TalosPrinciple from '@/public/talos_principle.jpg';
 
 export default async function HomePage()
 {
 	const supabase = createServerClient();
 	const user = (await supabase.auth.getUser()).data.user;
-    const { data: profiles, error } = await supabase
+    const { data: profiles } = await supabase
     .from('profiles')
     .select('*')
     .order('createdAt', { ascending: true });
@@ -43,24 +42,22 @@ export default async function HomePage()
 			<p className="text-4xl font-light">
 				Where the words end, the world ends.
 			</p>
-			<Image src={TalosPrinciple} alt="Talos Principle" quality={100} priority width={500} height={400} className="w-full h-[400px] object-cover rounded-md" />
 			<p className="text-center">
-				Here in Gehenna, you can share your thoughts and opinions on anything you want. It's like Medium and Substack without the chaos,
-				premium subscription waving, ads, monetisation and all that shit.
-				
-				You can write public monologues, private schizo ramblings, insights / observations,
-				or anything you want, just so long as it doesn't violate the <Link href='/tos' target="_blank" className="text-blue-500 underline">Terms of Service</Link>.
+				Gehenna is a free platform for people to write about whatever they want. It&apos;s a small place.
 				<br />
 				<br />
-				The app is currently being developed to support a bunch of new things, like <b>customising your own space, having your own domain and stuff like that.</b>
-				&nbsp;More will be written here as it gets created. 
-				<br />
-				<br />
-				I am personally hosting all of this. It is a free service because I believe every man should have his own space to share.
-				<br />
-				<br />
-				Also, if you can&apos;t tell, this site is based on the Talos Principle: Road To Gehenna DLC. I love the game and the nature of how the community shares things, the overarching concept so I named the site after it.
+				The Internet gets smaller every year and it&apos;s a sad thing to witness. As you scroll down, you will see
+				a list of real names from real people, writing real things. Gehenna does not allow slop content that is a cacophony of SEO optimised,
+				hilariously perfect "stories" that are half-written using ChatGPT and further contributing to the stench that eminates from the modern Internet.
 			</p>
+			{
+				user &&
+				<Link href='/auth'>
+					<Button variant="light">
+						Join Gehenna
+					</Button>
+				</Link>
+			}
 			{/* <TotalUsersCount /> */}
 		</div>
 		{
@@ -72,6 +69,7 @@ export default async function HomePage()
                 {
                     profiles.map(profile => 
                     <Link href={`/${profile.handle}`}
+					key={profile.id}
                     target="_blank"
                     className='bg-tertiary rounded-md p-4 flex flex-col gap-4'>
                         <div className="w-full flex flex-row gap-5">
