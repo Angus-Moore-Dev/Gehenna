@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-import TotalUsersCount from "@/components/TotalUsersCount";
+// import TotalUsersCount from "@/components/TotalUsersCount";
 import { createServerClient } from "@/utils/supabase/server";
 import { Button } from "@mantine/core";
 import Image from "next/image";
@@ -10,6 +10,10 @@ export default async function HomePage()
 {
 	const supabase = createServerClient();
 	const user = (await supabase.auth.getUser()).data.user;
+    const { data: profiles, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('createdAt', { ascending: true });
 
 	// const { data: latestPost } = await supabase
 	// .from('post')
@@ -57,62 +61,37 @@ export default async function HomePage()
 				<br />
 				Also, if you can&apos;t tell, this site is based on the Talos Principle: Road To Gehenna DLC. I love the game and the nature of how the community shares things, the overarching concept so I named the site after it.
 			</p>
-			<Link href='/explore' className="w-fit">
-				<Button>
-					Explore Authors
-				</Button>
-			</Link>
-			<TotalUsersCount />
+			{/* <TotalUsersCount /> */}
 		</div>
-		{/* {
-			latestPost &&
-			<>
-			<span className="-mb-7 pb-2 border-b-[1px] border-b-neutral-600 w-full max-w-4xl font-semibold">
-				Latest Posts on <span className="text-primary font-bold">Gehenna</span>
-			</span>
-			{
-				latestPost.map((latestPost, index) => 
-				<Link
-				key={index}
-				href={`/${latestPost.profiles?.handle}/${latestPost.id}`} 
-				className="w-full max-w-4xl grid grid-cols-2 grid-rows-1 -mt-5">
-					<Image src={(latestPost.postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
-					<div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center max-h-[300px]">
-						<span className="text-2xl font-bold text-center">
-							{latestPost.title}
-						</span>
-						<p className="text-neutral-400">
-							{latestPost.byline}
-						</p>
-						<div className="mt-auto flex flex-col items-center gap-5">
-							{
-								latestPost.profiles &&
-								<div className="flex flex-row items-center gap-2">
-									{
-										!latestPost.profiles.avatar &&
-										<Image src='/gehenna_logo_transparent.png' alt="" width={250} height={250} style={{ width: 32, height: 32, objectFit: 'cover' }} className="object-cover rounded-full" />
-									}
-									{
-										latestPost.profiles.avatar &&
-										<Image src={latestPost.profiles.avatar} alt="" width={250} height={250} style={{ width: 32, height: 32, objectFit: 'cover' }} className="object-cover rounded-full" />
-									}
-									<small>
-										{latestPost.profiles.name}
-									</small>
-								</div>
-							}
-							<small className="">
-								{
-									latestPost.postTopics &&
-									<>{latestPost.postTopics?.title}&nbsp;&middot;&nbsp;</>
-								}{new Date(latestPost.createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' })}
-							</small>
-						</div>
-					</div>
-				</Link>)
-			}
-			</>
-		} */}
+		{
+			profiles &&
+			<section className="w-full max-w-4xl grid grid-cols-2 gap-5 flex-wrap justify-center">
+				<span className="col-span-2 font-semibold text-lg pb-2 border-b-[1px] border-b-primary">
+					Authors on Gehenna
+				</span>
+                {
+                    profiles.map(profile => 
+                    <Link href={`/${profile.handle}`}
+                    target="_blank"
+                    className='bg-tertiary rounded-md p-4 flex flex-col gap-4'>
+                        <div className="w-full flex flex-row gap-5">
+                            <Image src={profile.avatar} alt="Profile Picture" width={250} height={250} style={{ width: 96, height: 96, borderRadius: '9999' }} className="object-cover rounded-full" />
+                            <div className="flex flex-col w-full">
+                                <span className="text-2xl font-bold">
+                                    {profile.name}
+                                </span>
+                                <small className="text-neutral-400">
+                                    {profile.handle}.gehenna.app
+                                </small>
+                                <small className="font-light pt-1 my-1 border-t-[1px] border-t-neutral-600 line-clamp-2">
+                                    {profile.bio}
+                                </small>
+                            </div>
+                        </div>
+                    </Link>)
+                }
+            </section>
+		}
 	</div>
 	</>
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { NewPostContent, Post, PostTopic, Profile } from "@/utils/global.types";
+import { ContentSection, NewPostContent, Post, PostTopic, Profile } from "@/utils/global.types";
 import { Button } from "@mantine/core";
 import { useState } from "react";
 import PostCreationSection from "./PostCreationSection";
@@ -12,6 +12,7 @@ import { v4 } from "uuid";
 import { User } from "@supabase/supabase-js";
 import { notifications } from "@mantine/notifications";
 import generatePostContentSections from "@/utils/generatePostContentSections";
+import DraftPosts from "./DraftPosts";
 
 
 export default function CreateNewPost({ profile, topics }: { profile: Profile, topics: PostTopic[] })
@@ -157,6 +158,16 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
     }
 
     return <div className="w-full flex flex-col gap-5">
+        {/* {
+            stage === 1 &&
+            <DraftPosts
+                profileId={profile.id}
+                onSelectPost={post =>
+                {
+                    // TODO!!!! Need a new system to support drafing.
+                }} 
+            />
+        } */}
         <section className={`w-full flex flex-row items-center gap-2 ${stage >= 1 && '-mb-32'} p-4 bg-tertiary rounded-md`}>
             <span className="text-2xl font-bold">
                 Write New Post | {stage === 0 ? 'Details' : stage === 1 ? 'Preview' : 'Finalise'}
@@ -218,6 +229,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                     public: true,
                     topicId: selectedPostTopic === 'new' ? null : selectedPostTopic,
                     contentSections: generatePostContentSections(postStructure),
+                    isDraft: true
                 }}
                 profile={profile}
                 postTopicTitle={selectedPostTopic === 'new' ? newPostTopicName : postTopics.find(x => x.id === selectedPostTopic)?.title ?? ''}
@@ -242,6 +254,7 @@ export default function CreateNewPost({ profile, topics }: { profile: Profile, t
                 public: true,
                 topicId: selectedPostTopic === 'new' ? null : selectedPostTopic,
                 contentSections: [],
+                isDraft: true
             }}
             profile={profile}
             postTopic={selectedPostTopic === 'new' ? newPostTopicName : postTopics.find(x => x.id === selectedPostTopic)?.title ?? ''}

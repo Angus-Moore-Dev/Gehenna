@@ -1,5 +1,5 @@
 'use client';
-import { MediaInfo, Post, Profile } from "@/utils/global.types"
+import { ContentSection, MediaInfo, Post, Profile } from "@/utils/global.types"
 import { TypographyStylesProvider } from "@mantine/core";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import Image from "next/image";
@@ -101,16 +101,16 @@ export default function PostContent({ post, profile, postTopicTitle, user, postL
                 {
                     case 'text':
                         return <TypographyStylesProvider key={index} className="">
-                            <div dangerouslySetInnerHTML={{ __html: section.content }} />
+                            <div dangerouslySetInnerHTML={{ __html: section.content! }} />
                         </TypographyStylesProvider>
                     case 'image':
-                        return <Image key={index} src={section.content} alt={section.content} width={1000} height={1000} className="w-full rounded-md mb-2" />
+                        return <Image key={index} src={section.content!} alt={section.content!} width={1000} height={1000} className="w-full rounded-md mb-2" />
                     case 'video':
-                        return <video key={index} src={section.content} controls className="w-full rounded-md mb-2" />
+                        return <video key={index} src={section.content!} controls className="w-full rounded-md mb-2" />
                     case 'audio':
-                        return <audio key={index} src={section.content} controls className="w-full rounded-md mb-2" />
+                        return <audio key={index} src={section.content!} controls className="w-full rounded-md mb-2" />
                     case 'file':
-                        return <FileBox key={index} content={section} />
+                        return <FileBox key={index} content={section as ContentSection} />
                 }
             })
         }

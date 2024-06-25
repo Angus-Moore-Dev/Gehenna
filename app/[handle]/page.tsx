@@ -53,7 +53,13 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
     if (error && !profile)
         redirect('/');
 
-    const { data: posts, error: postError } = await supabase
+    const { data: posts, error: postError } = user && user.id === profile.id ?
+    await supabase
+    .from('post')
+    .select('id, title, postImageURL, createdAt, byline, topicId')
+    .eq('userId', profile.id)
+    .order('createdAt', { ascending: false }) :
+    await supabase
     .from('post')
     .select('id, title, postImageURL, createdAt, byline, topicId')
     .eq('public', true)
@@ -107,7 +113,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
                 Latest Post
             </span>
             <Link href={`/${params.handle}/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2">
-                <Image src={(posts[0].postImageURL as MediaInfo).url} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
+                <Image src={(posts[0].postImageURL as MediaInfo).url!} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
                 <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
                     <span className="text-2xl font-bold text-center">
                         {posts[0].title}
