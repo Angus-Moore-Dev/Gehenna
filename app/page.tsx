@@ -14,26 +14,6 @@ export default async function HomePage()
     .select('*')
     .order('createdAt', { ascending: true });
 
-	// const { data: latestPost } = await supabase
-	// .from('post')
-	// .select('id, title, byline, topicId, postImageURL, createdAt, profiles!inner(id, name, handle, avatar), postTopics(title)')
-	// .eq('public', true)
-	// .order('createdAt', { ascending: false })
-	// .limit(5);
-
-	// let profile: Profile | null = null;
-	// if (user)
-	// {
-	// 	const { data } = await supabase
-	// 	.from('profiles')
-	// 	.select('*')
-	// 	.eq('id', user.id)
-	// 	.single();
-
-	// 	if (data)
-	// 		profile = data;
-	// }
-
 
 	return <>
 	<div className="w-full min-h-screen flex flex-col items-center gap-10">
