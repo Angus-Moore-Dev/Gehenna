@@ -51,12 +51,18 @@ export default async function HomePage()
 				hilariously perfect "stories" that are half-written using ChatGPT and further contributing to the stench that eminates from the modern Internet.
 			</p>
 			{
-				user &&
+				!user &&
 				<Link href='/auth'>
 					<Button variant="light">
 						Join Gehenna
 					</Button>
 				</Link>
+			}
+			{
+				user &&
+				<span className="text-neutral-400 font-semibold">
+					Welcome back, {user.email}
+				</span>
 			}
 			{/* <TotalUsersCount /> */}
 		</div>
