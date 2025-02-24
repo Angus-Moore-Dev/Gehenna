@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      personal_tasks: {
+        Row: {
+          category: string
+          createdAt: string
+          description: string
+          dueAt: string
+          id: number
+          importance: string
+          profileId: string
+          title: string
+        }
+        Insert: {
+          category: string
+          createdAt?: string
+          description?: string
+          dueAt: string
+          id?: number
+          importance: string
+          profileId: string
+          title: string
+        }
+        Update: {
+          category?: string
+          createdAt?: string
+          description?: string
+          dueAt?: string
+          id?: number
+          importance?: string
+          profileId?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_tasks_profileId_fkey"
+            columns: ["profileId"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post: {
         Row: {
           attachedFileURLs: Database["public"]["CompositeTypes"]["mediaInfo"][]
@@ -102,13 +143,6 @@ export type Database = {
             referencedRelation: "post"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "postComments_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       postLikes: {
@@ -148,13 +182,6 @@ export type Database = {
             referencedRelation: "post"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "postLikes_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       postTopics: {
@@ -176,15 +203,7 @@ export type Database = {
           title?: string
           userId?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "postTopics_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -214,15 +233,7 @@ export type Database = {
           name?: string
           profileBannerURL?: Json
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -350,4 +361,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
