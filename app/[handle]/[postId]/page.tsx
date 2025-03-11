@@ -55,10 +55,11 @@ export async function generateMetadata({ params }: { params: Promise<{ postId: s
     }
 }
 
-export default async function PostPage({ params }: { params: { postId: string, handle: string } })
+export default async function PostPage({ params }: { params: Promise<{ postId: string, handle: string }> })
 {
     const supabase = createServerClient();
     const user = (await supabase.auth.getUser()).data.user;
+    const paramData = await params;
 
     const { data: post, error: postError } = await supabase
     .from('post')
@@ -68,7 +69,7 @@ export default async function PostPage({ params }: { params: { postId: string, h
             title
         )
     `)
-    .eq('id', params.postId)
+    .eq('id', paramData.postId)
     .single();
 
     if (!post && postError)
@@ -91,7 +92,7 @@ export default async function PostPage({ params }: { params: { postId: string, h
     .select('*', { count: 'exact', head: false })
     .eq('postId', post.id);
 
-    if (profile.handle !== params.handle)
+    if (profile.handle !== paramData.handle)
     {
         // It means the user is on another handle looking at a post from another person.
         // We want to redirect them to that user's handle instead.
