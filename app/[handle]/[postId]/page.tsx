@@ -8,9 +8,9 @@ import { redirect } from "next/navigation";
 
 let favicon = '/favicon.ico';
 
-export async function generateMetadata({ params }: { params: { postId: string }}, parent: ResolvingMetadata): Promise<Metadata>
+export async function generateMetadata({ params }: { params: Promise<{ postId: string }>}): Promise<Metadata>
 {
-    const postId = params.postId;
+    const postId = (await params).postId;
     const supabase = createServerClient();
 
     const { data: post, error: postError } = await supabase
