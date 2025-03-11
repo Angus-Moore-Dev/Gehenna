@@ -13,9 +13,9 @@ import HandlePosts from "@/components/HandlePosts";
 
 let favicon = '/favicon.ico';
 
-export async function generateMetadata({ params }: { params: { handle: string }}, parent: ResolvingMetadata): Promise<Metadata>
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }>}, parent: ResolvingMetadata): Promise<Metadata>
 {
-    const handle = params.handle;
+    const handle = (await params).handle;
     const supabase = createServerClient();
 
     const { data: profile, error } = await supabase
