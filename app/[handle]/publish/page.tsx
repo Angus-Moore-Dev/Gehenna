@@ -22,13 +22,13 @@ export async function generateMetadata(): Promise<Metadata>
 }
 
 
-export default async function PublishNewPost({ params }: { params: { handle: string }})
+export default async function PublishNewPost({ params }: { params: Promise<{ handle: string }> })
 {
     const supabase = createServerClient();
     const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('handle', params.handle)
+    .eq('handle', (await params).handle)
     .single();
 
     const user = (await supabase.auth.getUser()).data.user;

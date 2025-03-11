@@ -11,11 +11,11 @@ export default async function RootLayout({
 	params
 }: {
 	children: React.ReactNode,
-	params: { handle: string }
+	params: Promise<{ handle: string }>
 }) {
 	
 	const supabase = createServerClient();
-	const profile = (await supabase.from('profiles').select('*').eq('handle', params.handle).single()).data;
+	const profile = (await supabase.from('profiles').select('*').eq('handle', (await params).handle).single()).data;
 
 	if (!profile)
 		redirect('/404');

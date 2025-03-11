@@ -39,15 +39,16 @@ export async function generateMetadata({ params }: { params: { handle: string }}
     }
 }
 
-export default async function AuthorHomePage({ params }: { params: { handle: string }})
+export default async function AuthorHomePage({ params }: { params: Promise<{ handle: string }> })
 {
     const supabase = createServerClient();
     const user = (await supabase.auth.getUser()).data.user;
+    const paramData = await params;
 
     const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('handle', params.handle)
+    .eq('handle', paramData.handle)
     .single();
 
     if (error && !profile)
@@ -112,7 +113,7 @@ export default async function AuthorHomePage({ params }: { params: { handle: str
             <span className="font-semib old w-full max-w-4xl -mb-9">
                 Latest Post
             </span>
-            <Link href={`/${params.handle}/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2">
+            <Link href={`/${paramData.handle}/${posts[0].id}`} className="w-full max-w-4xl grid grid-cols-2">
                 <Image src={(posts[0].postImageURL as MediaInfo).url!} alt="" width={500} height={300} className="max-h-[300px] object-cover rounded-l-md bg-[#0e0e0e]" />
                 <div className="flex flex-col gap-4 bg-tertiary rounded-r-md flex-grow p-8 items-center text-center">
                     <span className="text-2xl font-bold text-center">
