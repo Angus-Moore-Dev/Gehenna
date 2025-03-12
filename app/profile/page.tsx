@@ -13,7 +13,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: { postId: string }}, parent: ResolvingMetadata): Promise<Metadata>
+export async function generateMetadata(): Promise<Metadata>
 {
     return {
         title: 'My Account | Gehenna',
