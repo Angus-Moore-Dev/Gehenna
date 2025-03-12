@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 export async function getSupabaseCookie(): Promise<RequestCookie | undefined>
 {
     const cookieName = 'sb-fdiavyxctdwgbvoawijj-auth-token'; // Hardcoded for now
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 	const supabaseCookie = cookieStore.get(cookieName);
 
     return supabaseCookie;
